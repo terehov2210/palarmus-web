@@ -39,12 +39,17 @@ beside it never changes: the value proposition is one message, and a headline
 that rewrites itself under the reader is worse than no slider. What rotates is
 the evidence of range.
 
-`src/content/hero-slides.ts` lists the slides; `hero.tsx` drops any whose file
-is missing from `public/` and `HeroArt` falls back to a plain static image when
-fewer than two remain. **Three of the four illustrations are still outstanding,
-so today it renders as a single static hero with no controls** and the slider
-starts working by itself as each file lands. Spec and sources:
-[illustration-kit/hero-slider/](illustration-kit/hero-slider/README.md).
+Four slides, one per direction: травматологія, заміна суглобів, спінальна
+хірургія, спортивна медицина. `src/content/hero-slides.ts` lists them;
+`hero.tsx` drops any whose file is missing from `public/` and `HeroArt` falls
+back to a plain static image when fewer than two remain, so the hero never
+shows a placeholder and adding a fifth direction needs no code. Spec and
+sources: [illustration-kit/hero-slider/](illustration-kit/hero-slider/README.md).
+
+Cost, measured with cache disabled: first paint still fetches **one** image
+(13 KB), because slide 0 is the LCP element and nothing else is mounted yet.
+A reader who stays long enough to see all four pulls 140 KB total — still well
+under the 202 KB the homepage cost before any of this work.
 
 How it behaves, and why:
 
@@ -66,6 +71,11 @@ How it behaves, and why:
   over the art. The label started as plain `fg-secondary` text and measured
   about 1.5:1 on the deep blue slide; on its own chip it measures 12.7:1, and
   the dots clear the 3:1 non-text threshold against the darkest art in the set.
+- **The group wraps the controls, not just the picture.** `role="group"` and the
+  carousel role description sit on the element that holds the image *and* the
+  buttons. They were on the media box while the controls sat beside it, which
+  left the buttons announced as loose controls with nothing saying what they
+  operate.
 - **The label is a link** into the direction on screen, which keeps the cluster
   a control group rather than decoration — and keeps the slider from adding a
   fifth text element to the hero's stack, since it lives on the art rather than

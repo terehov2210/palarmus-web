@@ -1,11 +1,15 @@
-# Hero slider — 3 illustrations
+# Hero slider — delivered
 
-The homepage hero is now a slider. Slide 1 exists; slides 2, 3 and 4 are what
-this folder is asking for.
+All four slides are in `public/brand/` and the slider is live. This file is kept
+as the record of what was asked for and the constraints it was built to, so a
+fifth direction can be added to the same spec.
 
-**Count: 3 renders.** All three subjects have already been drawn for the
-training section, so this is a re-render of existing scenes on a different
-ground at a different crop, not new artwork.
+Delivered art is mirrored in `deliverables/`, byte-identical to `public/`.
+
+Checked on arrival: all three at 1600x1200, deep blue grounds matching slide 1
+to within a couple of RGB points at the corners (they crossfade, so drift would
+read as a flicker), subject right of centre in the desktop crop, and each one
+still readable in the 5:4 mobile crop.
 
 ```
 hero-slider/
@@ -14,24 +18,23 @@ hero-slider/
   implants/    device renders from the live shop
 ```
 
-## The slider only turns on when the art lands
+## Adding a fifth needs no code
 
-The code is live. `src/content/hero-slides.ts` lists four slides;
+`src/content/hero-slides.ts` lists the slides;
 `src/components/sections/hero.tsx` drops any whose file is missing from
 `public/`, and with fewer than two left the hero renders a plain static image
-with no controls. So the homepage looks finished right now, and the slider
-starts working by itself as each file arrives — no code change needed.
-
-Drop the files at these exact paths:
+with no controls. So a new direction is a row in that file plus a file at the
+matching path — and a slide whose art has not arrived yet simply does not
+appear, rather than showing a placeholder.
 
 | Slide | File | Direction |
 | --- | --- | --- |
-| 1 | `public/brand/hero.webp` | Травматологія — **exists** |
+| 1 | `public/brand/hero.webp` | Травматологія |
 | 2 | `public/brand/hero-joints.webp` | Заміна суглобів |
 | 3 | `public/brand/hero-spinal.webp` | Спінальна хірургія |
 | 4 | `public/brand/hero-sports.webp` | Спортивна медицина |
 
-## Format, identical for all three
+## Format, identical for all of them
 
 | | |
 | --- | --- |
@@ -101,11 +104,10 @@ labrum.** ParaTak™ and LocTak™ titanium anchors.
   enough to read as a shoulder, so the reader knows which joint they are
   looking at.
 
-## Notes before you start
+## Notes
 
 - **The renders in `implants/` are lit on black.** Use them for geometry,
-  thread pitch and proportion only. Do not carry their ground or their lighting
-  into the output.
+  thread pitch and proportion only, never for ground or lighting.
 - **Colour-coded parts are presentation, not product.** The anchors have purple
   and green driver handles; the implants themselves are titanium.
 - **Deliver WebP**, quality ~85. The site re-encodes to AVIF at `quality={82}`

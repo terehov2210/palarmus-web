@@ -110,6 +110,13 @@ export function HeroArt({ slides }: { slides: HeroSlide[] }) {
   return (
     <div
       className="order-2 w-full page-gutter pb-14 lg:absolute lg:inset-y-0 lg:right-0 lg:order-none lg:w-[54%] lg:p-0"
+      /* The group is the wrapper, not the media box, because the controls sit
+         beside the image rather than inside it. Labelling only the picture
+         would leave the buttons announced as loose controls with nothing
+         saying what they operate. */
+      role={single ? undefined : "group"}
+      aria-roledescription={single ? undefined : "карусель"}
+      aria-label={single ? undefined : "Напрями постачання"}
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
       onFocusCapture={() => setHovered(true)}
@@ -117,9 +124,6 @@ export function HeroArt({ slides }: { slides: HeroSlide[] }) {
     >
       <div
         className="relative aspect-5/4 overflow-hidden rounded-media media-outline lg:h-full lg:aspect-auto lg:rounded-none lg:outline-hidden"
-        role={single ? undefined : "group"}
-        aria-roledescription={single ? undefined : "карусель"}
-        aria-label={single ? undefined : "Напрями постачання"}
       >
         {slides.map((slide, i) => (
           <div
