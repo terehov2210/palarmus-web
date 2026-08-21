@@ -1,9 +1,10 @@
-import Image from "next/image";
-
+import { HeroArt } from "@/components/sections/hero-art";
 import { Reveal } from "@/components/reveal";
 import { ButtonLink } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/section";
+import { heroSlides } from "@/content/hero-slides";
 import { site } from "@/content/site";
+import { hasPublicAsset } from "@/lib/assets";
 
 /**
  * One screen, vertically centred.
@@ -19,44 +20,34 @@ import { site } from "@/content/site";
  *
  * The height floor is desktop-only. On narrow viewports the art sits below the
  * copy as its own block, so forcing a full screen there would push the CTAs
- * off it.
+ * off it. That is also why the section is a column below `lg` and lets the art
+ * bleed absolutely above it.
  *
  * Four text elements, no more: eyebrow, headline, lede, actions. The three
  * assurance claims that used to sit under the CTAs now have their own band
  * directly below this section — they were ~116px of the overflow, and they
- * repeat the "Чому Palarmus" block further down the page.
+ * repeat the "Чому Palarmus" block further down the page. The slider's own
+ * label lives on the art rather than in this column for the same reason.
+ *
+ * Slides with no file in `public/` are filtered out here rather than shown as
+ * placeholders, and with fewer than two left `HeroArt` renders a plain static
+ * image with no controls. So the hero looks finished now and the slider starts
+ * working by itself as the remaining illustrations land.
  */
 export function Hero() {
+  const slides = heroSlides.filter((slide) => hasPublicAsset(slide.src));
+
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate flex items-center overflow-hidden border-b border-hairline lg:min-h-[calc(100dvh-4.5rem-1px)]"
+      className="relative isolate flex flex-col overflow-hidden border-b border-hairline lg:min-h-[calc(100dvh-4.5rem-1px)] lg:flex-row lg:items-center"
     >
-      {/* Decorative art bleeds to the viewport edge; the copy column stays
-          inside the layout margins on solid ground, so no text ever renders
-          over the illustration. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 hidden w-[54%] lg:block"
-      >
-        <Image
-          src="/brand/hero.webp"
-          alt=""
-          fill
-          quality={82}
-          priority
-          sizes="54vw"
-          className="object-cover object-right"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-base),transparent_58%)]" />
-      </div>
-
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 blueprint-grid opacity-40 [mask-image:radial-gradient(120%_90%_at_0%_0%,black,transparent_70%)]"
       />
 
-      <div className="container-page relative w-full py-14 lg:py-16">
+      <div className="container-page relative order-1 w-full py-14 lg:py-16">
         <div className="flex max-w-[36rem] flex-col gap-7">
           <Reveal className="flex flex-col gap-5">
             <Eyebrow>Дистрибуція імплантів в Україні</Eyebrow>
@@ -87,31 +78,9 @@ export function Hero() {
             </ButtonLink>
           </Reveal>
         </div>
-
-        {/* Below the copy on narrow viewports rather than behind it.
-
-            No `priority` here, and that is the point. Both instances used to
-            carry it, so the browser preloaded both regardless of which one the
-            breakpoint actually shows: on a 1440px viewport this hidden block
-            pulled a 1920px variant, 53KB of the homepage's 202KB, for an
-            element at `display: none`. Without `priority` it is lazy, and a
-            lazy image under a hidden ancestor is never fetched.
-
-            `sizes` is 92vw rather than 100vw because this block sits inside
-            `container-page`, so it is the viewport minus the gutters. The old
-            100vw made the browser pick one step too large and also tripped
-            Next's own "image is not rendered at full viewport width" warning. */}
-        <div className="relative mt-12 aspect-5/4 overflow-hidden rounded-media media-outline lg:hidden">
-          <Image
-            src="/brand/hero.webp"
-            alt=""
-            fill
-            quality={82}
-            sizes="92vw"
-            className="object-cover object-right"
-          />
-        </div>
       </div>
+
+      <HeroArt slides={slides} />
     </section>
   );
 }

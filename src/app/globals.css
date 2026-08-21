@@ -289,6 +289,15 @@ body {
   padding-right: max(clamp(1.25rem, 3.5vw, 3rem), env(safe-area-inset-right));
 }
 
+/* The same gutter without the max-width or centring. The hero art needs to
+   line up with `container-page` on narrow viewports while bleeding to the
+   viewport edge on wide ones, and restating the clamp in a utility class was
+   the kind of duplication that drifts. */
+@utility page-gutter {
+  padding-left: max(clamp(1.25rem, 3.5vw, 3rem), env(safe-area-inset-left));
+  padding-right: max(clamp(1.25rem, 3.5vw, 3rem), env(safe-area-inset-right));
+}
+
 /* Scrim behind card captions that sit over the category illustrations. On
    light the scrim lifts toward the page ground rather than down toward black.
    Opacity at the text band is >=88%, which measures 13.8:1 for fg text against

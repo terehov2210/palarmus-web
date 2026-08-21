@@ -10,6 +10,13 @@ illustration-kit/
   implants/                  <- product photography, filenames map to slots
 ```
 
+## The hero slider is a separate, smaller ask
+
+`hero-slider/` asks for **3 more renders** — slides 2, 3 and 4 of the homepage
+hero. All three subjects were already drawn for the training section, so it is a
+re-render on a deep blue ground at a 4:3 crop, not new artwork. That folder is
+self-contained too; start there if the hero is the priority.
+
 ## What you are making
 
 21 illustrations of orthopaedic implants **in situ** — the device seated in the

@@ -32,6 +32,48 @@ Certificate cards render a `Переглянути` link only when `documentUrl`
 otherwise they say "Скан документа надаємо за запитом", so the page never
 offers a file that does not exist.
 
+## Hero slider
+
+The hero rotates through one illustration per catalogue direction. The copy
+beside it never changes: the value proposition is one message, and a headline
+that rewrites itself under the reader is worse than no slider. What rotates is
+the evidence of range.
+
+`src/content/hero-slides.ts` lists the slides; `hero.tsx` drops any whose file
+is missing from `public/` and `HeroArt` falls back to a plain static image when
+fewer than two remain. **Three of the four illustrations are still outstanding,
+so today it renders as a single static hero with no controls** and the slider
+starts working by itself as each file lands. Spec and sources:
+[illustration-kit/hero-slider/](illustration-kit/hero-slider/README.md).
+
+How it behaves, and why:
+
+- **One `<Image>` element, not two.** This replaced the duplicated desktop and
+  mobile trees, which is what made a slider affordable: four slides across two
+  trees would have been eight fetches. It also closes the 53 KB duplicate-hero
+  waste that was previously documented as a known residual.
+- **Progressive loading.** Slide 0 is the measured LCP element, so it is the
+  only image fetched during first paint. Slide 1 warms 900ms later, and each
+  advance keeps exactly one slide warm ahead. Verified: 1 image mounted at
+  first paint, 4 after two advances.
+- **It stops when it should.** No auto-advance at all under
+  `prefers-reduced-motion: reduce`; pauses on hover, on focus-within, and while
+  the tab is hidden; and any use of the controls stops it permanently. There is
+  a real pause button, because auto-advancing content that runs past five
+  seconds needs a mechanism to stop it (WCAG 2.2.2) and hover is not one a
+  keyboard reaches.
+- **The controls carry their own ground.** Label, pause and dots are light chips
+  over the art. The label started as plain `fg-secondary` text and measured
+  about 1.5:1 on the deep blue slide; on its own chip it measures 12.7:1, and
+  the dots clear the 3:1 non-text threshold against the darkest art in the set.
+- **The label is a link** into the direction on screen, which keeps the cluster
+  a control group rather than decoration — and keeps the slider from adding a
+  fifth text element to the hero's stack, since it lives on the art rather than
+  the copy column.
+- Crossfade is 600ms on `ease`: a state change rather than an entrance, and
+  slower than the site's UI easing because it is showing something rather than
+  answering a click.
+
 ## Catalogue (`/catalog`)
 
 Three levels, all prerendered: the index, `/catalog/{category}` for the six
