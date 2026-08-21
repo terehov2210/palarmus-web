@@ -8,6 +8,8 @@ type RevealProps = {
   delay?: number;
   className?: string;
   as?: ElementType;
+  /** Anchor target, so a deep link can address the revealed block itself. */
+  id?: string;
 };
 
 /**
@@ -23,6 +25,7 @@ export function Reveal({
   delay = 0,
   className,
   as: Tag = "div",
+  id,
 }: RevealProps) {
   const ref = useRef<HTMLElement>(null);
   const [state, setState] = useState<"idle" | "pending" | "shown">("idle");
@@ -32,7 +35,16 @@ export function Reveal({
     if (!node) return;
 
     // Already on screen at mount: leave it be, no entrance on page load.
-    if (node.getBoundingClientRect().top < window.innerHeight * 0.9) return;
+    //
+    // The boundary is the viewport edge, not a fraction of it. The observer's
+    // root stops 12% short of the bottom, so hiding anything past 90% opened a
+    // gap: an element starting inside that band was hidden, yet sat above the
+    // observer's root bottom and could only be recovered by scrolling. When
+    // the page already fits the viewport there is nothing to scroll and it
+    // stayed hidden for good. Hiding only what is genuinely below the fold
+    // keeps that gap closed, since anything below the fold can always be
+    // scrolled to.
+    if (node.getBoundingClientRect().top < window.innerHeight) return;
 
     setState("pending");
 
@@ -52,6 +64,7 @@ export function Reveal({
   return (
     <Tag
       ref={ref}
+      id={id}
       className={className}
       data-reveal={state === "idle" ? undefined : state}
       style={delay ? ({ "--reveal-delay": `${delay}ms` } as React.CSSProperties) : undefined}

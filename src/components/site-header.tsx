@@ -31,7 +31,7 @@ export function SiteHeader() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="relative inline-flex min-h-10 items-center rounded-control px-3 text-body-sm font-medium text-fg-secondary transition-[color] duration-fast ease-out-quint after:absolute after:inset-x-3 after:bottom-1.5 after:h-px after:origin-left after:scale-x-0 after:bg-accent-line after:transition-[scale] after:duration-fast after:ease-out-quint hover:text-fg hover:after:scale-x-100"
+                  className="relative inline-flex min-h-10 items-center rounded-control px-3 text-body-sm font-medium text-fg-secondary transition-[color] duration-fast ease-out-quint after:absolute after:inset-x-3 after:bottom-1.5 after:h-px after:origin-left after:scale-x-0 after:bg-accent-line after:transition-[scale] after:duration-fast after:ease-out-quint hover:text-fg [@media(hover:hover)]:hover:after:scale-x-100"
                 >
                   {item.label}
                 </Link>

@@ -46,7 +46,9 @@ export function Eyebrow({ children }: { children: ReactNode }) {
 }
 
 type SectionHeaderProps = {
-  eyebrow: string;
+  /** Optional on purpose: an eyebrow above every heading reads as a template.
+      The training page runs at most one per three sections. */
+  eyebrow?: string;
   title: string;
   titleId: string;
   description?: string;
@@ -64,7 +66,7 @@ export function SectionHeader({
   return (
     <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
       <Reveal className="flex flex-col gap-4">
-        <Eyebrow>{eyebrow}</Eyebrow>
+        {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
         <h2
           id={titleId}
           className="max-w-[22ch] text-h2 text-balance text-fg"

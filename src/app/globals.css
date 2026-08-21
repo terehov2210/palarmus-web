@@ -53,42 +53,48 @@
    ========================================================================== */
 
 /* Only the steps a role below actually consumes are declared. Run
-   `node scripts/palette.mjs` to print the full ramps when a new role needs
-   one — a step nothing renders is maintenance for zero pixels. */
+   `node scripts/palette.mjs` to print the full ramps and re-measure every
+   pair — a step nothing renders is maintenance for zero pixels. */
 :root {
-  /* Accent — the brand vermilion. h=32.1 is #ff2f00 measured off the
-     current palarmus.com.ua build. */
-  --accent-500: oklch(65.2% 0.2026 32.1);
-  --accent-550: oklch(58.0% 0.2147 32.1);
-  --accent-600: oklch(54.0% 0.1999 32.1);
-  --accent-650: oklch(50.0% 0.1851 32.1);
-  --accent-925: oklch(28.0% 0.0371 32.1);
+  /* Accent — a clean azure, h=257.7 measured off #0a6fe8. The hue is held
+     here on purpose: clear of the cyan end, where it would read as the teal
+     the nearest competitor already owns, and clear of the violet end, where a
+     medical blue starts looking like a generic gradient.
 
-  /* Neutral — cool graphite, h=264. Reads as instrument steel and keeps the
-     vermilion from muddying against it. */
-  --neutral-50: oklch(98.5% 0.0018 264);
-  --neutral-300: oklch(86.8% 0.0056 264);
-  --neutral-400: oklch(78.2% 0.007 264);
-  --neutral-550: oklch(55% 0.008 264);
-  --neutral-900: oklch(28.3% 0.006 264);
-  --neutral-950: oklch(20.4% 0.0048 264);
-  --neutral-ink: oklch(16.8% 0.004 264);
+     Steps run darker as the number rises, which on a light appearance is also
+     the interaction direction: rest -> hover -> active all go down. */
+  --accent-100: oklch(95.5% 0.0217 257.7);
+  --accent-500: oklch(60% 0.2107 257.7);
+  --accent-600: oklch(50.5% 0.1813 257.7);
+  --accent-650: oklch(45.5% 0.1634 257.7);
+  --accent-700: oklch(41% 0.1472 257.7);
 
-  /* Error — h=0. Held 32° off the accent so a failed field never reads as a
-     brand highlight. Always shipped with an icon as well as the hue. */
-  --error-400: oklch(74.4% 0.0925 0);
-  --error-500: oklch(65.2% 0.1888 0);
-  --error-900: oklch(33.9% 0.0725 0);
+  /* Neutral — the accent hue at a trace chroma, so every grey belongs to the
+     same family of blue instead of reading as a separate warm or cool grey. */
+  --neutral-page: oklch(99.4% 0.0014 257.7);
+  --neutral-band: oklch(96.8% 0.0062 257.7);
+  --neutral-raised: oklch(93.8% 0.0088 257.7);
+  --neutral-line: oklch(62% 0.01 257.7);
+  --neutral-muted: oklch(52% 0.0125 257.7);
+  --neutral-body: oklch(44% 0.014 257.7);
+  --neutral-ink: oklch(19% 0.013 257.7);
+
+  /* Error — h=25, held 127° off the accent so a failed field can never read
+     as a brand highlight. Always shipped with an icon as well as the hue. */
+  --error-100: oklch(95.2% 0.0077 25);
+  --error-400: oklch(60% 0.2068 25);
+  --error-500: oklch(52% 0.1898 25);
 
   /* Success — h=152. */
-  --success-400: oklch(74.4% 0.1128 152);
-  --success-900: oklch(33.9% 0.0498 152);
+  --success-100: oklch(95.2% 0.0236 152);
+  --success-500: oklch(48% 0.1074 152);
 }
 
 /* ==========================================================================
    Tier 2 — semantic roles. The only tier components are allowed to use.
-   One committed dark appearance: the wordmark is white-only and the product
-   photography is lit on black, so a light theme would break both.
+   One committed light appearance: the page ground is a near-white with a
+   trace of the accent hue in it, the ink is a cool near-black, and the
+   illustrations keep their own light ground, so nothing needs a second theme.
    ========================================================================== */
 
 @theme {
@@ -98,43 +104,45 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* Surfaces, in stacking order. */
-  --color-base: var(--neutral-ink);
-  --color-surface: var(--neutral-950);
-  --color-raised: var(--neutral-900);
+  /* Surfaces, in stacking order. On light, "up" is a deeper tint rather than
+     a lighter one: the page is already at the top of the ramp, so a band or a
+     hover has nowhere to go but down. */
+  --color-base: var(--neutral-page);
+  --color-surface: var(--neutral-band);
+  --color-raised: var(--neutral-raised);
 
   /* Foreground. Every pair is measured against every surface it renders on
      in docs/color-contrast.md. */
-  --color-fg: var(--neutral-50);
-  --color-fg-secondary: var(--neutral-300);
-  --color-fg-muted: var(--neutral-400);
-  /* fg-accent measures 5.46:1 on base and 5.10:1 on surface, but only
-     4.09:1 on raised — keep accent *text* off bg-raised. */
-  --color-fg-accent: var(--accent-500);
-  --color-on-accent: var(--neutral-50);
+  --color-fg: var(--neutral-ink);
+  --color-fg-secondary: var(--neutral-body);
+  --color-fg-muted: var(--neutral-muted);
+  /* Unlike the previous dark build, accent text clears 4.5:1 on all three
+     surfaces, so there is no surface it has to stay off. */
+  --color-fg-accent: var(--accent-600);
+  --color-on-accent: oklch(100% 0 0);
 
   /* Accent as a fill. Rest → hover → active all clear 4.5:1 against the
-     on-accent label. */
+     on-accent label, and every step is darker than the last. */
   --color-accent-solid: var(--accent-600);
-  --color-accent-solid-hover: var(--accent-550);
-  --color-accent-solid-active: var(--accent-650);
-  --color-accent-tint: var(--accent-925);
+  --color-accent-solid-hover: var(--accent-650);
+  --color-accent-solid-active: var(--accent-700);
+  --color-accent-tint: var(--accent-100);
   --color-accent-line: var(--accent-500);
 
   /* Lines. `hairline` is structure only; `control-line` clears 3:1 against
-     bg-surface for input and control perimeters. */
-  --color-hairline: oklch(98.5% 0.0018 264 / 0.1);
-  --color-hairline-strong: oklch(98.5% 0.0018 264 / 0.18);
-  --color-control-line: var(--neutral-550);
-  --color-outline-image: oklch(1 0 0 / 0.1);
+     both bg-base and bg-surface for input and control perimeters. */
+  --color-hairline: oklch(19% 0.013 257.7 / 0.1);
+  --color-hairline-strong: oklch(19% 0.013 257.7 / 0.18);
+  --color-control-line: var(--neutral-line);
+  --color-outline-image: oklch(19% 0.013 257.7 / 0.08);
 
-  --color-focus-ring: var(--neutral-50);
+  --color-focus-ring: var(--neutral-ink);
 
   --color-error: var(--error-500);
   --color-error-line: var(--error-400);
-  --color-error-tint: var(--error-900);
-  --color-success: var(--success-400);
-  --color-success-tint: var(--success-900);
+  --color-error-tint: var(--error-100);
+  --color-success: var(--success-500);
+  --color-success-tint: var(--success-100);
 
   /* ---- Type scale, named by role -------------------------------------- */
   --font-sans: "Manrope", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
@@ -181,10 +189,33 @@
   --radius-card: 1.25rem; /* 20px — cards, panels */
   --radius-media: 1rem; /* 16px — standalone media */
 
-  /* ---- Motion --------------------------------------------------------- */
+  /* ---- Elevation ------------------------------------------------------
+     A hairline alone cannot separate a near-white card from a near-white
+     page, so cards carry a shadow as well. Both stops are the ink at low
+     alpha rather than black, so the shade stays in the page's own hue. */
+  --shadow-card: 0 1px 2px oklch(19% 0.013 257.7 / 0.04),
+    0 10px 28px -12px oklch(19% 0.013 257.7 / 0.12);
+  --shadow-card-hover: 0 1px 2px oklch(19% 0.013 257.7 / 0.05),
+    0 16px 40px -14px oklch(19% 0.013 257.7 / 0.18);
+
+  /* ---- Motion ---------------------------------------------------------
+     `fast` is press and hover feedback: inside the 100-160ms window where a
+     button still feels like it answered the finger.
+
+     `reveal` was 520ms. With a 20px travel that read as lag rather than
+     entrance, and stacked with the per-card stagger the last card in a row
+     finished nearly 800ms after it crossed the fold. 400ms plus a 60ms
+     stagger lands the whole row inside 580ms.
+
+     `--animate-spin` overrides Tailwind's 1s default. A quicker spinner makes
+     an identical wait feel shorter, which is the cheapest perceived
+     performance win on the page. */
   --ease-out-quint: cubic-bezier(0.2, 0, 0, 1);
   --duration-fast: 150ms;
-  --duration-reveal: 520ms;
+  --duration-reveal: 400ms;
+  --duration-enter: 240ms;
+  --duration-exit: 150ms;
+  --animate-spin: spin 0.7s linear infinite;
 
   /* ---- Layout --------------------------------------------------------- */
   --container-page: 82.5rem; /* 1320px */
@@ -195,7 +226,7 @@
    ========================================================================== */
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -206,8 +237,8 @@ body {
   line-height: 1.6;
 }
 
-/* Keyboard users get a ring; pointer users normally do not. White clears
-   4.5:1 even on the accent fill, so one ring works on every surface. */
+/* Keyboard users get a ring; pointer users normally do not. The ink clears
+   3:1 on every surface and on the accent fill, so one ring works everywhere. */
 :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
@@ -228,7 +259,7 @@ body {
   *::before,
   *::after {
     transition-property: background-color, border-color, color, opacity,
-      outline-color, fill, stroke !important;
+      outline-color, fill, stroke, box-shadow !important;
     scale: none !important;
     translate: none !important;
   }
@@ -258,9 +289,11 @@ body {
   padding-right: max(clamp(1.25rem, 3.5vw, 3rem), env(safe-area-inset-right));
 }
 
-/* Scrim behind card captions that sit over photography. Opacity at the text
-   band is >=88%, which measures 15.7:1 for fg text against the brightest
-   pixel in the category art. */
+/* Scrim behind card captions that sit over the category illustrations. On
+   light the scrim lifts toward the page ground rather than down toward black.
+   Opacity at the text band is >=88%, which measures 13.8:1 for fg text against
+   the darkest pixel in the art (#000002, the drill body in equipment.webp).
+   Re-measure with `python3 scripts/art.py --measure` if the art changes. */
 @utility scrim-bottom {
   background-image: linear-gradient(
     to top,
@@ -271,10 +304,80 @@ body {
   );
 }
 
-/* 1px low-opacity outline gives photography consistent depth on dark. */
+/* 1px low-opacity outline keeps light art from bleeding into a light page. */
 @utility media-outline {
   outline: 1px solid var(--color-outline-image);
   outline-offset: -1px;
+}
+
+/* ==========================================================================
+   Native <dialog> enter and exit.
+
+   `showModal()` on its own pops the panel into place with no transition, which
+   is the one case the eye reliably reads as broken. Animating it needs
+   `allow-discrete` so `display` and the top layer stay put while opacity and
+   translate run; without it the element is gone before the exit can play.
+
+   Enter is 240ms, exit 150ms: the exit is the system responding to a decision
+   the user already made, so it gets out of the way faster than it arrived.
+   No scale — this is a modal, so it stays put rather than growing from a
+   trigger, and a full-screen sheet that scales reads as a zoom.
+
+   Under a reduce preference the global rule below drops `translate` and
+   narrows `transition-property`, which also drops `allow-discrete`. The dialog
+   then opens and closes instantly, which is the correct reduced-motion answer.
+   ========================================================================== */
+
+@utility dialog-sheet {
+  opacity: 0;
+  translate: 0 -0.5rem;
+  transition: opacity var(--duration-exit) var(--ease-out-quint),
+    translate var(--duration-exit) var(--ease-out-quint),
+    display var(--duration-exit) allow-discrete,
+    overlay var(--duration-exit) allow-discrete;
+
+  &[open] {
+    opacity: 1;
+    translate: 0 0;
+    transition-duration: var(--duration-enter);
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
+  }
+
+  &::backdrop {
+    opacity: 0;
+    transition: opacity var(--duration-exit) var(--ease-out-quint),
+      display var(--duration-exit) allow-discrete,
+      overlay var(--duration-exit) allow-discrete;
+  }
+
+  &[open]::backdrop {
+    opacity: 1;
+    transition-duration: var(--duration-enter);
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+}
+
+/* ==========================================================================
+   Entrance for content React inserts after an interaction: the consultation
+   form's success and error banners. They are rare, so they earn a transition,
+   and appearing from nothing is exactly what reads as a glitch.
+   ========================================================================== */
+
+@utility enter-notice {
+  transition: opacity var(--duration-enter) var(--ease-out-quint),
+    translate var(--duration-enter) var(--ease-out-quint);
+
+  @starting-style {
+    opacity: 0;
+    translate: 0 -0.25rem;
+  }
 }
 
 /* Hairline technical grid. Decorative, so it never carries meaning. */
@@ -284,11 +387,7 @@ body {
       var(--color-hairline) 1px,
       transparent 1px
     ),
-    linear-gradient(
-      to bottom,
-      var(--color-hairline) 1px,
-      transparent 1px
-    );
+    linear-gradient(to bottom, var(--color-hairline) 1px, transparent 1px);
   background-size: 4rem 4rem;
 }
 

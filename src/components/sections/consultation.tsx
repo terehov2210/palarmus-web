@@ -94,7 +94,7 @@ export function Consultation() {
             aria-labelledby="consultation-title"
             aria-busy={isPending}
             noValidate
-            className="flex flex-col gap-5 rounded-card border border-hairline bg-surface p-6 lg:p-8"
+            className="flex flex-col gap-5 rounded-card border border-hairline bg-surface p-6 shadow-card lg:p-8"
           >
             {/* Stable region, rendered before its text updates, so repeated
                 submissions announce reliably. */}
@@ -105,7 +105,7 @@ export function Consultation() {
             </p>
 
             {state.status === "success" ? (
-              <p className="flex items-start gap-3 rounded-control bg-success-tint px-4 py-3 text-body-sm text-fg">
+              <p className="enter-notice flex items-start gap-3 rounded-control bg-success-tint px-4 py-3 text-body-sm text-fg">
                 <CheckCircle2
                   aria-hidden="true"
                   size={18}
@@ -119,7 +119,7 @@ export function Consultation() {
             {state.formError ? (
               <p
                 role="alert"
-                className="flex items-start gap-3 rounded-control bg-error-tint px-4 py-3 text-body-sm text-fg"
+                className="enter-notice flex items-start gap-3 rounded-control bg-error-tint px-4 py-3 text-body-sm text-fg"
               >
                 <AlertCircle
                   aria-hidden="true"

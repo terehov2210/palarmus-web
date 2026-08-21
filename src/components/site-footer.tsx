@@ -59,7 +59,7 @@ export function SiteFooter() {
 
           <a
             href={site.instagram.href}
-            className="inline-flex min-h-11 w-fit items-center gap-3 rounded-control border border-hairline-strong px-4 text-body-sm text-fg transition-[border-color,color] duration-fast ease-out-quint hover:border-control-line hover:text-fg-accent"
+            className="inline-flex min-h-11 w-fit items-center gap-3 rounded-control border border-hairline-strong px-4 text-body-sm text-fg transition-[border-color,color,scale] duration-fast ease-out-quint active:scale-[0.97] hover:border-control-line hover:text-fg-accent"
           >
             <InstagramGlyph size={16} strokeWidth={1.5} />
             Instagram — {site.instagram.label}

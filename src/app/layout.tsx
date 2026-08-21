@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 /** No maximum-scale, so the reader decides how far to zoom. */
 export const viewport: Viewport = {
-  themeColor: "#0e0f11",
+  themeColor: "#fcfdfe",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

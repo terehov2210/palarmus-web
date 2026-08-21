@@ -19,8 +19,8 @@ export function Certificates() {
           <Reveal
             as="li"
             key={certificate.code}
-            delay={(i % 4) * 90}
-            className="flex h-full flex-col gap-5 rounded-card border border-hairline bg-surface p-6"
+            delay={(i % 4) * 60}
+            className="flex h-full flex-col gap-5 rounded-card border border-hairline bg-surface p-6 shadow-card"
           >
             <span className="inline-flex size-10 items-center justify-center rounded-control bg-accent-tint">
               <BadgeCheck

@@ -29,27 +29,32 @@ export function Categories() {
         {categories.map((category, i) => (
           <Reveal
             as="li"
-            key={category.href}
-            delay={(i % 2) * 90}
+            key={category.slug}
+            delay={(i % 2) * 60}
             className="group"
           >
             <Link
-              href={category.href}
-              className="relative flex aspect-16/10 flex-col justify-end overflow-hidden rounded-card border border-hairline transition-[border-color] duration-fast ease-out-quint hover:border-hairline-strong sm:aspect-16/7"
+              href={`/catalog/${category.slug}`}
+              className="relative flex aspect-16/10 flex-col justify-end overflow-hidden rounded-card border border-hairline shadow-card transition-[border-color,box-shadow,scale] duration-fast ease-out-quint active:scale-[0.99] hover:border-hairline-strong hover:shadow-card-hover sm:aspect-16/7"
             >
               <Image
                 src={category.image}
                 alt={category.imageAlt}
                 fill
                 sizes="(min-width: 1024px) 40rem, 92vw"
-                className="object-cover object-right transition-[scale] duration-300 ease-out-quint group-hover:scale-105"
+                className="object-cover object-right transition-[scale] duration-200 ease-out-quint group-hover:scale-105"
               />
 
               <div aria-hidden="true" className="absolute inset-0 scrim-bottom" />
 
+              {/* The only text on this card with no scrim behind it, so it is
+                  measured against the raw art rather than against a surface.
+                  `fg-muted` passed on the old near-white duotone and fails on
+                  the illustrations, whose corners carry a soft blue vignette:
+                  3.63:1 at worst. One step darker clears AA on all six. */}
               <span
                 aria-hidden="true"
-                className="absolute start-6 top-6 text-label uppercase text-fg-muted"
+                className="absolute start-6 top-6 text-label uppercase text-fg-secondary"
               >
                 {category.index}
               </span>

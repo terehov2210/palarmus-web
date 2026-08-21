@@ -8,6 +8,14 @@ export const site = {
   tagline: "Нове покоління імплантів",
   description:
     "Постачання імплантів та медичних рішень для травматології й ортопедії: стержні, гвинти, пластини для остеосинтезу, ендопротези суглобів, біоактивні ін’єкції гіалуронової кислоти.",
+  /**
+   * Shorter line for the hero. `description` stays as written for metadata
+   * and the OG card, where length helps; in the hero it ran to four lines and
+   * was a large part of why the section overflowed the first screen. It also
+   * listed the same six directions the catalogue section repeats right below.
+   */
+  heroLede:
+    "Остеосинтез, ендопротезування та артроскопія — від виробників напряму.",
   phone: {
     label: "+38 (095) 2025 005",
     href: "tel:+380952025005",
@@ -30,6 +38,7 @@ export const site = {
 
 export const primaryNav = [
   { label: "Каталог", href: "/catalog" },
+  { label: "Навчання", href: "/education" },
   { label: "Про компанію", href: "/about" },
   { label: "Покупцям", href: "/for-buyers" },
   { label: "Блог", href: "/blog" },
@@ -52,6 +61,7 @@ export const footerNav = {
     heading: "Компанія",
     links: [
       { label: "Про компанію", href: "/about" },
+      { label: "Навчання", href: "/education" },
       { label: "Сертифікати якості", href: "/#certificates" },
       { label: "Відгуки лікарів", href: "/#reviews" },
       { label: "Блог", href: "/blog" },

@@ -1,27 +1,40 @@
 import Image from "next/image";
-import { GraduationCap, ShieldCheck, Truck } from "lucide-react";
 
 import { Reveal } from "@/components/reveal";
 import { ButtonLink } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/section";
 import { site } from "@/content/site";
 
-/** Claims taken verbatim from the live site's own advantages block. */
-const assurances = [
-  { icon: Truck, label: "Представники у кожному місті України" },
-  { icon: GraduationCap, label: "Навчання лікарів в Україні та за кордоном" },
-  { icon: ShieldCheck, label: "Міжнародні сертифікати якості" },
-];
-
+/**
+ * One screen, vertically centred.
+ *
+ * `min-h` is the viewport minus everything above it, so the section ends
+ * exactly at the fold instead of overflowing it. That subtrahend is the
+ * header's `h-18` (4.5rem) **plus its bottom hairline** — miss the 1px and the
+ * hero lands one pixel past the fold at every single viewport size, which is
+ * enough to arm the scrollbar.
+ *
+ * `dvh` rather than `vh`: on iOS Safari the address bar makes `vh` taller than
+ * what is actually visible, which is the bug this was fixed to avoid.
+ *
+ * The height floor is desktop-only. On narrow viewports the art sits below the
+ * copy as its own block, so forcing a full screen there would push the CTAs
+ * off it.
+ *
+ * Four text elements, no more: eyebrow, headline, lede, actions. The three
+ * assurance claims that used to sit under the CTAs now have their own band
+ * directly below this section — they were ~116px of the overflow, and they
+ * repeat the "Чому Palarmus" block further down the page.
+ */
 export function Hero() {
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden border-b border-hairline"
+      className="relative isolate flex items-center overflow-hidden border-b border-hairline lg:min-h-[calc(100dvh-4.5rem-1px)]"
     >
       {/* Decorative art bleeds to the viewport edge; the copy column stays
           inside the layout margins on solid ground, so no text ever renders
-          over the photograph. */}
+          over the illustration. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-0 right-0 hidden w-[54%] lg:block"
@@ -42,15 +55,15 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 blueprint-grid opacity-40 [mask-image:radial-gradient(120%_90%_at_0%_0%,black,transparent_70%)]"
       />
 
-      <div className="container-page relative py-16 lg:py-28">
+      <div className="container-page relative w-full py-14 lg:py-16">
         <div className="flex max-w-[36rem] flex-col gap-7">
           <Reveal className="flex flex-col gap-5">
             <Eyebrow>Дистрибуція імплантів в Україні</Eyebrow>
             <h1 id="hero-title" className="text-display text-balance text-fg">
               Нове покоління імплантів для травматології та ортопедії
             </h1>
-            <p className="max-w-[52ch] text-lede text-pretty text-fg-secondary">
-              {site.description}
+            <p className="max-w-[46ch] text-lede text-pretty text-fg-secondary">
+              {site.heroLede}
             </p>
           </Reveal>
 
@@ -71,23 +84,6 @@ export function Hero() {
             >
               Отримати консультацію
             </ButtonLink>
-          </Reveal>
-
-          <Reveal delay={200} as="ul" className="flex flex-col gap-3 pt-4">
-            {assurances.map(({ icon: Icon, label }) => (
-              <li
-                key={label}
-                className="flex items-center gap-3 text-body-sm text-fg-secondary"
-              >
-                <Icon
-                  aria-hidden="true"
-                  size={18}
-                  strokeWidth={1.5}
-                  className="shrink-0 text-fg-accent"
-                />
-                {label}
-              </li>
-            ))}
           </Reveal>
         </div>
 

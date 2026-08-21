@@ -1,13 +1,19 @@
 /**
- * Categories and featured products. Names, images and groupings are taken
- * from the live palarmus.com.ua build.
+ * Catalogue categories. Titles, groupings and art are taken from the live
+ * palarmus.com.ua build; `slug` is the URL segment the previous build already
+ * used, so no link changes.
+ *
+ * Individual products live in `products.ts`.
  */
 
 export type Category = {
   index: string;
+  slug: string;
   title: string;
+  /** One line, used on cards. */
   summary: string;
-  href: string;
+  /** Longer intro, used as the lede on the category page. */
+  blurb: string;
   image: string;
   /** Empty string marks the art as decorative for assistive technology. */
   imageAlt: string;
@@ -16,126 +22,65 @@ export type Category = {
 export const categories: Category[] = [
   {
     index: "01",
+    slug: "traumatology",
     title: "Імпланти для травматології",
     summary: "Стержні, гвинти та пластини для остеосинтезу.",
-    href: "/catalog/traumatology",
+    blurb:
+      "Інтрамедулярні стержні для стегнової, великогомілкової та плечової кістки, поліаксіальні блокуючі пластини з анатомічним контуром і повна гвинтова номенклатура — кортикальні, спонгіозні, канюльовані компресійні.",
     image: "/categories/traumatology.webp",
     imageAlt: "",
   },
   {
     index: "02",
+    slug: "joints",
     title: "Імпланти для заміни суглобів",
     summary: "Ендопротези кульшового та колінного суглобів.",
-    href: "/catalog/joints",
+    blurb:
+      "Первинне та ревізійне ендопротезування кульшового суглоба з парами тертя кераміка-поліетилен і метал-поліетилен, безцементні чашки з трабекулярного титану, тотальні та одновиросткові системи для коліна.",
     image: "/categories/joints.webp",
     imageAlt: "",
   },
   {
     index: "03",
+    slug: "spinal",
     title: "Спінальна хірургія",
     summary: "Системи транспедикулярної фіксації та кейджі.",
-    href: "/catalog/spinal",
+    blurb:
+      "Транспедикулярна фіксація та міжтілові кейджі. Позиції цього напряму ми підбираємо під конкретний випадок разом із виробником — напишіть, що потрібно, і ми узгодимо комплектацію та строк.",
     image: "/categories/spinal.webp",
     imageAlt: "",
   },
   {
     index: "04",
+    slug: "sports-medicine",
     title: "Спортивна медицина",
     summary: "Якірна фіксація для артроскопії плеча й коліна.",
-    href: "/catalog/sports-medicine",
+    blurb:
+      "Шовні якорі всіх типів — титанові, полімерні PEEK, біорезорбовані та повністю нитковані, — системи кортикальної фіксації з кнопковим механізмом, інтерференційні гвинти й інструмент для відновлення меніска.",
     image: "/categories/sports.webp",
     imageAlt: "",
   },
   {
     index: "05",
+    slug: "equipment",
     title: "Обладнання",
     summary: "Інструменти й набори для операційної.",
-    href: "/catalog/equipment",
+    blurb:
+      "Силовий інструмент і системи для операційної: акумуляторні дрилі з набором насадок для ортопедії, травматології та мікрохірургії.",
     image: "/categories/equipment.webp",
     imageAlt: "",
   },
   {
     index: "06",
+    slug: "hyaluronic-acid",
     title: "Гіалуронова кислота",
     summary: "Біоактивні внутрішньосуглобові ін’єкції.",
-    href: "/catalog/hyaluronic-acid",
+    blurb:
+      "Крос-лінковані гідрогелі гіалуронату натрію для внутрішньосуглобового введення при гонартрозі та інших дегенеративних ураженнях суглобів.",
     image: "/categories/hyaluronic.webp",
     imageAlt: "",
   },
 ];
 
-export type Product = {
-  name: string;
-  category: string;
-  summary: string;
-  href: string;
-  image: string;
-  imageAlt: string;
-};
-
-export const featuredProducts: Product[] = [
-  {
-    name: "TrHCROSS 2,0%",
-    category: "Гіалуронова кислота",
-    summary: "Крос-лінкований гель для внутрішньосуглобової ін’єкції.",
-    href: "/catalog/hyaluronic-acid/trhcross-2",
-    image: "/products/trhcross.webp",
-    imageAlt: "Шприц TrHCROSS 2,0% в упаковці",
-  },
-  {
-    name: "Проксимальний стержень",
-    category: "Травматологія",
-    summary: "Інтрамедулярний остеосинтез проксимального відділу.",
-    href: "/catalog/traumatology/proximal-rod",
-    image: "/products/proximal-rod.webp",
-    imageAlt: "Титановий проксимальний інтрамедулярний стержень",
-  },
-  {
-    name: "RingButton™",
-    category: "Спортивна медицина",
-    summary: "Система кортикальної фіксації з фіксованою довжиною.",
-    href: "/catalog/sports-medicine/ringbutton",
-    image: "/products/ringbutton.webp",
-    imageAlt: "Система кортикальної фіксації RingButton з нитками",
-  },
-  {
-    name: "ParaTak™",
-    category: "Спортивна медицина",
-    summary: "Титановий шурупний якір для шва.",
-    href: "/catalog/sports-medicine/paratak",
-    image: "/products/paratak.webp",
-    imageAlt: "Титановий якір для шва ParaTak",
-  },
-  {
-    name: "LocTak™",
-    category: "Спортивна медицина",
-    summary: "Титановий якір із замковою фіксацією нитки.",
-    href: "/catalog/sports-medicine/loctak",
-    image: "/products/loctak.webp",
-    imageAlt: "Титановий якір із замковою фіксацією LocTak",
-  },
-  {
-    name: "SutureLoc™",
-    category: "Спортивна медицина",
-    summary: "Повністю нитковий якір без жорсткого тіла.",
-    href: "/catalog/sports-medicine/sutureloc",
-    image: "/products/sutureloc.webp",
-    imageAlt: "Повністю нитковий якір SutureLoc",
-  },
-  {
-    name: "XtraLoc™ PEEK",
-    category: "Спортивна медицина",
-    summary: "Полімерний якір для інтерференційної фіксації.",
-    href: "/catalog/sports-medicine/xtraloc-peek",
-    image: "/products/xtraloc.webp",
-    imageAlt: "Полімерний інтерференційний якір XtraLoc PEEK",
-  },
-  {
-    name: "SpeedLoc™",
-    category: "Спортивна медицина",
-    summary: "Біорезорбований якір для шва.",
-    href: "/catalog/sports-medicine/speedloc",
-    image: "/products/speedloc.png",
-    imageAlt: "Біорезорбований якір для шва SpeedLoc",
-  },
-];
+export const findCategory = (slug: string) =>
+  categories.find((c) => c.slug === slug);

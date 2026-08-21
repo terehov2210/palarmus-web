@@ -10,6 +10,10 @@ import { primaryNav, site } from "@/content/site";
  * Native `<dialog>` on purpose. `showModal()` traps focus, makes the rest of
  * the page inert, closes on Escape and returns focus to the trigger — all
  * behaviour a custom overlay has to rebuild and usually gets wrong.
+ *
+ * `dialog-sheet` supplies the enter and exit. `showModal()` alone snaps the
+ * panel into place with no transition, and a full-screen surface appearing
+ * from nothing is the one case that reliably reads as a glitch.
  */
 export function MobileNav() {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -31,7 +35,7 @@ export function MobileNav() {
       <dialog
         ref={dialogRef}
         aria-label="Меню сайту"
-        className="m-0 h-full max-h-none w-full max-w-none overscroll-contain bg-base text-fg backdrop:bg-base/70 backdrop:backdrop-blur-sm"
+        className="dialog-sheet m-0 h-full max-h-none w-full max-w-none overscroll-contain bg-base text-fg backdrop:bg-base/70 backdrop:backdrop-blur-sm"
       >
         <div className="container-page flex h-full flex-col gap-8 py-5">
           <div className="flex h-8 items-center justify-between">

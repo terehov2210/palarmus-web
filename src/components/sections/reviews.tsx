@@ -21,10 +21,10 @@ export function Reviews() {
           <Reveal
             as="li"
             key={testimonial.quote}
-            delay={(i % 3) * 90}
+            delay={(i % 3) * 60}
             className="h-full"
           >
-            <figure className="flex h-full flex-col gap-6 rounded-card border border-hairline bg-base p-6 lg:p-7">
+            <figure className="flex h-full flex-col gap-6 rounded-card border border-hairline bg-base p-6 shadow-card lg:p-7">
               <Quote
                 aria-hidden="true"
                 size={22}

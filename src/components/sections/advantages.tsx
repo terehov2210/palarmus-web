@@ -42,7 +42,7 @@ export function Advantages() {
             <Reveal
               as="li"
               key={advantage.title}
-              delay={(i % 4) * 90}
+              delay={(i % 4) * 60}
               className="flex flex-col gap-4 border-t border-hairline pt-6"
             >
               <Icon
