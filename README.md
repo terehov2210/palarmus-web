@@ -161,6 +161,45 @@ renders they were drawn from are in
   because `art-src/` still holds those originals, but anything listed there is
   overwritten, so a slot holding a real illustration must stay out of the list.
 
+### Image delivery
+
+Measured with the network panel over a real page load, cache disabled, scrolled
+to the bottom so lazy images actually fetch:
+
+| Page | Before | After |
+| --- | --- | --- |
+| Homepage, 1440x900 | 202 KB / 18 requests | **106 KB / 17** |
+| `/education`, 1440x900 | 152 KB / 8 | **103 KB / 8** |
+
+Two changes, in order of what they were worth:
+
+- **The hero was downloaded twice.** The desktop and mobile `<Image>` both
+  carried `priority`, so the browser preloaded both regardless of which one the
+  breakpoint showed. On a 1440px viewport the hidden mobile block pulled a
+  1920px variant: 53 KB of the homepage's 202 KB, for an element at
+  `display: none`. Dropping `priority` there makes it lazy, and a lazy image
+  under a hidden ancestor is never fetched. Its `sizes` was also `100vw` while
+  the block sits inside `container-page`, which made the browser pick one step
+  too large.
+- **AVIF was configured off.** Next's default `images.formats` is
+  `["image/webp"]`, so browsers advertising AVIF were still handed WebP.
+  Enabling it saves 33-45% per asset on this kind of art — smooth 3D renders,
+  large gradient areas, fine texture on top.
+
+On quality: AVIF and WebP do not mean the same thing by `q=75`. Measured
+against the source renders, AVIF q75 sits 0.6-2.0 dB PSNR below WebP q75, so
+illustrations pass `quality={82}` instead, where the smooth hero is at parity
+(0.02 dB) and the most texture-dense illustration is 1.4 dB behind while still
+36% smaller. Verified by eye at 1:1 as well: no banding across the blue
+grounds, trabecular texture and screw threads intact.
+
+One known residual: the desktop hero keeps `priority` and is therefore still
+fetched (~9 KB) on mobile, where it is hidden. It stays because the hero image
+is the **measured LCP element** on desktop (140ms), and removing the preload to
+save 9 KB on one breakpoint would trade a real metric for a small one. Merging
+the two instances into a single element would fix both, but it means
+restructuring a hero that is currently fitted to the fold to the pixel.
+
 ### Type
 
 Manrope 400–800 variable, self-hosted as `.woff2` with `unicode-range` per

@@ -43,6 +43,7 @@ export function Hero() {
           src="/brand/hero.webp"
           alt=""
           fill
+          quality={82}
           priority
           sizes="54vw"
           className="object-cover object-right"
@@ -87,14 +88,26 @@ export function Hero() {
           </Reveal>
         </div>
 
-        {/* Below the copy on narrow viewports rather than behind it. */}
+        {/* Below the copy on narrow viewports rather than behind it.
+
+            No `priority` here, and that is the point. Both instances used to
+            carry it, so the browser preloaded both regardless of which one the
+            breakpoint actually shows: on a 1440px viewport this hidden block
+            pulled a 1920px variant, 53KB of the homepage's 202KB, for an
+            element at `display: none`. Without `priority` it is lazy, and a
+            lazy image under a hidden ancestor is never fetched.
+
+            `sizes` is 92vw rather than 100vw because this block sits inside
+            `container-page`, so it is the viewport minus the gutters. The old
+            100vw made the browser pick one step too large and also tripped
+            Next's own "image is not rendered at full viewport width" warning. */}
         <div className="relative mt-12 aspect-5/4 overflow-hidden rounded-media media-outline lg:hidden">
           <Image
             src="/brand/hero.webp"
             alt=""
             fill
-            priority
-            sizes="100vw"
+            quality={82}
+            sizes="92vw"
             className="object-cover object-right"
           />
         </div>

@@ -52,6 +52,7 @@ export default async function CategoryPage({
             src={found.image}
             alt=""
             fill
+            quality={82}
             priority
             sizes="46vw"
             className="object-cover object-right"

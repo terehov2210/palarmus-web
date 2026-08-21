@@ -41,6 +41,7 @@ export function Categories() {
                 src={category.image}
                 alt={category.imageAlt}
                 fill
+                quality={82}
                 sizes="(min-width: 1024px) 40rem, 92vw"
                 className="object-cover object-right transition-[scale] duration-200 ease-out-quint group-hover:scale-105"
               />

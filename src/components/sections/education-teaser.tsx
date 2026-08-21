@@ -28,6 +28,7 @@ export function EducationTeaser() {
             src="/education/hero.webp"
             alt="Розріз стегнової кістки з інтрамедулярним стержнем, шари м'яких тканин і кортексу"
             fill
+            quality={82}
             sizes="(min-width: 1024px) 30rem, 92vw"
             className="object-cover"
           />

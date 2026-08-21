@@ -60,6 +60,7 @@ export function ArtSlot({
           src={src}
           alt={alt}
           fill
+          quality={82}
           sizes={sizes}
           priority={priority}
           className="object-cover"
