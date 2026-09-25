@@ -1,20 +1,38 @@
 # Palarmus Implants — new site
 
 Next.js 16 (App Router) rebuild of [palarmus.com.ua](https://palarmus.com.ua).
-This iteration covers the **homepage**, the **catalogue** (`/catalog`, six
-category pages, 23 product pages) and the **training section** (`/education`)
-end to end; the remaining routes land on a "розділ у розробці" stub so nothing
-they link to dead-ends.
+It covers the **homepage**, the **catalogue** (`/catalog`, six category pages,
+23 product pages), the **training section** (`/education`), **`/about`** and
+**`/contacts`**. Everything else is a real 404. The visual identity follows the
+Palarmus brandbook (see [Brand](#brand)).
 
 ```bash
 npm run dev     # http://localhost:3000
 npm run build
 npm run lint
-node scripts/palette.mjs   # regenerate + verify the colour system
+node scripts/palette.mjs   # verify every colour pair against WCAG
+python scripts/neutralise-art.py <files>   # strip blue grounds from new renders
 python3 scripts/art.py     # rebuild public/ art from art-src/ (needs Pillow)
 ```
 
-## ⚠️ Placeholder content — read before publishing
+## Launch checklist
+
+1. **`LEAD_WEBHOOK_URL`** — set it in the hosting environment (see
+   `.env.example`). Without it the consultation form tells visitors to phone
+   instead of pretending the request went through.
+2. **Gilroy licence** — the brand's primary face is commercial. The subset
+   files in `public/fonts/gilroy-*.woff2` must be covered by Palarmus' web
+   licence before the site is public.
+3. **Placeholder blocks** — off by default, see below. Turn each on only with
+   real data.
+4. **Office map link** — `site.address.href` in `src/content/site.ts` is still
+   `null`.
+
+## ⚠️ Placeholder content — gated off
+
+Every block below is switched off in `published` (`src/content/trust.ts`), so
+none of it renders, and no link points at it, until someone turns it on in the
+same commit that replaces its data.
 
 `src/content/trust.ts` carries the three blocks the redesign added, and none of
 their data is verified:
@@ -32,57 +50,187 @@ Certificate cards render a `Переглянути` link only when `documentUrl`
 otherwise they say "Скан документа надаємо за запитом", so the page never
 offers a file that does not exist.
 
-## Hero slider
+## Hero — the 3D model
 
-The hero rotates through one illustration per catalogue direction. The copy
-beside it never changes: the value proposition is one message, and a headline
-that rewrites itself under the reader is worse than no slider. What rotates is
-the evidence of range.
+The hero art is `public/models/implant.glb`: a pelvis, sacrum and both femurs
+with a total hip replacement on the right hip, the right femur cut away so the
+stem is visible inside the canal. It turns by itself, slowly, and carries six
+labelled points — three implant components, three bones — each of which opens a
+panel with a few sentences on what that part does.
 
-Four slides, one per direction: травматологія, заміна суглобів, спінальна
-хірургія, спортивна медицина. `src/content/hero-slides.ts` lists them;
-`hero.tsx` drops any whose file is missing from `public/` and `HeroArt` falls
-back to a plain static image when fewer than two remain, so the hero never
-shows a placeholder and adding a fifth direction needs no code. Spec and
-sources: [illustration-kit/hero-slider/](illustration-kit/hero-slider/README.md).
+It replaced the four-slide illustration carousel. The same screen real estate
+now answers "what exactly am I buying" instead of listing directions the
+catalogue lists anyway. The joints illustration stayed on as the no-WebGL
+fallback; the other three slides are still in `public/brand/` and currently
+unused, and the spec they were drawn to is kept in
+[illustration-kit/hero-slider/](illustration-kit/hero-slider/README.md).
 
-Cost, measured with cache disabled: first paint still fetches **one** image
-(13 KB), because slide 0 is the LCP element and nothing else is mounted yet.
-A reader who stays long enough to see all four pulls 140 KB total — still well
-under the 202 KB the homepage cost before any of this work.
+There is one canvas on the homepage, not two: the section that used to sit below
+the product grid with the same model was removed when the hero took it over,
+because two WebGL contexts is twice the frame cost for one asset.
 
-How it behaves, and why:
+### Cost, and who pays it
 
-- **One `<Image>` element, not two.** This replaced the duplicated desktop and
-  mobile trees, which is what made a slider affordable: four slides across two
-  trees would have been eight fetches. It also closes the 53 KB duplicate-hero
-  waste that was previously documented as a known residual.
-- **Progressive loading.** Slide 0 is the measured LCP element, so it is the
-  only image fetched during first paint. Slide 1 warms 900ms later, and each
-  advance keeps exactly one slide warm ahead. Verified: 1 image mounted at
-  first paint, 4 after two advances.
-- **It stops when it should.** No auto-advance at all under
-  `prefers-reduced-motion: reduce`; pauses on hover, on focus-within, and while
-  the tab is hidden; and any use of the controls stops it permanently. There is
-  a real pause button, because auto-advancing content that runs past five
-  seconds needs a mechanism to stop it (WCAG 2.2.2) and hover is not one a
-  keyboard reaches.
-- **The controls carry their own ground.** Label, pause and dots are light chips
-  over the art. The label started as plain `fg-secondary` text and measured
-  about 1.5:1 on the deep blue slide; on its own chip it measures 12.7:1, and
-  the dots clear the 3:1 non-text threshold against the darkest art in the set.
-- **The group wraps the controls, not just the picture.** `role="group"` and the
-  carousel role description sit on the element that holds the image *and* the
-  buttons. They were on the media box while the controls sat beside it, which
-  left the buttons announced as loose controls with nothing saying what they
-  operate.
-- **The label is a link** into the direction on screen, which keeps the cluster
-  a control group rather than decoration — and keeps the slider from adding a
-  fifth text element to the hero's stack, since it lives on the art rather than
-  the copy column.
-- Crossfade is 600ms on `ease`: a state change rather than an entrance, and
-  slower than the site's UI easing because it is showing something rather than
-  answering a click.
+Nothing above the fold waits on WebGL. The hero's own markup — headline, lede,
+CTAs — is server-rendered and paints on its own; the 3D bundle and the 1.5 MB
+GLB are requested from a client effect and arrive whenever they arrive. Until
+then the frame holds the page's blue wash and, once the chunk is in, a progress
+line. Scrolled past, the frame loop stops (`frameloop="never"`, off an
+IntersectionObserver).
+
+**There is no poster.** There used to be: the joints illustration painted
+immediately and crossfaded out when the model arrived. It went because the
+handover was the most visible thing about the hero — a drawing appearing and
+being replaced a second later reads as a page changing its mind, and no easing
+curve fixes that. The illustration now renders *only* when the WebGL probe comes
+back negative, which also means 87KB that was fetched with `priority` on every
+single visit is no longer fetched at all. Verified: no request for
+`hero-joints.webp` on a normal load.
+
+The trade is deliberate and worth naming: the frame is empty for as long as the
+3D chunk and the GLB take. It is tinted rather than white, and outlined below
+`lg`, so it reads as a frame waiting rather than as a hole — but on a slow
+connection it *is* a wait, where the poster used to fill it. If that ever reads
+as broken, the fix is a lighter first-frame state, not bringing the poster back.
+
+The asset is EXT_meshopt_compression, and `useGLTF` is called with Draco
+explicitly off, because drei's default points DRACOLoader at gstatic.com.
+MeshoptDecoder ships inside the bundle, so nothing is fetched from a third party
+— including the environment map, which is generated locally from Lightformers
+rather than downloaded as an HDRI.
+
+### Lighting
+
+The asset ships **one** material, with a metallicRoughness map and both factors
+left at the glTF default of 1. So the cup and the stem are true metal — direct
+lights give them almost no diffuse and nearly everything they show is a
+reflection — while the bone is dielectric and wants ordinary directional
+shading. One material, two jobs, one `envMapIntensity` between them.
+
+The split is made by the **shape** of the sources, not their number. A narrow
+bright card mirrors as a hard streak down the stem while adding almost nothing
+to the overall irradiance; a big soft one floods the scene and flattens the bone
+to a pale beige, which is exactly what a first pass at "brighter" produced. So
+the rig is four narrow strips plus one small hot circle for the glint on the
+ceramic head, over a deep blue ground — the value every unlit facet of the metal
+settles to.
+
+The bone is then lit the ordinary way: a warm key well above a very low ambient,
+against a cool fill. Warm key against cool fill is what makes the render look
+richer; turning everything up only ever made it look washed.
+
+### Background
+
+The hero sits in `hero-wash`, three gradient layers off the single
+`accent-wash` stop: a deep pool where the model is, a shallower one opposite so
+the band reads tinted rather than cornered, and a whole-section lift so no part
+of it is page-white. The model's canvas is transparent, so the wash is what the
+render composites onto — warm bone on a cool ground, which is most of why the
+model reads as vivid.
+
+There are two variants, switched at `lg`, because the deep pool has to follow
+the art: off the right edge in two columns, down at the bottom when the hero
+stacks. One geometry for both left the phone almost white.
+
+### Interaction, and what each rule protects
+
+- **No OrbitControls.** Rotation is a horizontal drag with inertia, under
+  `touch-action: pan-y`, so the browser keeps vertical scrolling for itself. A
+  hero that eats the first swipe, or the first turn of the wheel, is a hero
+  nobody gets past. There is no zoom for the same reason.
+- **It stops the moment the pointer is inside**, so nothing has to be chased to
+  be clicked, and it never moves on its own under
+  `prefers-reduced-motion: reduce`.
+- **It sweeps an arc, it does not revolve.** A full revolution was the obvious
+  thing and the wrong one: the construction is on one hip and faces
+  anterolaterally, so a complete turn spends **41% of its time with no implant
+  component visible at all** — the hero showing the back of a pelvis — and leaves
+  each landmark reachable only 42–46% of the time. Swept between −25° and +60°
+  instead, easing at both ends over about 40 seconds there and back, every
+  implant component is visible throughout and each landmark is reachable 91–100%
+  of the time. Measured live: never fewer than five of the six dots active.
+  The band is asymmetric because the construction is, and it contains every
+  landmark's own presenting azimuth, so opening one cannot throw the model
+  outside its own sweep. Drag still goes anywhere, including the whole way
+  round; the sweep eases it back in afterwards rather than fighting it.
+- **Opening a landmark turns the model** until that part faces the reader, and
+  holds it there while the panel is open — the same turn whether it was opened
+  by its dot or by name. Under a reduce preference that turn is an instant cut
+  rather than an animation: the model still has to end up showing the part being
+  named. Dragging closes the panel rather than towing it around.
+- **A dot fades out when its part turns away.** Visibility is
+  `dot(facing, toCamera)` against an authored `facing` vector rather than a
+  per-frame raycast: six raycasts against 200k triangles every frame is not a
+  budget a hero has. Hit-testing is tied to exactly that visibility, over
+  exactly the same range. It used to have a higher bar than the fade, which left
+  a 12° band per dot where a half-lit plus looked clickable and was not — and
+  because a dead dot could not be hovered either, it could not light itself up
+  to escape that band.
+- **Fading them out at all is what keeps the frame legible.** Two hotspots can
+  sit on the same line of sight: the ceramic head and the greater trochanter,
+  seen edge-on at 91°, project 3px apart on desktop and under a pixel on a
+  phone, and the far one of the pair is genuinely behind the near one. A dot
+  being hovered or open stays at full strength regardless, so nothing dims out
+  from under the cursor mid-click.
+- **The legend is the interface; the dots are the spatial affordance.** The
+  bounded sweep keeps nearly every dot live nearly all the time, but "nearly" is
+  not a thing to build the only route to the content on — a dot still moves
+  while you reach for it, and the trochanter is genuinely behind the femur for
+  part of the arc. So the six landmarks are also a row of named chips in the
+  panel's slot: always complete, always in the same place, and marking the open
+  one. The dots are `aria-hidden` and out of the tab order, because a moving
+  target that can be occluded is not a control to hand a keyboard user.
+- **Every route out of a panel is the same route.** A legend chip, a dot, the
+  panel's own button and Escape all go through one handler in `HeroArt`, which is
+  what stops Escape from closing the panel and leaving the focus on `<body>`.
+  Focus returns to the legend chip for the landmark that was open — never to its
+  dot, which by then may have turned away.
+- **Nothing full-width may sit over the frame without `pointer-events-none`.**
+  The copy column is `w-full`, so at `lg` its *box* spans the art as well, and
+  because it carries `order-1` against the art's `lg:order-none` the flex
+  container paints it over the canvas — in a flex container `order` reorders
+  painting, not just layout. That swallowed every click aimed at a dot, and the
+  only ones that appeared to work were the two that swing past the box's right
+  edge, since `container-page` caps it at 82.5rem. The column is now
+  `pointer-events-none` with `auto` on the copy block itself.
+  Verify with hit-testing, not with `element.click()`: a scripted click bypasses
+  the hit test entirely and will happily "pass" on a dot no cursor can reach.
+  `document.elementFromPoint` at each dot's centre is the real check.
+- **The stem's anchor is in the proximal third of the stem, not mid-shaft.**
+  Mid-shaft put it at 52% of the frame height, exactly where the panel's top
+  edge lands, so that one marker was unclickable whenever any panel was open.
+  Higher up is also the part the copy is about.
+- **The panel sits in a fixed slot, not on the dot.** The model fills the middle
+  of the frame, so a popover opening outward covered the construction it was
+  describing, and opening inward ran off the edge of the art. Two columns: it
+  takes the frame's bottom corner. One column: the frame is barely taller than
+  the panel, so it goes underneath, where it hides nothing.
+- **The femoral shafts run out of the bottom of the frame** and the canvas is
+  masked there, so they dissolve into the page instead of ending in a hard crop.
+  The mask is on the canvas only; the dots and the legend over it stay at full
+  strength.
+
+### The labelled points
+
+Coordinates live in `src/content/implant-hotspots.ts`. The GLB is one merged
+mesh with a single baked material — there are no named nodes to hang a label on
+— so every anchor was measured by raycasting the loaded geometry and reading
+back the hit point, then checked against a rendered close-up. Re-measure if the
+asset is ever re-exported.
+
+`facing` is authored rather than taken from the surface normal, because it
+answers a different question: not which way the triangle points, but which way
+the feature reads from. It doubles as the target azimuth for the
+turn-to-present.
+
+| Point | Kind |
+| --- | --- |
+| Ацетабулярна чашка | implant |
+| Керамічна головка | implant |
+| Ніжка ендопротеза | implant |
+| Великий вертлюг | bone |
+| Кульшова западина | bone |
+| Клубова кістка | bone |
 
 ## Catalogue (`/catalog`)
 
@@ -144,164 +292,84 @@ Until it is set, `sendLead` throws and the form shows "Форма ще не пі
 до системи заявок. Зателефонуйте нам: …" — an honest failure with a working
 recovery path, rather than a success that never happened.
 
-Validation runs on submit, marks failing fields `aria-invalid`, points
-`aria-describedby` at the inline message, and focuses the first failure.
+Built on Base UI `Form` + `Field`. Each field validates in the browser with
+the same rule the server action runs (`src/lib/consultation.ts`), on submit and
+then on every change; the server validates again and returns its own errors
+through Form's `errors` prop into the same `Field.Error` slot. Base UI wires
+`aria-invalid`, `aria-describedby` and the label, and focuses the first
+failing field. Without JavaScript it is still a plain `<form>` posting to the
+server action.
 
-## Design system
+The form is keyed on the values the server echoes back, so a failed submit
+remounts it with those values as fresh defaults — Base UI does not allow an
+uncontrolled field's `defaultValue` to change once mounted.
 
-`src/app/globals.css` holds the whole system in two tiers.
+## UI primitives — Base UI
 
-**Primitives** (`--accent-500`, `--neutral-950`, …) are named by hue and never
-referenced from a component. **Semantic tokens** (`--color-fg-secondary`,
-`--color-accent-solid`, …) are named by role and are the only tier components
-touch. Tailwind's default palette is switched off (`--color-*: initial`), so a
-raw colour cannot slip into a class name.
+Interactive parts are built on [Base UI](https://base-ui.com) (`@base-ui/react`),
+which ships behaviour and accessibility and no styles. All styling is still
+Tailwind on our own tokens, keyed off Base UI's state attributes
+(`data-pressed`, `data-invalid`, `data-disabled`, `data-starting-style`,
+`data-ending-style`).
 
-Ramps are generated in OKLCH by `scripts/palette.mjs`: constant hue, even
-steps in perceived lightness, chroma peaking mid-ramp, sRGB-gamut clamped.
-Only the steps a role consumes are declared in CSS — run the script to print
-the full ramps when a new role needs one.
+| Where | Base UI part |
+| --- | --- |
+| `ui/button.tsx` `Button` | `Button` (`focusableWhenDisabled` on pending submit) |
+| Mobile menu | `Dialog` — portal, backdrop, focus trap, scroll lock, Escape |
+| Consultation form | `Form`, `Field` (`Label`, `Control`, `Description`, `Error`) |
+| Hero model switch | `ToggleGroup` + `Toggle` |
+| Hero landmark chips, card close | `Button` |
+| Hero model loading | `Progress` |
 
-- **Accent** h=257.7, a clean azure taken from `#0a6fe8`. The hue is held
-  there on purpose: clear of the cyan end, where it would read as the teal the
-  nearest competitor already owns, and clear of the violet end, where a
-  medical blue starts looking like a generic gradient. One token serves both
-  the filled button and accent text, so it sits at L 50.5% rather than the
-  brand value — `#0a6fe8` is fine as a fill (4.72:1 under a white label) but
-  as text it fails on two of the three surfaces.
-- **Neutral** shares the accent hue at a trace chroma, so every grey on the
-  page belongs to the same family of blue instead of reading as a separate
-  warm or cool grey.
-- **Error** h=25 and **success** h=152, deliberately 127° and 106° off the
-  accent so a failed field never reads as a brand highlight. Colour is never
-  the only cue — every error and success message ships an icon.
-- No warning ramp: nothing renders one.
+`ButtonLink` stays a styled Next `Link` on purpose: Base UI's Button enforces
+button semantics, and its docs say a link that looks like a button should be
+styled as a link.
 
-Every pair the page actually renders is measured in
-[docs/color-contrast.md](docs/color-contrast.md). `node scripts/palette.mjs`
-exits non-zero if any pair drops below its threshold.
+Portals need two things from the root layout, both in place: page content in
+an `isolate` wrapper (so popups always paint above it) and `relative` on
+`<body>` (backdrop positioning on iOS Safari 26+).
 
-One committed light appearance, no theme toggle. The page ground is a
-near-white carrying a trace of the accent hue, and the ink is a cool
-near-black. Because a hairline alone cannot separate a near-white card from a
-near-white page, cards also carry `--shadow-card`, whose stops are the ink at
-low alpha rather than black so the shade stays in the page's own hue.
+## Brand
 
-### Art
+The identity is the Palarmus brandbook («Brand Guidlines», v1.0). What the site
+takes from it:
 
-Every image slot now holds a commissioned illustration: photoreal 3D anatomy
-with the device in situ, ivory bone, brushed titanium and a translucent
-soft-tissue envelope. The two hero slots sit on a deep blue ground, everything
-inside a card on a near-white one. Sources, the style reference and the product
-renders they were drawn from are in
-[illustration-kit/](illustration-kit/README.md).
+- **Colour** — White `#FFFFFF`, Black `#000000`, Venetian Red `#C7000B`, plus
+  the brandbook's own tints. Nothing else. See
+  [docs/color-contrast.md](docs/color-contrast.md) for every measured pair.
+- **Type** — Gilroy for headings and figures (Light 300 for display, Medium 500
+  for section heads, SemiBold 600 for card titles, ExtraBold 800 for emphasis),
+  Montserrat for running text. Display and h2 are set in capitals, as every
+  heading in the brandbook is. Wrap a word in `<strong>` inside a display
+  heading to get the two-weight line from the exhibition stand.
+- **The red square** — the marker under every brandbook heading. It is the
+  `brand-mark` utility (size it with `size-*`) and leads every `Eyebrow`.
+- **Square corners, flat surfaces** — cards and media are square, controls
+  keep 2px; separation comes from 1px lines, and the only shadow is on hover.
+- **Black chapter pages** — `.tone-ink` re-points the semantic tokens at black.
+  The hero, «Чому Palarmus», the mission block and the footer use it. The hero
+  is modelled on the brandbook's exhibition stand: black ground, the anatomy
+  lit, a low red glow behind it, and a red band (the assurances strip) below.
+- **Logo** — `src/components/ui/logo.tsx`, traced from the brandbook's vector
+  master, coloured by `currentColor` (black on white, white on black, white on
+  red — the three approved combinations). `lockup` includes the *implants*
+  script; `wordmark` is for small sizes. Raw SVGs are in `public/brand/`.
+- **Icon** — `src/app/icon.svg`: the logo's «P» with the red square, on black.
+- **Slogan** — «Інновації, які лікують» (brandbook 1.3), used as the hero
+  eyebrow and in the footer. `/about` quotes «Про бренд» and «Місія» verbatim.
 
-`scripts/art.py` has two live jobs and one dormant one:
+The illustrations were commissioned against the earlier azure palette.
+`scripts/neutralise-art.py` desaturates only the blue band of hues (grounds,
+soft tissue) and leaves bone, titanium and ceramic as rendered; it has been
+run over `public/categories`, `public/education` and the hero fallback. Run it
+on any new render before it goes in. After replacing an image, clear
+`.next/cache/images` (and `.next/dev/cache/images` in dev) or the optimiser
+keeps serving the old one.
 
-- `--measure` prints the two pixels of the category art that the colour system
-  depends on: the darkest pixel anywhere, which the caption scrim carries ink
-  over, and the darkest pixel under the `01`..`06` index label, which is the
-  only text on a card with **no** scrim behind it. Both are asserted by
-  `palette.mjs`. This is what caught the label falling to 3.63:1 when the
-  illustrations replaced the old near-white duotone.
-- A default run recolours the wordmark. It ships white-on-transparent, so it is
-  invisible on a light page; the alpha channel is a clean mask, which makes the
-  recolour exact rather than a re-trace.
-- Its `ANATOMY` list is **empty on purpose**. The site originally shipped
-  white-and-red x-ray stock on pure black, which the script inverted into a
-  light blue duotone. The illustrations have replaced all of it. The code stays
-  because `art-src/` still holds those originals, but anything listed there is
-  overwritten, so a slot holding a real illustration must stay out of the list.
-
-### Image delivery
-
-Measured with the network panel over a real page load, cache disabled, scrolled
-to the bottom so lazy images actually fetch:
-
-| Page | Before | After |
-| --- | --- | --- |
-| Homepage, 1440x900 | 202 KB / 18 requests | **106 KB / 17** |
-| `/education`, 1440x900 | 152 KB / 8 | **103 KB / 8** |
-
-Two changes, in order of what they were worth:
-
-- **The hero was downloaded twice.** The desktop and mobile `<Image>` both
-  carried `priority`, so the browser preloaded both regardless of which one the
-  breakpoint showed. On a 1440px viewport the hidden mobile block pulled a
-  1920px variant: 53 KB of the homepage's 202 KB, for an element at
-  `display: none`. Dropping `priority` there makes it lazy, and a lazy image
-  under a hidden ancestor is never fetched. Its `sizes` was also `100vw` while
-  the block sits inside `container-page`, which made the browser pick one step
-  too large.
-- **AVIF was configured off.** Next's default `images.formats` is
-  `["image/webp"]`, so browsers advertising AVIF were still handed WebP.
-  Enabling it saves 33-45% per asset on this kind of art — smooth 3D renders,
-  large gradient areas, fine texture on top.
-
-On quality: AVIF and WebP do not mean the same thing by `q=75`. Measured
-against the source renders, AVIF q75 sits 0.6-2.0 dB PSNR below WebP q75, so
-illustrations pass `quality={82}` instead, where the smooth hero is at parity
-(0.02 dB) and the most texture-dense illustration is 1.4 dB behind while still
-36% smaller. Verified by eye at 1:1 as well: no banding across the blue
-grounds, trabecular texture and screw threads intact.
-
-One known residual: the desktop hero keeps `priority` and is therefore still
-fetched (~9 KB) on mobile, where it is hidden. It stays because the hero image
-is the **measured LCP element** on desktop (140ms), and removing the preload to
-save 9 KB on one breakpoint would trade a real metric for a small one. Merging
-the two instances into a single element would fix both, but it means
-restructuring a hero that is currently fitted to the fold to the pixel.
-
-### Type
-
-Manrope 400–800 variable, self-hosted as `.woff2` with `unicode-range` per
-subset, so only Latin + Cyrillic load (two requests, ~39 KB). One family;
-weight and size carry the hierarchy. Sizes are named by role
-(`text-display`, `text-lede`, `text-body-sm`, `text-label`) with line-height
-and tracking bound to each step.
-
-### Motion
-
-Every transition names the properties it animates — there is no
-`transition: all` on the site — and every one of them is `transform`-family or
-`opacity`/colour, so nothing animates layout.
-
-| Role | Value | Why |
-| --- | --- | --- |
-| Press feedback | 150ms | Inside the 100-160ms window where a control still feels like it answered the finger. |
-| Enter (dialog, banners) | 240ms | |
-| Exit | 150ms | Faster than the entrance: the exit is the system responding to a decision already made. |
-| Scroll reveal | 400ms + 60ms stagger | Was 520ms + 90ms, which stacked to ~800ms for the last card in a row. |
-| Easing | `cubic-bezier(0.2, 0, 0, 1)` | One strong ease-out. No `ease-in` anywhere — it delays the first frame, which is the frame the user is watching. |
-| Image zoom on hover | 200ms | Hover fires tens of times a day, so it is the one place to cut rather than
-indulge. Was 300ms. |
-| Spinner | 0.7s | Tailwind's 1s default made an identical wait feel longer. |
-
-Details that are load-bearing:
-
-- **Everything pressable has an `:active` scale**, not just buttons: cards take
-  `0.99` (a large surface needs less), pills and small controls `0.97`, buttons
-  `0.96`. Tailwind v4 gates `hover:` behind `@media (hover: hover)`, so without
-  this a card tap on a phone had **no feedback at all** until navigation.
-- **The mobile menu animates.** `showModal()` on its own snaps a full-screen
-  surface into place. `dialog-sheet` in `globals.css` fades and slides it with
-  `transition-behavior: allow-discrete`, which is what keeps `display` and the
-  top layer alive long enough for the exit to play.
-- **Form result banners use `@starting-style`** rather than mounting abruptly.
-- **One hover rule needed manual gating.** Tailwind v4 gates plain `hover:`
-  automatically, but the compound `hover:after:` on the desktop nav underline
-  escaped it, so a tap on a touch laptop left the underline stuck on. It now
-  carries `[@media(hover:hover)]:` explicitly. Compiled output has zero ungated
-  `:hover` rules.
-- **Scroll entrances are CSS keyframes, not JS.** CSS animations run off the
-  main thread, so they stay smooth while the page is still loading — which is
-  exactly when these fire.
-- Motion is opt-in: under `prefers-reduced-motion: reduce` a global rule drops
-  every `scale` and `translate` and narrows `transition-property` to colour and
-  opacity. Verified: the dialog still opens and closes correctly, it just does
-  not slide.
-
-`@media print` force-shows every reveal, because print never scrolls.
+Security headers (`next.config.ts`): HSTS, `X-Frame-Options: DENY` +
+`frame-ancestors 'none'`, `nosniff`, a strict referrer policy and a
+permissions policy. No script CSP: Next inlines its bootstrap, so a real one
+needs per-request nonces from a proxy.
 
 ### Accessibility notes
 
@@ -310,9 +378,8 @@ Details that are load-bearing:
 - Focus ring is the ink at 2px with a 2px offset — one value that clears 3:1 on
   every surface *including* the accent fill, plus `Highlight` under
   `forced-colors`.
-- The mobile menu is a native `<dialog>` opened with `showModal()`, so focus
-  trapping, background `inert`, Escape and focus restoration come from the
-  platform.
+- The mobile menu is a Base UI `Dialog`, so focus
+  trapping, scroll lock, Escape and focus restoration come from the library.
 - Verified with no horizontal overflow at 320 px, 375 px and at 200 % zoom.
 
 ## Structure
@@ -325,15 +392,19 @@ src/
     catalog/            index, [category], [category]/[product]
     education/          training section
     actions.ts          consultation server action
-    [...slug]/          "розділ у розробці" stub for unbuilt routes
+    about/, contacts/   company and contact pages
+    not-found.tsx       the 404; error.tsx the runtime error boundary
     globals.css         the design system
   components/
     sections/           one file per homepage section
     catalog/            product card, breadcrumbs
     ui/                 button, section scaffolding, art slot, brand glyphs
+    hero-model.tsx      the hero canvas, its dots and the landmark legend
     site-header.tsx, site-footer.tsx, mobile-nav.tsx, reveal.tsx
   content/              all copy and data, no strings in components
   lib/                  validation + lead delivery
+public/
+  models/implant.glb    the hero model, meshopt-compressed
 ```
 
 Copy lives in `src/content/`, not in components, so it can be handed to
@@ -345,10 +416,15 @@ whoever owns the words without touching layout.
   [docs/product-media.md](docs/product-media.md).
 - Catalog search and filters: intentionally omitted rather than shipped as dead
   controls. Both need a backend.
-- `src/app/[...slug]/page.tsx` still swallows real 404s for the routes that are
-  not built yet (`/about`, `/for-buyers`, `/blog`, `/contacts`, `/account`).
-  Inside `/catalog` a wrong slug now 404s properly. Delete the stub as the rest
-  of the routes land.
+- «Покупцям», «Блог» and the account area are on the live site's menu but have
+  no content yet, so they are out of the navigation rather than linking to a
+  stub. Add them to `primaryNav` / `footerNav` as their pages land.
+- The hero's 3D model is the hip specimen; it will be replaced by the
+  interactive skeleton map (a Palarmus-capped skeleton, joints linking to the
+  catalogue) once that model is delivered.
 - Спінальна хірургія has no products, matching the live shop. If that is wrong,
   the source is the shop, not this build.
 - Payment methods are listed as text; no card-brand marks are bundled.
+- `public/brand/hero.webp`, `hero-spinal.webp` and `hero-sports.webp` are
+  commissioned art with nothing rendering them since the hero became the 3D
+  model. The obvious home is one illustration per card in the Напрями section.

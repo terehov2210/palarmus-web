@@ -15,6 +15,23 @@
  * cut the section.
  */
 
+/**
+ * Launch gate. A block renders on the live site only once its switch is on,
+ * so nothing unverified can ship by accident. Turn a switch on in the same
+ * commit that replaces that block's placeholder data with the real records.
+ *
+ *   certificates — each entry names the real issuing body, and has a scan
+ *   stats        — every figure is one Palarmus can stand behind
+ *   testimonials — real doctors, with their written consent to be quoted
+ *
+ * While a block is off, links to it (footer, sitemap) are dropped as well.
+ */
+export const published = {
+  certificates: false,
+  stats: false,
+  testimonials: false,
+} as const;
+
 export type Certificate = {
   code: string;
   title: string;

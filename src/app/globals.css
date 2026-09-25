@@ -1,224 +1,300 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Typeface — Manrope, variable 400..800, self-hosted woff2.
-   Subsets carry unicode-range so Latin pages never pay for Cyrillic.
+   Typefaces — per the Palarmus brandbook (section 4).
+
+   Gilroy is the primary face: headings, key messages, figures. Montserrat is
+   the secondary face: running text, labels, forms.
+
+   Gilroy is a commercial family (Radomir Tinkov). The files in /public/fonts
+   are subset to Latin + Ukrainian Cyrillic and must be covered by Palarmus'
+   web licence before launch. Four weights ship:
+     300 Light      — display headings, as on the brandbook covers
+     500 Medium     — section headings
+     600 SemiBold   — card titles, UI
+     800 ExtraBold  — emphasis inside headings, figures
+
+   Montserrat is variable 300..700, self-hosted from Google Fonts' subsets, and
+   carries unicode-range so a Latin-only page never pays for Cyrillic.
    ========================================================================== */
 
 @font-face {
-  font-family: "Manrope";
+  font-family: "Gilroy";
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 300;
   font-display: swap;
-  src: url("/fonts/manrope-cyrillic-ext.woff2") format("woff2");
+  src: url("/fonts/gilroy-300.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/gilroy-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/gilroy-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 700 800;
+  font-display: swap;
+  src: url("/fonts/gilroy-800.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/fonts/montserrat-cyrillic-ext.woff2") format("woff2");
   unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F,
     U+FE2E-FE2F;
 }
 
 @font-face {
-  font-family: "Manrope";
+  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 300 700;
   font-display: swap;
-  src: url("/fonts/manrope-cyrillic.woff2") format("woff2");
+  src: url("/fonts/montserrat-cyrillic.woff2") format("woff2");
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 @font-face {
-  font-family: "Manrope";
+  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 300 700;
   font-display: swap;
-  src: url("/fonts/manrope-latin-ext.woff2") format("woff2");
+  src: url("/fonts/montserrat-latin-ext.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
     U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
     U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: "Manrope";
+  font-family: "Montserrat";
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 300 700;
   font-display: swap;
-  src: url("/fonts/manrope-latin.woff2") format("woff2");
+  src: url("/fonts/montserrat-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* ==========================================================================
-   Tier 1 — primitives. Named by hue, never referenced from a component.
-   Ramps generated in OKLCH: constant hue, even perceived-lightness steps,
-   chroma peaking mid-ramp, denser at the light end. sRGB-gamut clamped.
+   Tier 1 — primitives. Never referenced from a component.
+
+   The brandbook palette (section 3.1) is three colours and nothing else:
+     White         #FFFFFF   primary
+     Black         #000000   primary
+     Venetian Red  #C7000B   accent
+   plus the red and black tints it prints under each swatch. Every step below
+   is one of those three or a tint/shade of them; the greys are pure
+   achromatic, so nothing reads as a fourth colour.
+
+   Run `node scripts/palette.mjs` to re-measure every pair.
    ========================================================================== */
 
-/* Only the steps a role below actually consumes are declared. Run
-   `node scripts/palette.mjs` to print the full ramps and re-measure every
-   pair — a step nothing renders is maintenance for zero pixels. */
 :root {
-  /* Accent — a clean azure, h=257.7 measured off #0a6fe8. The hue is held
-     here on purpose: clear of the cyan end, where it would read as the teal
-     the nearest competitor already owns, and clear of the violet end, where a
-     medical blue starts looking like a generic gradient.
+  --red-50: #fbebec; /* 8% tint — washes */
+  --red-300: #e0666d; /* 60% tint — accent text on black, 6.3:1 */
+  --red-500: #c7000b; /* Venetian Red */
+  --red-600: #a8000a; /* hover */
+  --red-700: #8a0008; /* active */
 
-     Steps run darker as the number rises, which on a light appearance is also
-     the interaction direction: rest -> hover -> active all go down. */
-  --accent-100: oklch(95.5% 0.0217 257.7);
-  --accent-500: oklch(60% 0.2107 257.7);
-  --accent-600: oklch(50.5% 0.1813 257.7);
-  --accent-650: oklch(45.5% 0.1634 257.7);
-  --accent-700: oklch(41% 0.1472 257.7);
+  --grey-0: #ffffff;
+  --grey-50: #f5f5f5;
+  --grey-100: #ebebeb;
+  --grey-400: #8a8a8a; /* control perimeters, 3.4:1 on white */
+  --grey-500: #666666; /* muted text, 5.7:1 on white, 5.3:1 on grey-50 */
+  --grey-700: #3a3a3a; /* body text */
+  --grey-1000: #000000;
 
-  /* Neutral — the accent hue at a trace chroma, so every grey belongs to the
-     same family of blue instead of reading as a separate warm or cool grey. */
-  --neutral-page: oklch(99.4% 0.0014 257.7);
-  --neutral-band: oklch(96.8% 0.0062 257.7);
-  --neutral-raised: oklch(93.8% 0.0088 257.7);
-  --neutral-line: oklch(62% 0.01 257.7);
-  --neutral-muted: oklch(52% 0.0125 257.7);
-  --neutral-body: oklch(44% 0.014 257.7);
-  --neutral-ink: oklch(19% 0.013 257.7);
+  /* On black. */
+  --ink-900: #0d0d0d;
+  --ink-800: #1a1a1a;
+  --ink-500: #6e6e6e;
+  --ink-300: #9e9e9e; /* muted on black, 7.8:1 */
+  --ink-200: #c4c4c4; /* body on black */
 
-  /* Error — h=25, held 127° off the accent so a failed field can never read
-     as a brand highlight. Always shipped with an icon as well as the hue. */
-  --error-100: oklch(95.2% 0.0077 25);
-  --error-400: oklch(60% 0.2068 25);
-  --error-500: oklch(52% 0.1898 25);
-
-  /* Success — h=152. */
   --success-100: oklch(95.2% 0.0236 152);
   --success-500: oklch(48% 0.1074 152);
 }
 
 /* ==========================================================================
    Tier 2 — semantic roles. The only tier components are allowed to use.
-   One committed light appearance: the page ground is a near-white with a
-   trace of the accent hue in it, the ink is a cool near-black, and the
-   illustrations keep their own light ground, so nothing needs a second theme.
+
+   The page is white with black ink. The dark theme (below) re-points the same
+   roles, so every component serves both themes without a second set.
    ========================================================================== */
 
 @theme {
   --color-*: initial;
 
-  /* Framework baseline rather than palette steps. */
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* Surfaces, in stacking order. On light, "up" is a deeper tint rather than
-     a lighter one: the page is already at the top of the ramp, so a band or a
-     hover has nowhere to go but down. */
-  --color-base: var(--neutral-page);
-  --color-surface: var(--neutral-band);
-  --color-raised: var(--neutral-raised);
+  --color-base: var(--grey-0);
+  --color-surface: var(--grey-50);
+  --color-raised: var(--grey-100);
 
-  /* Foreground. Every pair is measured against every surface it renders on
-     in docs/color-contrast.md. */
-  --color-fg: var(--neutral-ink);
-  --color-fg-secondary: var(--neutral-body);
-  --color-fg-muted: var(--neutral-muted);
-  /* Unlike the previous dark build, accent text clears 4.5:1 on all three
-     surfaces, so there is no surface it has to stay off. */
-  --color-fg-accent: var(--accent-600);
-  --color-on-accent: oklch(100% 0 0);
+  --color-fg: var(--grey-1000);
+  --color-fg-secondary: var(--grey-700);
+  --color-fg-muted: var(--grey-500);
+  /* 6.1:1 on white, 5.6:1 on grey-50. */
+  --color-fg-accent: var(--red-500);
+  --color-on-accent: #ffffff;
 
-  /* Accent as a fill. Rest → hover → active all clear 4.5:1 against the
-     on-accent label, and every step is darker than the last. */
-  --color-accent-solid: var(--accent-600);
-  --color-accent-solid-hover: var(--accent-650);
-  --color-accent-solid-active: var(--accent-700);
-  --color-accent-tint: var(--accent-100);
-  --color-accent-line: var(--accent-500);
+  /* White on each step: 6.1 / 7.9 / 10.1 :1. */
+  --color-accent-solid: var(--red-500);
+  --color-accent-solid-hover: var(--red-600);
+  --color-accent-solid-active: var(--red-700);
+  --color-accent-tint: var(--red-50);
+  --color-accent-wash: var(--red-50);
+  --color-accent-line: var(--red-500);
 
-  /* Lines. `hairline` is structure only; `control-line` clears 3:1 against
-     both bg-base and bg-surface for input and control perimeters. */
-  --color-hairline: oklch(19% 0.013 257.7 / 0.1);
-  --color-hairline-strong: oklch(19% 0.013 257.7 / 0.18);
-  --color-control-line: var(--neutral-line);
-  --color-outline-image: oklch(19% 0.013 257.7 / 0.08);
+  --color-hairline: rgb(0 0 0 / 0.1);
+  --color-hairline-strong: rgb(0 0 0 / 0.2);
+  --color-control-line: var(--grey-400);
+  --color-outline-image: rgb(0 0 0 / 0.08);
 
-  --color-focus-ring: var(--neutral-ink);
+  --color-focus-ring: var(--grey-1000);
 
-  --color-error: var(--error-500);
-  --color-error-line: var(--error-400);
-  --color-error-tint: var(--error-100);
+  /* The brand is red, so an error cannot be told apart by hue alone. It
+     always ships with an icon and a message, never as colour only. */
+  --color-error: var(--red-600);
+  --color-error-line: var(--red-500);
+  --color-error-tint: var(--red-50);
   --color-success: var(--success-500);
   --color-success-tint: var(--success-100);
 
-  /* ---- Type scale, named by role -------------------------------------- */
-  --font-sans: "Manrope", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  /* ---- Type ------------------------------------------------------------ */
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-display: "Gilroy", "Montserrat", ui-sans-serif, system-ui, sans-serif;
 
-  --text-display: clamp(2.375rem, 1.4rem + 4.2vw, 4.25rem);
-  --text-display--line-height: 1.04;
-  --text-display--letter-spacing: -0.03em;
-  --text-display--font-weight: 800;
+  /* Display and h2 are sentence case with tight, negative tracking — the
+     large-type convention of current product sites. */
+  --text-display: clamp(2.5rem, 1.35rem + 4.6vw, 4.75rem);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.035em;
+  --text-display--font-weight: 300;
 
-  --text-h2: clamp(1.75rem, 1.15rem + 2.1vw, 2.625rem);
-  --text-h2--line-height: 1.1;
-  --text-h2--letter-spacing: -0.022em;
-  --text-h2--font-weight: 700;
+  --text-h2: clamp(1.875rem, 1.2rem + 2.3vw, 3.25rem);
+  --text-h2--line-height: 1.05;
+  --text-h2--letter-spacing: -0.03em;
+  --text-h2--font-weight: 500;
 
-  --text-h3: 1.125rem;
-  --text-h3--line-height: 1.35;
+  --text-h3: 1.1875rem;
+  --text-h3--line-height: 1.3;
   --text-h3--letter-spacing: -0.01em;
-  --text-h3--font-weight: 700;
+  --text-h3--font-weight: 600;
 
-  --text-lede: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
-  --text-lede--line-height: 1.6;
+  --text-lede: clamp(1rem, 0.95rem + 0.25vw, 1.1875rem);
+  --text-lede--line-height: 1.65;
 
   --text-body: 1rem;
-  --text-body--line-height: 1.6;
+  --text-body--line-height: 1.65;
 
   --text-body-sm: 0.875rem;
-  --text-body-sm--line-height: 1.55;
+  --text-body-sm--line-height: 1.6;
 
   --text-caption: 0.8125rem;
   --text-caption--line-height: 1.5;
 
   --text-label: 0.75rem;
   --text-label--line-height: 1.35;
-  --text-label--letter-spacing: 0.14em;
+  --text-label--letter-spacing: 0.08em;
   --text-label--font-weight: 600;
 
-  --text-stat: clamp(2rem, 1.4rem + 2vw, 3rem);
+  --text-stat: clamp(2.25rem, 1.5rem + 2.4vw, 3.5rem);
   --text-stat--line-height: 1;
-  --text-stat--letter-spacing: -0.03em;
+  --text-stat--letter-spacing: -0.01em;
   --text-stat--font-weight: 800;
 
-  /* ---- Radii. Nested boxes stay concentric: outer = inner + padding. --- */
-  --radius-control: 0.625rem; /* 10px — buttons, inputs */
-  --radius-card: 1.25rem; /* 20px — cards, panels */
-  --radius-media: 1rem; /* 16px — standalone media */
+  /* ---- Radii ------------------------------------------------------------
+     The print brandbook is square-cornered; on screen the site softens it so
+     it reads as a current product rather than a printed catalogue. Buttons
+     and chips are pills, fields and small tiles use `control`, and nested
+     surfaces use `inner` so corners stay concentric (outer = inner + padding). */
+  --radius-control: 0.75rem;
+  --radius-pill: 999px;
+  --radius-inner: 1rem;
+  --radius-card: 1.5rem;
+  --radius-media: 1.5rem;
 
-  /* ---- Elevation ------------------------------------------------------
-     A hairline alone cannot separate a near-white card from a near-white
-     page, so cards carry a shadow as well. Both stops are the ink at low
-     alpha rather than black, so the shade stays in the page's own hue. */
-  --shadow-card: 0 1px 2px oklch(19% 0.013 257.7 / 0.04),
-    0 10px 28px -12px oklch(19% 0.013 257.7 / 0.12);
-  --shadow-card-hover: 0 1px 2px oklch(19% 0.013 257.7 / 0.05),
-    0 16px 40px -14px oklch(19% 0.013 257.7 / 0.18);
+  /* ---- Elevation --------------------------------------------------------
+     Soft, layered and low-contrast: surfaces separate by tone first, shadow
+     second. Hover lifts with a wider, softer shade. */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 16px -6px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 2px 4px rgb(0 0 0 / 0.04),
+    0 24px 48px -20px rgb(0 0 0 / 0.22);
+  --shadow-float: 0 1px 2px rgb(0 0 0 / 0.05), 0 12px 32px -12px rgb(0 0 0 / 0.18);
 
-  /* ---- Motion ---------------------------------------------------------
-     `fast` is press and hover feedback: inside the 100-160ms window where a
-     button still feels like it answered the finger.
-
-     `reveal` was 520ms. With a 20px travel that read as lag rather than
-     entrance, and stacked with the per-card stagger the last card in a row
-     finished nearly 800ms after it crossed the fold. 400ms plus a 60ms
-     stagger lands the whole row inside 580ms.
-
-     `--animate-spin` overrides Tailwind's 1s default. A quicker spinner makes
-     an identical wait feel shorter, which is the cheapest perceived
-     performance win on the page. */
+  /* ---- Motion ---------------------------------------------------------- */
   --ease-out-quint: cubic-bezier(0.2, 0, 0, 1);
   --duration-fast: 150ms;
+  --duration-medium: 320ms;
   --duration-reveal: 400ms;
   --duration-enter: 240ms;
   --duration-exit: 150ms;
   --animate-spin: spin 0.7s linear infinite;
 
-  /* ---- Layout --------------------------------------------------------- */
+  /* ---- Layout ---------------------------------------------------------- */
   --container-page: 82.5rem; /* 1320px */
+}
+
+/* ==========================================================================
+   Dark theme — the same roles, re-pointed. The whole page switches at once,
+   so there are no alternating black and white bands: the header, hero,
+   sections and footer always share one ground.
+
+   `data-theme` is set on <html> before first paint by the script in
+   layout.tsx, from the reader's saved choice or else their system setting.
+   Without JavaScript the page stays light.
+
+   Ground is near-black rather than #000 so surfaces can step up from it.
+   Accent *fills* stay Venetian Red (white on it is 6.1:1); accent *text*
+   moves to the 60% tint, because the base red is 3.4:1 on black.
+   ========================================================================== */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root[data-theme="dark"] {
+  --color-base: #0b0b0c;
+  --color-surface: #141415;
+  --color-raised: #1d1d1f;
+  --color-fg: #ffffff;
+  --color-fg-secondary: var(--ink-200);
+  --color-fg-muted: var(--ink-300);
+  --color-fg-accent: var(--red-300);
+  --color-accent-tint: rgb(199 0 11 / 0.2);
+  --color-accent-wash: rgb(199 0 11 / 0.12);
+  --color-hairline: rgb(255 255 255 / 0.09);
+  --color-hairline-strong: rgb(255 255 255 / 0.2);
+  --color-control-line: var(--ink-500);
+  --color-outline-image: rgb(255 255 255 / 0.08);
+  --color-focus-ring: #ffffff;
+  --color-error: var(--red-300);
+  --color-error-line: var(--red-300);
+  --color-error-tint: rgb(199 0 11 / 0.18);
+  --color-success-tint: oklch(30% 0.05 152);
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.04) inset,
+    0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-card-hover: 0 1px 0 rgb(255 255 255 / 0.06) inset,
+    0 28px 56px -20px rgb(0 0 0 / 0.9);
+  --shadow-float: 0 1px 0 rgb(255 255 255 / 0.05) inset,
+    0 20px 48px -16px rgb(0 0 0 / 0.8);
+  color-scheme: dark;
 }
 
 /* ==========================================================================
@@ -234,11 +310,32 @@ body {
   color: var(--color-fg);
   font-family: var(--font-sans);
   font-size: var(--text-body);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
-/* Keyboard users get a ring; pointer users normally do not. The ink clears
-   3:1 on every surface and on the accent fill, so one ring works everywhere. */
+/* Headings and figures are Gilroy. Layered as base so a utility can still
+   override either. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  .text-display,
+  .text-h2,
+  .text-h3,
+  .text-stat {
+    font-family: var(--font-display);
+  }
+
+  /* The heavier half of a two-weight headline, as on the brandbook stand:
+     «НОВЕ ПОКОЛІННЯ ІМПЛАНТІВ» with the last word in ExtraBold. */
+  .text-display strong,
+  .text-h2 strong {
+    font-weight: 800;
+  }
+}
+
+/* Keyboard users get a ring; pointer users normally do not. */
 :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
@@ -266,8 +363,8 @@ body {
 }
 
 ::selection {
-  background-color: var(--color-accent-tint);
-  color: var(--color-fg);
+  background-color: var(--color-accent-solid);
+  color: var(--color-on-accent);
 }
 
 /* Anchored sections clear the sticky header. */
@@ -298,79 +395,10 @@ body {
   padding-right: max(clamp(1.25rem, 3.5vw, 3rem), env(safe-area-inset-right));
 }
 
-/* Scrim behind card captions that sit over the category illustrations. On
-   light the scrim lifts toward the page ground rather than down toward black.
-   Opacity at the text band is >=88%, which measures 13.8:1 for fg text against
-   the darkest pixel in the art (#000002, the drill body in equipment.webp).
-   Re-measure with `python3 scripts/art.py --measure` if the art changes. */
-@utility scrim-bottom {
-  background-image: linear-gradient(
-    to top,
-    var(--color-base) 0%,
-    color-mix(in oklab, var(--color-base) 92%, transparent) 40%,
-    color-mix(in oklab, var(--color-base) 45%, transparent) 70%,
-    transparent 100%
-  );
-}
-
 /* 1px low-opacity outline keeps light art from bleeding into a light page. */
 @utility media-outline {
   outline: 1px solid var(--color-outline-image);
   outline-offset: -1px;
-}
-
-/* ==========================================================================
-   Native <dialog> enter and exit.
-
-   `showModal()` on its own pops the panel into place with no transition, which
-   is the one case the eye reliably reads as broken. Animating it needs
-   `allow-discrete` so `display` and the top layer stay put while opacity and
-   translate run; without it the element is gone before the exit can play.
-
-   Enter is 240ms, exit 150ms: the exit is the system responding to a decision
-   the user already made, so it gets out of the way faster than it arrived.
-   No scale — this is a modal, so it stays put rather than growing from a
-   trigger, and a full-screen sheet that scales reads as a zoom.
-
-   Under a reduce preference the global rule below drops `translate` and
-   narrows `transition-property`, which also drops `allow-discrete`. The dialog
-   then opens and closes instantly, which is the correct reduced-motion answer.
-   ========================================================================== */
-
-@utility dialog-sheet {
-  opacity: 0;
-  translate: 0 -0.5rem;
-  transition: opacity var(--duration-exit) var(--ease-out-quint),
-    translate var(--duration-exit) var(--ease-out-quint),
-    display var(--duration-exit) allow-discrete,
-    overlay var(--duration-exit) allow-discrete;
-
-  &[open] {
-    opacity: 1;
-    translate: 0 0;
-    transition-duration: var(--duration-enter);
-
-    @starting-style {
-      opacity: 0;
-      translate: 0 -0.5rem;
-    }
-  }
-
-  &::backdrop {
-    opacity: 0;
-    transition: opacity var(--duration-exit) var(--ease-out-quint),
-      display var(--duration-exit) allow-discrete,
-      overlay var(--duration-exit) allow-discrete;
-  }
-
-  &[open]::backdrop {
-    opacity: 1;
-    transition-duration: var(--duration-enter);
-
-    @starting-style {
-      opacity: 0;
-    }
-  }
 }
 
 /* ==========================================================================
@@ -457,5 +485,147 @@ body {
     opacity: 1 !important;
     translate: none !important;
     animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Hero model — hotspot markers and the frame's soft edges.
+
+   Centring here is done with `transform`, never `translate`. The reduced-motion
+   block above kills `translate` outright, so a marker positioned with it would
+   sit half its own width off the point it is labelling for every reader who
+   asked for less movement.
+
+   The anchor is a zero-size box whose origin is the projected 3D point; the
+   frame callback writes its transform. `--flank` is how far a chip or card
+   stands off that point, and `data-side` — also written by the frame callback —
+   decides which way it opens, so nothing ever reaches across the model.
+   ========================================================================== */
+
+@utility hotspot-anchor {
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+@utility hotspot-dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+
+@utility hotspot-flank {
+  --flank: 1.5rem;
+  position: absolute;
+  top: 0;
+  transform: translateY(-50%);
+}
+
+[data-side="end"] .hotspot-flank {
+  left: var(--flank);
+}
+
+[data-side="start"] .hotspot-flank {
+  right: var(--flank);
+}
+
+/* The femoral shafts run out of the bottom of the frame. Fading the canvas
+   there dissolves them into the page, where a hard crop would read as a
+   rendering bug. The masks are on the canvas only, so the markers over it stay
+   at full strength. */
+@utility mask-fade-b {
+  mask-image: linear-gradient(to bottom, black 0%, black 84%, transparent 100%);
+}
+
+/* ==========================================================================
+   Hero backdrop — the ground the model stands on.
+
+   The figure has no box of its own; it stands on the hero's own ground, the
+   same as the header's, so the page never changes colour under it. What
+   separates it from that ground is the light on the bone itself (shadows,
+   occlusion) plus two quiet layers here:
+
+   - a technical grid that is only there behind the figure, dissolving well
+     before any edge, so the model reads as placed on a drafting table rather
+     than cut out and pasted on;
+   - a pool of light: on the light theme a barely-there neutral shade that
+     gives white bone something to sit against, never a coloured shape; on the
+     dark theme the low Venetian Red glow of the brandbook's exhibition stand.
+
+   Every stop is a token, so the one set of gradients serves both themes. The
+   pool sits behind the art column on wide screens and behind the art block,
+   under the copy, on narrow ones.
+   ========================================================================== */
+
+:root {
+  --backdrop-pool: rgb(0 0 0 / 0.032);
+  --backdrop-pool-soft: rgb(0 0 0 / 0.012);
+  --backdrop-glow: transparent;
+  --backdrop-glow-soft: transparent;
+  --backdrop-grid: rgb(0 0 0 / 0.055);
+}
+
+:root[data-theme="dark"] {
+  --backdrop-pool: rgb(255 255 255 / 0.05);
+  --backdrop-pool-soft: rgb(255 255 255 / 0.015);
+  --backdrop-glow: rgb(199 0 11 / 0.28);
+  --backdrop-glow-soft: rgb(199 0 11 / 0.09);
+  --backdrop-grid: rgb(255 255 255 / 0.06);
+}
+
+.hero-backdrop {
+  --pool-at: 50% 78%;
+  --pool-size: 90% 36%;
+  --glow-at: 58% 82%;
+  --glow-size: 70% 30%;
+  background-image:
+    radial-gradient(var(--glow-size) at var(--glow-at), var(--backdrop-glow) 0%, var(--backdrop-glow-soft) 45%, transparent 78%),
+    radial-gradient(var(--pool-size) at var(--pool-at), var(--backdrop-pool) 0%, var(--backdrop-pool-soft) 42%, transparent 100%);
+}
+
+/* The grid, masked to a soft ellipse around the figure. */
+.hero-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--backdrop-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--backdrop-grid) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  background-position: center;
+  mask-image: radial-gradient(var(--pool-size) at var(--pool-at), black 0%, transparent 70%);
+}
+
+@media (min-width: 64rem) {
+  .hero-backdrop {
+    --pool-at: 76% 46%;
+    --pool-size: 44% 72%;
+    --glow-at: 76% 50%;
+    --glow-size: 36% 56%;
+  }
+}
+
+/* The brand marker: a small Venetian Red square, as under every heading in
+   the brandbook. Size it with `size-*`. Decorative — always aria-hidden. */
+@utility brand-mark {
+  display: block;
+  flex-shrink: 0;
+  background-color: var(--color-accent-solid);
+}
+
+/* The alert glyph in front of a Base UI `Field.Error`. Field.Error renders the
+   validation message itself, so the icon is a masked pseudo-element in the
+   current text colour rather than a child — the same shape as lucide's
+   circle-alert, which the form banners use. */
+@utility field-error-icon {
+  &::before {
+    content: "";
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' x2='12' y1='8' y2='12'/%3E%3Cline x1='12' x2='12.01' y1='16' y2='16'/%3E%3C/svg%3E")
+      center / contain no-repeat;
   }
 }

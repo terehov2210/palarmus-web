@@ -6,6 +6,8 @@
 export const site = {
   name: "Palarmus Implants",
   tagline: "Нове покоління імплантів",
+  /** The brand line, from the brandbook's mission page (section 1.3). */
+  slogan: "Інновації, які лікують",
   description:
     "Постачання імплантів та медичних рішень для травматології й ортопедії: стержні, гвинти, пластини для остеосинтезу, ендопротези суглобів, біоактивні ін’єкції гіалуронової кислоти.",
   /**
@@ -34,14 +36,23 @@ export const site = {
     href: "https://www.instagram.com/implants.ua/",
   },
   url: "https://palarmus.com.ua",
+  /** Brandbook, section 1.2 — «Про бренд». Verbatim. */
+  about:
+    "Palarmus — це молода та динамічна компанія, що виводить на український ринок сучасні рішення у травматології та ортопедії. Компанія вивчає світові тенденції, співпрацює з провідними виробниками та формує портфоліо з інноваційних імплантів, щоб зробити їх доступними для українських пацієнтів та лікарів. Palarmus забезпечує Україну інноваційними медичними технологіями світового рівня.",
+  /** Brandbook, section 1.3 — «Місія». Verbatim. */
+  mission:
+    "Місія бренду — надавати інноваційні рішення для медичної галузі, які об’єднують найкращі світові технології, практичність та бездоганну якість. Бренд втілює віру в те, що прогрес у медицині починається з доступу до правильних інструментів.",
 } as const;
 
+/**
+ * Only routes that exist. «Покупцям», «Блог» and the account area are on the
+ * live site's menu but have no content yet; they come back here when their
+ * pages are built, rather than linking to a placeholder.
+ */
 export const primaryNav = [
   { label: "Каталог", href: "/catalog" },
   { label: "Навчання", href: "/education" },
   { label: "Про компанію", href: "/about" },
-  { label: "Покупцям", href: "/for-buyers" },
-  { label: "Блог", href: "/blog" },
   { label: "Контакти", href: "/contacts" },
 ] as const;
 
@@ -62,19 +73,9 @@ export const footerNav = {
     links: [
       { label: "Про компанію", href: "/about" },
       { label: "Навчання", href: "/education" },
-      { label: "Сертифікати якості", href: "/#certificates" },
-      { label: "Відгуки лікарів", href: "/#reviews" },
-      { label: "Блог", href: "/blog" },
+      { label: "Глосарій", href: "/education#glossary" },
+      { label: "Консультація", href: "/#consultation" },
       { label: "Контакти", href: "/contacts" },
-    ],
-  },
-  account: {
-    heading: "Кабінет",
-    links: [
-      { label: "Профіль", href: "/account" },
-      { label: "Мої замовлення", href: "/account/orders" },
-      { label: "Обране", href: "/account/wishlist" },
-      { label: "Порівняння", href: "/compare" },
     ],
   },
 } as const;

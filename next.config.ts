@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+
   images: {
     /**
      * AVIF first, WebP as the fallback.
@@ -31,6 +33,59 @@ const nextConfig: NextConfig = {
      * fidelity. Everything else keeps 75, where it already looks right.
      */
     qualities: [75, 82],
+  },
+
+  /**
+   * The hero's GLBs, which Next otherwise serves out of `public/` with
+   * `max-age=0`.
+   *
+   * That is the right default for a folder whose filenames carry no content
+   * hash — but it costs a revalidation round trip on every repeat visit for a
+   * file approaching a megabyte, and the response is byte-identical almost
+   * every time.
+   *
+   * A week of `max-age` with a month of `stale-while-revalidate` is the trade
+   * this makes: repeat visits inside a week pay nothing, and a replaced model
+   * still reaches everyone without anyone having to remember to rename a file.
+   * `immutable` would be the faster answer and the wrong one here — these
+   * assets have no hash in their names, so a returning reader would be pinned
+   * to a stale model for as long as the max-age says.
+   */
+  async headers() {
+    return [
+      /**
+       * Baseline hardening for every response. No CSP here on purpose: Next
+       * inlines its bootstrap scripts, so a useful policy needs per-request
+       * nonces from a proxy, and a policy with `unsafe-inline` would only look
+       * like protection. `frame-ancestors` is the part worth having today.
+       */
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+      {
+        source: "/models/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=2592000",
+          },
+        ],
+      },
+    ];
   },
 };
 

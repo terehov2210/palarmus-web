@@ -20,22 +20,21 @@ const assurances = [
 
 export function Assurances() {
   return (
-    <section aria-label="Що ми гарантуємо" className="border-b border-hairline bg-surface">
+    // Continues the hero on the same ground rather than cutting it with a
+    // solid band: three quiet tiles, the red kept to the icon badge.
+    <section aria-label="Що ми гарантуємо">
       <Reveal
         as="ul"
-        className="container-page grid gap-x-8 gap-y-4 py-6 sm:grid-cols-3 lg:py-7"
+        className="container-page grid gap-3 py-6 sm:grid-cols-3 lg:py-8"
       >
         {assurances.map(({ icon: Icon, label }) => (
           <li
             key={label}
-            className="flex items-center gap-3 text-body-sm text-fg-secondary"
+            className="flex items-center gap-4 rounded-card bg-surface p-3 pe-5 text-body-sm font-medium text-fg ring-1 ring-inset ring-hairline"
           >
-            <Icon
-              aria-hidden="true"
-              size={18}
-              strokeWidth={1.5}
-              className="shrink-0 text-fg-accent"
-            />
+            <span className="grid size-11 shrink-0 place-items-center rounded-control bg-accent-tint text-fg-accent">
+              <Icon aria-hidden="true" size={20} strokeWidth={1.75} />
+            </span>
             {label}
           </li>
         ))}

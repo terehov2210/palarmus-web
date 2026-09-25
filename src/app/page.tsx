@@ -8,6 +8,7 @@ import { Hero } from "@/components/sections/hero";
 import { Partners } from "@/components/sections/partners";
 import { Products } from "@/components/sections/products";
 import { Reviews } from "@/components/sections/reviews";
+import { published } from "@/content/trust";
 
 export default function HomePage() {
   return (
@@ -16,10 +17,10 @@ export default function HomePage() {
       <Assurances />
       <Categories />
       <Advantages />
-      <Certificates />
+      {published.certificates ? <Certificates /> : null}
       <Products />
       <EducationTeaser />
-      <Reviews />
+      {published.testimonials ? <Reviews /> : null}
       <Partners />
       <Consultation />
     </>

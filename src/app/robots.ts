@@ -7,8 +7,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Account pages hold nothing a crawler should index.
-      disallow: ["/account/", "/compare"],
     },
     sitemap: `${site.url}/sitemap.xml`,
   };

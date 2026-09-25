@@ -1,8 +1,14 @@
-# Hero slider — delivered
+# Hero slider — delivered, then retired
 
-All four slides are in `public/brand/` and the slider is live. This file is kept
-as the record of what was asked for and the constraints it was built to, so a
-fifth direction can be added to the same spec.
+All four slides are in `public/brand/`. The slider itself is gone: the hero is
+now the 3D endoprosthesis model with labelled anatomy, and `hero-joints.webp`
+is kept as its no-WebGL fallback — rendered only when the WebGL probe comes back
+negative, never as a poster in front of the model. See the hero section of the
+root [README](../../README.md).
+
+This file is kept as the record of what was asked for and the constraints the
+art was built to — the three unused slides are commissioned work looking for a
+home, and anything drawn to this spec will match them.
 
 Delivered art is mirrored in `deliverables/`, byte-identical to `public/`.
 
@@ -18,14 +24,12 @@ hero-slider/
   implants/    device renders from the live shop
 ```
 
-## Adding a fifth needs no code
+## What became of them
 
-`src/content/hero-slides.ts` lists the slides;
-`src/components/sections/hero.tsx` drops any whose file is missing from
-`public/`, and with fewer than two left the hero renders a plain static image
-with no controls. So a new direction is a row in that file plus a file at the
-matching path — and a slide whose art has not arrived yet simply does not
-appear, rather than showing a placeholder.
+`src/content/hero-slides.ts` and the rotation logic were deleted with the
+slider. `hero-joints.webp` is referenced directly by
+`src/components/sections/hero-art.tsx`; the other three are unused files in
+`public/brand/`.
 
 | Slide | File | Direction |
 | --- | --- | --- |

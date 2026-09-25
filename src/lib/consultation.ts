@@ -39,17 +39,35 @@ export function normalisePhone(input: string) {
   return input.replace(/[\s()-]/g, "");
 }
 
-/** Hints are phrased as what to do, not what went wrong. */
+/*
+ * Hints are phrased as what to do, not what went wrong.
+ *
+ * One function per field, so the same rule runs in two places: in the browser
+ * through each Base UI `Field.Root`'s `validate`, and again on the server in
+ * the action, which never trusts the client. They return `null` when valid,
+ * which is what `Field.Root` expects.
+ */
+
+export function validateName(value: string) {
+  return value.trim().length < 2
+    ? "Вкажіть ім’я — щонайменше 2 символи."
+    : null;
+}
+
+export function validatePhone(value: string) {
+  return PHONE.test(normalisePhone(value.trim()))
+    ? null
+    : "Вкажіть номер у форматі 0XX XXX XX XX.";
+}
+
 export function validateConsultation(values: ConsultationValues) {
   const fieldErrors: ConsultationState["fieldErrors"] = {};
 
-  if (values.name.length < 2) {
-    fieldErrors.name = "Вкажіть ім’я — щонайменше 2 символи.";
-  }
+  const name = validateName(values.name);
+  if (name) fieldErrors.name = name;
 
-  if (!PHONE.test(normalisePhone(values.phone))) {
-    fieldErrors.phone = "Вкажіть номер у форматі 0XX XXX XX XX.";
-  }
+  const phone = validatePhone(values.phone);
+  if (phone) fieldErrors.phone = phone;
 
   return fieldErrors;
 }

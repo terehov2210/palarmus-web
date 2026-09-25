@@ -1,21 +1,48 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
+import { Field } from "@base-ui/react/field";
+import { Form } from "@base-ui/react/form";
 import { AlertCircle, CheckCircle2, Loader2, Mail, MapPin, Phone } from "lucide-react";
 
 import { submitConsultation } from "@/app/actions";
-import { initialConsultationState } from "@/lib/consultation";
+import {
+  initialConsultationState,
+  validateName,
+  validatePhone,
+} from "@/lib/consultation";
 import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/section";
 import { site } from "@/content/site";
 
-const fieldBase = [
-  "w-full rounded-control border bg-base px-4 py-3",
+/** The perimeter turns red off Base UI's `data-invalid` on the control. */
+const control = [
+  "w-full rounded-control border border-hairline-strong bg-surface px-4 py-3.5",
   "text-body text-fg placeholder:text-fg-muted",
-  "transition-[border-color] duration-fast ease-out-quint",
+  "transition-[border-color,background-color,box-shadow] duration-fast ease-out-quint",
+  "hover:border-control-line focus:border-fg focus:bg-base focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--color-fg)_8%,transparent)]",
+  "data-invalid:border-error-line",
 ].join(" ");
 
+const label = "text-body-sm font-medium text-fg";
+
+/** Icon + message, never colour alone — the brand accent is red too. */
+const error =
+  "field-error-icon flex items-center gap-2 text-caption text-error";
+
+/**
+ * Base UI Form + Field.
+ *
+ * Each field validates in the browser with the same rule the server action
+ * runs (`src/lib/consultation.ts`), so a mistake is flagged on submit without
+ * a round trip, and re-checked on every keystroke after that. The server still
+ * validates independently; whatever it returns goes back in through Form's
+ * `errors`, keyed by field name, and lands in the same `Field.Error` slot.
+ *
+ * Without JavaScript this is still a plain `<form>` posting to a server
+ * action, so it degrades to server-side validation only.
+ */
 export function Consultation() {
   const [state, formAction, isPending] = useActionState(
     submitConsultation,
@@ -25,7 +52,8 @@ export function Consultation() {
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
 
-  // Validation runs on submit, then focus lands on the first field that failed.
+  // Base UI focuses the first invalid field after its own validation. This
+  // covers the other route: errors only the server found.
   useEffect(() => {
     if (state.status !== "error") return;
     if (state.fieldErrors.name) nameRef.current?.focus();
@@ -36,11 +64,11 @@ export function Consultation() {
     <section
       id="consultation"
       aria-labelledby="consultation-title"
-      className="relative isolate overflow-hidden bg-base py-20 lg:py-32"
+      className="relative isolate overflow-hidden bg-surface py-20 lg:py-36"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 blueprint-grid opacity-40 [mask-image:radial-gradient(100%_80%_at_100%_100%,black,transparent_70%)]"
+        className="pointer-events-none absolute -bottom-40 end-[-10%] h-[32rem] w-[44rem] rounded-full bg-[radial-gradient(closest-side,rgb(199_0_11/0.10),transparent)] blur-2xl"
       />
 
       <div className="container-page relative grid gap-12 lg:grid-cols-2 lg:gap-16">
@@ -57,11 +85,11 @@ export function Consultation() {
             представником у вашому місті підбере набір і назве строк доставки.
           </p>
 
-          <ul className="mt-2 flex flex-col gap-4 border-t border-hairline pt-6">
+          <ul className="mt-2 flex flex-col gap-1 rounded-card bg-base/60 p-3 ring-1 ring-inset ring-hairline">
             <li>
               <a
                 href={site.phone.href}
-                className="inline-flex min-h-11 items-center gap-3 text-body font-semibold text-fg transition-[color] duration-fast ease-out-quint hover:text-fg-accent"
+                className="flex min-h-12 items-center gap-3 rounded-control px-3 text-body font-semibold text-fg transition-[background-color,color] duration-fast ease-out-quint hover:bg-surface hover:text-fg-accent"
               >
                 <Phone aria-hidden="true" size={18} strokeWidth={2} />
                 {site.phone.label}
@@ -70,13 +98,13 @@ export function Consultation() {
             <li>
               <a
                 href={site.email.href}
-                className="inline-flex min-h-11 items-center gap-3 text-body text-fg-secondary transition-[color] duration-fast ease-out-quint hover:text-fg"
+                className="flex min-h-12 items-center gap-3 rounded-control px-3 text-body text-fg-secondary transition-[background-color,color] duration-fast ease-out-quint hover:bg-surface hover:text-fg"
               >
                 <Mail aria-hidden="true" size={18} strokeWidth={1.5} />
                 {site.email.label}
               </a>
             </li>
-            <li className="flex items-start gap-3 text-body text-fg-secondary">
+            <li className="flex items-start gap-3 px-3 py-3 text-body text-fg-secondary">
               <MapPin
                 aria-hidden="true"
                 size={18}
@@ -89,12 +117,19 @@ export function Consultation() {
         </Reveal>
 
         <Reveal delay={120}>
-          <form
+          {/* Keyed on what the server echoed back. The fields are
+              uncontrolled, and Base UI (rightly) refuses a `defaultValue`
+              that changes under a mounted control, so a new echo remounts
+              the form with fresh defaults instead: kept values after an
+              error, empty fields after a success. */}
+          <Form
+            key={`${state.status}:${state.values.name}\u0000${state.values.phone}\u0000${state.values.message}`}
             action={formAction}
+            errors={state.fieldErrors}
             aria-labelledby="consultation-title"
             aria-busy={isPending}
             noValidate
-            className="flex flex-col gap-5 rounded-card border border-hairline bg-surface p-6 shadow-card lg:p-8"
+            className="flex flex-col gap-5 rounded-card bg-base p-6 shadow-float ring-1 ring-inset ring-hairline lg:p-9"
           >
             {/* Stable region, rendered before its text updates, so repeated
                 submissions announce reliably. */}
@@ -131,92 +166,73 @@ export function Consultation() {
               </p>
             ) : null}
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="lead-name" className="text-body-sm font-medium text-fg">
-                Ім’я
-              </label>
-              <input
+            <Field.Root
+              name="name"
+              validate={(value) => validateName(String(value ?? ""))}
+              className="flex flex-col gap-2"
+            >
+              <Field.Label className={label}>Ім’я</Field.Label>
+              <Field.Control
                 ref={nameRef}
-                id="lead-name"
-                name="name"
                 type="text"
                 autoComplete="name"
                 defaultValue={state.values.name}
-                aria-invalid={state.fieldErrors.name ? true : undefined}
-                aria-describedby={state.fieldErrors.name ? "lead-name-error" : undefined}
-                className={`${fieldBase} ${
-                  state.fieldErrors.name ? "border-error-line" : "border-control-line"
-                }`}
+                className={control}
               />
-              {state.fieldErrors.name ? (
-                <p
-                  id="lead-name-error"
-                  className="flex items-center gap-2 text-caption text-error"
-                >
-                  <AlertCircle aria-hidden="true" size={14} strokeWidth={2} />
-                  {state.fieldErrors.name}
-                </p>
-              ) : null}
-            </div>
+              <Field.Error className={error} />
+            </Field.Root>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="lead-phone" className="text-body-sm font-medium text-fg">
-                Телефон
-              </label>
-              <input
+            <Field.Root
+              name="phone"
+              validate={(value) => validatePhone(String(value ?? ""))}
+              className="group flex flex-col gap-2"
+            >
+              <Field.Label className={label}>Телефон</Field.Label>
+              <Field.Control
                 ref={phoneRef}
-                id="lead-phone"
-                name="phone"
                 type="tel"
                 inputMode="tel"
                 autoComplete="tel"
                 placeholder="067 123 45 67"
                 defaultValue={state.values.phone}
-                aria-invalid={state.fieldErrors.phone ? true : undefined}
-                aria-describedby={
-                  state.fieldErrors.phone ? "lead-phone-error" : "lead-phone-hint"
-                }
-                className={`${fieldBase} ${
-                  state.fieldErrors.phone ? "border-error-line" : "border-control-line"
-                }`}
+                className={control}
               />
-              {state.fieldErrors.phone ? (
-                <p
-                  id="lead-phone-error"
-                  className="flex items-center gap-2 text-caption text-error"
-                >
-                  <AlertCircle aria-hidden="true" size={14} strokeWidth={2} />
-                  {state.fieldErrors.phone}
-                </p>
-              ) : (
-                <p id="lead-phone-hint" className="text-caption text-fg-muted">
-                  Український мобільний номер, з кодом оператора.
-                </p>
-              )}
-            </div>
+              {/* The hint gives way to the error rather than stacking under
+                  it: they are about the same thing. */}
+              <Field.Description className="text-caption text-fg-muted group-data-invalid:hidden">
+                Український мобільний номер, з кодом оператора.
+              </Field.Description>
+              <Field.Error className={error} />
+            </Field.Root>
 
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="lead-message"
-                className="text-body-sm font-medium text-fg"
-              >
+            <Field.Root name="message" className="flex flex-col gap-2">
+              <Field.Label className={label}>
                 Що потрібно підібрати
                 <span className="font-normal text-fg-muted">
                   {" "}— необов’язково
                 </span>
-              </label>
-              <textarea
-                id="lead-message"
-                name="message"
-                rows={4}
+              </Field.Label>
+              <Field.Control
+                render={<textarea rows={4} />}
                 defaultValue={state.values.message}
-                className={`${fieldBase} min-h-32 resize-y border-control-line`}
+                className={`${control} min-h-32 resize-y`}
               />
-            </div>
+            </Field.Root>
 
-            <Button type="submit" size="lg" disabled={isPending} className="mt-1">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={isPending}
+              focusableWhenDisabled
+              className="mt-1"
+            >
               {isPending ? (
-                <Loader2 aria-hidden="true" size={18} strokeWidth={2} className="animate-spin" />
+                <Loader2
+                  aria-hidden="true"
+                  size={18}
+                  strokeWidth={2}
+                  className="animate-spin"
+                />
               ) : null}
               Надіслати заявку
             </Button>
@@ -224,7 +240,7 @@ export function Consultation() {
             <p className="text-caption text-fg-muted">
               Телефонуємо в робочий час. Контакти не передаємо третім сторонам.
             </p>
-          </form>
+          </Form>
         </Reveal>
       </div>
     </section>

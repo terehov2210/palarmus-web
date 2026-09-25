@@ -5,8 +5,7 @@ import { products, productHref } from "@/content/products";
 import { site } from "@/content/site";
 
 /**
- * Only real routes are listed. The `[...slug]` stubs are `noindex`, so they
- * stay out; everything below is prerendered.
+ * Every route the site has. Everything below is prerendered.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -34,6 +33,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${site.url}/education`,
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    {
+      url: `${site.url}/about`,
+      changeFrequency: "yearly",
+      priority: 0.6,
+    },
+    {
+      url: `${site.url}/contacts`,
+      changeFrequency: "yearly",
+      priority: 0.6,
     },
   ];
 }

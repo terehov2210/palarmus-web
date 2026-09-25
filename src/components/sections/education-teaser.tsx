@@ -12,7 +12,7 @@ import { implantTypes } from "@/content/education";
  *
  * Layout family used nowhere else on this page: one large visual against a
  * text column, where every other section is a card grid or a form split. It
- * also brings the deep blue of the hero back once, late, so the page opens and
+ * also brings the grey-ground render back once, late, so the page opens and
  * closes its two strongest images on the same note.
  *
  * The six pills are real navigation into each anchor on the training page, not
@@ -23,7 +23,7 @@ export function EducationTeaser() {
   return (
     <Section id="education" labelledBy="education-teaser-title">
       <div className="grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-        <Reveal className="relative aspect-4/3 overflow-hidden rounded-media media-outline lg:aspect-square">
+        <Reveal className="relative aspect-4/3 overflow-hidden rounded-media shadow-card-hover media-outline lg:aspect-square">
           <Image
             src="/education/hero.webp"
             alt="Розріз стегнової кістки з інтрамедулярним стержнем, шари м'яких тканин і кортексу"
@@ -55,7 +55,7 @@ export function EducationTeaser() {
               <li key={type.slug}>
                 <Link
                   href={`/education#${type.slug}`}
-                  className="inline-flex min-h-9 items-center rounded-control border border-hairline bg-surface px-3.5 text-body-sm text-fg-secondary transition-[border-color,color,background-color,scale] duration-fast ease-out-quint active:scale-[0.97] hover:border-control-line hover:bg-raised hover:text-fg"
+                  className="inline-flex min-h-9 items-center rounded-pill bg-surface px-4 text-body-sm text-fg-secondary ring-1 ring-inset ring-hairline transition-[box-shadow,color,background-color,scale] duration-fast ease-out-quint active:scale-[0.97] hover:bg-base hover:text-fg hover:shadow-card"
                 >
                   {type.name}
                 </Link>

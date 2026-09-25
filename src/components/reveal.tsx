@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+
+/**
+ * A closed set of tags rather than `ElementType`.
+ *
+ * `@react-three/fiber` augments the global JSX namespace with every three.js
+ * element, and against that union a generic tag resolves its spread props to
+ * `never`. These are the tags this component is actually rendered as.
+ */
+type RevealTag = "div" | "span" | "section" | "ul" | "ol" | "li" | "dl";
 
 type RevealProps = {
   children: ReactNode;
   /** Stagger within one semantic group. ~100ms reads as sequence, not lag. */
   delay?: number;
   className?: string;
-  as?: ElementType;
+  as?: RevealTag;
   /** Anchor target, so a deep link can address the revealed block itself. */
   id?: string;
 };
@@ -24,10 +33,10 @@ export function Reveal({
   children,
   delay = 0,
   className,
-  as: Tag = "div",
+  as = "div",
   id,
 }: RevealProps) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<"idle" | "pending" | "shown">("idle");
 
   useEffect(() => {
@@ -60,6 +69,11 @@ export function Reveal({
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+
+  // Narrowed to one concrete tag for typing only. A union of HTML tags
+  // intersects their ref types into something nothing can satisfy, and React
+  // renders whichever tag string it is handed.
+  const Tag = as as "div";
 
   return (
     <Tag
