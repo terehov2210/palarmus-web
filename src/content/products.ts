@@ -11,10 +11,9 @@
  * "Придбайте" and truncates mid-sentence, which reads as an advert in a card;
  * leading rhetorical questions were dropped for the same reason.
  *
- * `image` is only set where a site-ready photograph exists in `public/`. The
- * shop's own renders are lit on pure black, which cannot be keyed onto a light
- * page without punching holes through the darker metal, so the rest render a
- * labelled placeholder rather than a damaged cut-out. See docs/product-media.md.
+ * `image` is set for every product. Most are the manufacturers' renders, lit on
+ * pure black; they are shown on a dark studio tile with a screen blend rather
+ * than keyed out (see `ProductMedia` and docs/product-media.md).
  */
 
 export type ProductSpec = {
@@ -32,6 +31,9 @@ export type Product = {
   body: string[];
   spec: ProductSpec | null;
   image: string | null;
+  /** The image is a photograph on white, not a render on black: it gets a
+      light tile instead of the studio one. See `ProductMedia`. */
+  imageOnLight?: boolean;
   imageAlt: string;
   source: string | null;
 };
@@ -83,7 +85,7 @@ export const products: Product[] = [
         ["NAVY-C-12-400", "12мм × 400мм"],
       ],
     },
-    image: null,
+    image: "/products/navy-ar.webp",
     imageAlt: "NAVY A/R інтрамедулярний стегновий стрижень",
     source: "https://palarmus.com.ua/pokuptsyam/shop/navy-ar-intramedulyarniy-stegnoviy-strizhen/",
   },
@@ -128,7 +130,7 @@ export const products: Product[] = [
         ["A001623", "Ø11×400mm R"],
       ],
     },
-    image: null,
+    image: "/products/rewalk-femoral.webp",
     imageAlt: "Rewalk стегновий стрижень (комплект)",
     source: "https://palarmus.com.ua/pokuptsyam/shop/rewalk-stegnoviy-strizhen-komplekt/",
   },
@@ -164,7 +166,7 @@ export const products: Product[] = [
         ["A001595", "Ø11 × 380 мм"],
       ],
     },
-    image: null,
+    image: "/products/rewalk-tibial.webp",
     imageAlt: "Rewalk великогомілковий стрижень (комплект)",
     source: "https://palarmus.com.ua/pokuptsyam/shop/rewalk-velikogomilkoviy-strizhen-komplekt/",
   },
@@ -204,7 +206,7 @@ export const products: Product[] = [
         ["NITE-C-11-375", "11мм × 375 мм"],
       ],
     },
-    image: null,
+    image: "/products/nite.webp",
     imageAlt: "NITE Великогомілковий стрижень",
     source: "https://palarmus.com.ua/pokuptsyam/shop/nite-velikogomilkoviy-strizhen/",
   },
@@ -239,7 +241,7 @@ export const products: Product[] = [
         ["NUNA-09-300", "9мм × 300 мм"],
       ],
     },
-    image: null,
+    image: "/products/nuna.webp",
     imageAlt: "NUNA плечовий стрижень",
     source: "https://palarmus.com.ua/pokuptsyam/shop/nuna-plechoviy-strizhen/",
   },
@@ -274,7 +276,7 @@ export const products: Product[] = [
         ["A009765", "Ø11 × 400 mm R"],
       ],
     },
-    image: null,
+    image: "/products/titan-long.webp",
     imageAlt: "TITAN комплект довгий",
     source: "https://palarmus.com.ua/pokuptsyam/shop/titan-komplekt-dovgiy/",
   },
@@ -302,7 +304,7 @@ export const products: Product[] = [
         ["A007036", "14R", "230 мм"],
       ],
     },
-    image: null,
+    image: "/products/distal-medial-tibial-plate.webp",
     imageAlt: "Поліаксіальна дистальна медіальна блокуюча пластина великогомілкової кістки 3.5",
     source: "https://palarmus.com.ua/pokuptsyam/shop/poliaksialna-distalna-medialna-blokuyucha-plastina-velikogomilkovoi-kistki-2-73-5/",
   },
@@ -324,7 +326,7 @@ export const products: Product[] = [
         ["A008780", "11R", "50 мм"],
       ],
     },
-    image: null,
+    image: "/products/calcaneal-plate.webp",
     imageAlt: "Поліаксіальна блокуюча пластина п'яткової кістки 3.5",
     source: "https://palarmus.com.ua/pokuptsyam/shop/poliaksialna-blokuyucha-plastina-pyatkovoi-kistki-3-5/",
   },
@@ -338,7 +340,7 @@ export const products: Product[] = [
       "Канюльована будова забезпечує точне встановлення гвинта по напрямному спиці, що підвищує точність позиціонування та зменшує ризик помилок під час імплантації. Самонарізна різьба дозволяє вводити гвинт без попереднього нарізання, скорочуючи час операції та мінімізуючи травматизацію кістки. Компресійний принцип роботи забезпечує надійне притискання уламків і сприяє ефективному зрощенню.",
     ],
     spec: null,
-    image: null,
+    image: "/products/herbert-screw.webp",
     imageAlt: "Гвинт Герберта канюльований компресійний самонарізний",
     source: "https://palarmus.com.ua/pokuptsyam/shop/gvint-gerberta-kanyulovaniy-kompresiyniy-samonarizniy/",
   },
@@ -362,7 +364,7 @@ export const products: Product[] = [
         ["Дистальний стрижень Revistem™ M", "Розміри: 13 - 20×190 мм (крок 1 мм; висота ребра 1,2 мм; дистальний діаметр 7,9–15 мм)"],
       ],
     },
-    image: null,
+    image: "/products/revision-hip-apex-3dtf.webp",
     imageAlt: "Ревізійний ендопротез кульшового суглобу з парою тертя кераміка - поліетилен з безцементною ацетабулярною чашею з трабекулярного титану",
     source: "https://palarmus.com.ua/pokuptsyam/shop/reviziyniy-endoprotez-kulshovogo-suglobu-z-paroyu-tertya-keramika---polietilen-z-beztsementnoyu-atsetabulyarnoyu-chasheyu-z-trabekulyarnogo-titanu/",
   },
@@ -383,7 +385,7 @@ export const products: Product[] = [
         ["Тибіальний подовжувальний стрижень Mirai™", "Діаметр: 14 мм Висота: 30 мм"],
       ],
     },
-    image: null,
+    image: "/products/knee-mirai-ps.webp",
     imageAlt: "Ендопротез колінного суглобу (PS) + цемент",
     source: "https://palarmus.com.ua/pokuptsyam/shop/endoprotez-kolinnogo-suglobu-ps--tsement/",
   },
@@ -403,7 +405,7 @@ export const products: Product[] = [
         ["Великогомілкова платформа (iU™)", "1# LM/RL / 1# RM/LL 2# LM/RL / 2# RM/LL 3# LM/RL / 3# RM/LL 4# LM/RL / 4# RM/LL 5# LM/RL / 5# RM/LL 6# LM/RL / 6# RM/LL 7# LM/RL / 7# RM/LL"],
       ],
     },
-    image: null,
+    image: "/products/knee-unicompartmental-cr.webp",
     imageAlt: "Ендопротез одновиростковий колінного суглобу (CR) + цемент",
     source: "https://palarmus.com.ua/pokuptsyam/shop/endoprotez-kolinnogo-suglobu-odnobugorkoviy-cr--tsemen/",
   },
@@ -562,7 +564,7 @@ export const products: Product[] = [
         ["Тип роз'єму", "Зіркоподібний"],
       ],
     },
-    image: null,
+    image: "/products/graftfix.webp",
     imageAlt: "Біорезорбуючий інтерференційний гвинт GraftFix™",
     source: "https://palarmus.com.ua/pokuptsyam/shop/biorezorbuyuchiy-interferentsiyniy-gvint-graftfix/",
   },
@@ -586,7 +588,7 @@ export const products: Product[] = [
         ["Шовний матеріал", "2-0#"],
       ],
     },
-    image: null,
+    image: "/products/crescent-fix.webp",
     imageAlt: "Система \"все-всередині\" для відновлення меніска Crescent-Fix™",
     source: "https://palarmus.com.ua/pokuptsyam/shop/sistema-vse-vseredini-dlya-vidnovlennya-meniska-crescent-fix/",
   },
@@ -600,7 +602,7 @@ export const products: Product[] = [
       "Обладнання розроблено спеціально для використання в операційних, де важливі точність, надійність та економія часу. Завдяки модульній конструкції та набору змінних насадок, інструмент ідеально підходить для мікрохірургії (хірургія кисті та стопи), щелепно-лицьової хірургії, травматології.",
     ],
     spec: null,
-    image: null,
+    image: "/products/mini-power-tool.webp",
     imageAlt: "Міні-багатофункціональний портативний пристрій",
     source: "https://palarmus.com.ua/pokuptsyam/shop/mini-bagatofunktsionalniy-portativniy-pristriy/",
   },
@@ -624,6 +626,7 @@ export const products: Product[] = [
       ],
     },
     image: "/products/trhcross.webp",
+    imageOnLight: true,
     imageAlt: "TrHCROSS 2,0%",
     source: "https://palarmus.com.ua/pokuptsyam/shop/trhcross-20/",
   },
@@ -638,7 +641,24 @@ export const productHref = (p: Pick<Product, "category" | "slug">) =>
  * photograph, so the one grid on the site where the image *is* the content
  * never shows a placeholder.
  */
-export const featuredProducts = products.filter((p) => p.image !== null);
+/**
+ * The homepage strip: two rows, every direction represented, the systems the
+ * team is asked about most. Order is the order they show in.
+ */
+const FEATURED = [
+  "navy-ar",
+  "revision-hip-apex-3dtf",
+  "knee-mirai-ps",
+  "distal-medial-tibial-plate",
+  "ringbutton",
+  "paratak",
+  "mini-power-tool",
+  "trhcross-2",
+];
+
+export const featuredProducts = FEATURED.map((slug) => products.find((p) => p.slug === slug)).filter(
+  (p): p is Product => p !== undefined,
+);
 
 export const productsByCategory = (category: string) =>
   products.filter((p) => p.category === category);

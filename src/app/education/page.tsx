@@ -33,7 +33,7 @@ export default function EducationPage() {
       {/* ---- Intro. The one eyebrow in the first three sections. ---------- */}
       <section
         aria-labelledby="education-title"
-        className="relative isolate overflow-hidden border-b border-hairline"
+        className="relative isolate overflow-hidden"
       >
         <div
           aria-hidden="true"
@@ -76,24 +76,24 @@ export default function EducationPage() {
       </section>
 
       {/* ---- Principles. Numbered list, no eyebrow. ----------------------- */}
-      <Section id="principles" tone="surface" labelledBy="principles-title">
+      <Section id="principles" labelledBy="principles-title" className="pt-4 lg:pt-8">
         <SectionHeader
           titleId="principles-title"
           title="Чотири принципи, з яких починається будь-яка фіксація"
           description="Імплант не працює сам по собі. Він лише інструмент, який реалізує рішення, ухвалене до розрізу."
         />
 
-        <ol className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2">
+        <ol className="mt-12 grid gap-4 sm:grid-cols-2">
           {principles.map((principle, i) => (
             <Reveal
               as="li"
               key={principle.title}
               delay={(i % 2) * 60}
-              className="flex gap-5 border-t border-hairline pt-6"
+              className="flex gap-5 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline"
             >
               <span
                 aria-hidden="true"
-                className="shrink-0 text-h3 font-bold text-fg-accent tabular-nums"
+                className="grid size-11 shrink-0 place-items-center rounded-control bg-accent-tint text-body-sm font-bold text-fg-accent tabular-nums"
               >
                 {String(i + 1).padStart(2, "0")}
               </span>
@@ -119,7 +119,7 @@ export default function EducationPage() {
         {/* Two-up rather than six stacked image+text rows: the same block
             repeated six times down a page reads as a template, and the art
             alone would add ~4000px of scroll before any of the copy. */}
-        <ul className="mt-14 grid gap-5 lg:grid-cols-2 lg:gap-6">
+        <ul className="mt-12 grid gap-4 lg:grid-cols-2 lg:gap-5">
           {implantTypes.map((type, i) => (
             <Reveal
               as="li"
@@ -128,17 +128,17 @@ export default function EducationPage() {
               delay={(i % 2) * 60}
               className="h-full"
             >
-              <article className="flex h-full flex-col overflow-hidden rounded-card border border-hairline bg-surface shadow-card">
+              <article className="flex h-full flex-col rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline">
                 <ArtSlot
                   src={type.image}
                   alt={type.imageAlt}
                   spec={`${type.name}. Квадрат 1400x1400, той самий стиль: кістка кольору слонової кості, титановий імплант, напівпрозорі м'які тканини.`}
                   aspect="aspect-4/3 sm:aspect-square"
                   sizes="(min-width: 1024px) 32rem, 92vw"
-                  className="rounded-none media-outline"
+                  className="rounded-inner media-outline"
                 />
 
-                <div className="flex flex-1 flex-col gap-5 border-t border-hairline p-6 lg:p-7">
+                <div className="flex flex-1 flex-col gap-5 px-5 pt-6 pb-5 lg:px-6">
                   <div className="flex flex-col gap-1.5">
                     <h3 className="text-h3 text-balance text-fg">
                       {type.name}
@@ -180,7 +180,7 @@ export default function EducationPage() {
       </Section>
 
       {/* ---- Materials. Grouped by the job the material does. ------------- */}
-      <Section id="materials" tone="surface" labelledBy="materials-title">
+      <Section id="materials" labelledBy="materials-title">
         <SectionHeader
           eyebrow="Матеріали"
           titleId="materials-title"
@@ -188,12 +188,12 @@ export default function EducationPage() {
           description="Жорсткість, зносостійкість і прозорість для променів вирішують різні задачі, тому в одній конструкції часто поєднано кілька матеріалів."
         />
 
-        <div className="mt-14 grid gap-x-10 gap-y-12 lg:grid-cols-3">
+        <div className="mt-12 grid gap-4 lg:grid-cols-3">
           {materialGroups.map((group, i) => (
             <Reveal
               key={group.heading}
               delay={(i % 3) * 60}
-              className="flex flex-col gap-5 border-t border-hairline pt-6"
+              className="flex flex-col gap-5 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline"
             >
               <div className="flex flex-col gap-2">
                 <h3 className="text-h3 text-fg">{group.heading}</h3>
@@ -201,9 +201,9 @@ export default function EducationPage() {
                   {group.intro}
                 </p>
               </div>
-              <dl className="flex flex-col gap-4">
+              <dl className="flex flex-col gap-2">
                 {group.items.map((item) => (
-                  <div key={item.name} className="flex flex-col gap-1">
+                  <div key={item.name} className="flex flex-col gap-1 rounded-inner bg-base/70 p-4 ring-1 ring-inset ring-hairline">
                     <dt className="text-body-sm font-semibold text-fg">
                       {item.name}
                     </dt>
@@ -235,7 +235,7 @@ export default function EducationPage() {
             <li key={region.area}>
               <Link
                 href={region.href}
-                className="group flex items-start justify-between gap-6 rounded-card border border-hairline bg-surface p-5 shadow-card transition-[border-color,box-shadow,scale] duration-fast ease-out-quint active:scale-[0.99] hover:border-hairline-strong hover:shadow-card-hover"
+                className="group flex items-start justify-between gap-6 rounded-card bg-surface p-6 ring-1 ring-inset ring-hairline transition-[box-shadow,translate,scale] duration-medium ease-out-quint active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-card-hover"
               >
                 <span className="flex flex-col gap-1">
                   <span className="text-h3 text-fg">{region.area}</span>
@@ -256,7 +256,7 @@ export default function EducationPage() {
       </Section>
 
       {/* ---- Glossary. Definition grid. ----------------------------------- */}
-      <Section id="glossary" tone="surface" labelledBy="glossary-title">
+      <Section id="glossary" labelledBy="glossary-title">
         <SectionHeader
           eyebrow="Глосарій"
           titleId="glossary-title"
@@ -266,12 +266,12 @@ export default function EducationPage() {
         <Reveal
           as="dl"
           delay={80}
-          className="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3"
+          className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
         >
           {glossary.map((entry) => (
             <div
               key={entry.term}
-              className="flex flex-col gap-1.5 border-t border-hairline pt-5"
+              className="flex flex-col gap-1.5 rounded-inner bg-surface p-5 ring-1 ring-inset ring-hairline"
             >
               <dt className="text-body-sm font-semibold text-fg">
                 {entry.term}
@@ -294,7 +294,7 @@ export default function EducationPage() {
             >
               Межі цього матеріалу
             </h2>
-            <div className="flex flex-col gap-4 border-t border-hairline pt-6">
+            <div className="flex flex-col gap-4 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline">
               <p className="flex gap-3 text-body text-pretty text-fg-secondary">
                 <Info
                   aria-hidden="true"
@@ -332,7 +332,7 @@ export default function EducationPage() {
 
           <Reveal
             delay={120}
-            className="flex flex-col gap-5 rounded-card border border-hairline bg-surface p-6 shadow-card lg:p-8"
+            className="flex flex-col gap-5 rounded-card bg-surface p-7 shadow-card ring-1 ring-inset ring-hairline lg:p-9"
           >
             <h3 className="text-h3 text-balance text-fg">
               Потрібен воркшоп для відділення

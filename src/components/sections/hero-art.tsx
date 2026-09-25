@@ -46,7 +46,7 @@ function ZoneCard({
     <div
       id={PANEL_ID}
       data-hotspot-ui=""
-      className="pointer-events-auto w-[19rem] max-w-full rounded-card border border-hairline bg-base p-4 shadow-card"
+      className="pointer-events-auto w-[19rem] max-w-full rounded-card bg-base p-4 shadow-float ring-1 ring-inset ring-hairline"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">

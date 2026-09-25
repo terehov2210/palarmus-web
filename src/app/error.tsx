@@ -28,7 +28,6 @@ export default function Error({
       <h1 className="max-w-[20ch] text-h2 text-balance text-fg">
         Не вдалося завантажити сторінку
       </h1>
-      <span aria-hidden="true" className="brand-mark size-2.5" />
       <p className="max-w-[56ch] text-lede text-pretty text-fg-secondary">
         Спробуйте ще раз. Якщо не допоможе — зателефонуйте нам:{" "}
         <a href={site.phone.href} className="font-semibold text-fg underline">

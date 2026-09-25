@@ -20,7 +20,6 @@ export default function NotFound() {
       <h1 className="max-w-[20ch] text-display text-balance text-fg">
         Сторінку <strong>не знайдено</strong>
       </h1>
-      <span aria-hidden="true" className="brand-mark size-3" />
       <p className="max-w-[56ch] text-lede text-pretty text-fg-secondary">
         Можливо, посилання застаріло або сторінку перенесли. Почніть із
         каталогу або залиште заявку — підберемо потрібну позицію.

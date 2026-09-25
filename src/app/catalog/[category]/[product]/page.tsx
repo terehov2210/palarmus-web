@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ImageOff, Info, Phone } from "lucide-react";
+import { Info, Phone } from "lucide-react";
 
 import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { ProductCard } from "@/components/catalog/product-card";
+import { ProductMedia } from "@/components/catalog/product-media";
 import { Reveal } from "@/components/reveal";
-import { ButtonLink } from "@/components/ui/button";
-import { Section } from "@/components/ui/section";
+import { buttonClasses, ButtonLink } from "@/components/ui/button";
+import { Eyebrow, Section } from "@/components/ui/section";
 import { findCategory } from "@/content/catalog";
 import { findProduct, products, productsByCategory } from "@/content/products";
 import { site } from "@/content/site";
@@ -58,7 +58,7 @@ export default async function ProductPage({
 
   return (
     <>
-      <Section labelledBy="product-title">
+      <Section labelledBy="product-title" className="pt-10 lg:pt-14">
         <Breadcrumbs
           trail={[
             { label: "Головна", href: "/" },
@@ -68,42 +68,25 @@ export default async function ProductPage({
           ]}
         />
 
-        <div className="mt-8 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+        <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
           {/* Media. Squared off rather than 4:3 so a long nail and a small
-              anchor both get a sensible amount of room. */}
-          <Reveal className="relative aspect-square overflow-hidden rounded-card border border-hairline bg-surface shadow-card">
-            {found.image ? (
-              <Image
-                src={found.image}
-                alt={found.imageAlt}
-                fill
+              anchor both get a sensible amount of room; sticky beside the
+              copy on wide screens so it stays in view while the text runs. */}
+          <Reveal className="lg:sticky lg:top-28 lg:self-start">
+            <div className="rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline">
+              <ProductMedia
+                product={found}
                 priority
-                sizes="(min-width: 1024px) 32rem, 92vw"
-                className="object-contain p-10"
+                padding="p-10 lg:p-14"
+                sizes="(min-width: 1024px) 34rem, 92vw"
+                className="aspect-square rounded-inner"
               />
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-3 bg-accent-tint p-8 text-center">
-                <ImageOff
-                  aria-hidden="true"
-                  size={22}
-                  strokeWidth={1.5}
-                  className="text-fg-accent"
-                />
-                <p className="text-body-sm font-semibold text-fg">
-                  Фото готується
-                </p>
-                <p className="max-w-[34ch] text-caption text-pretty text-fg-secondary">
-                  Надішлемо знімки та повну специфікацію на запит.
-                </p>
-              </div>
-            )}
+            </div>
           </Reveal>
 
           <div className="flex flex-col gap-6">
-            <Reveal className="flex flex-col gap-3">
-              {cat ? (
-                <p className="text-label uppercase text-fg-muted">{cat.title}</p>
-              ) : null}
+            <Reveal className="flex flex-col gap-5">
+              {cat ? <Eyebrow>{cat.title}</Eyebrow> : null}
               <h1 id="product-title" className="text-h2 text-balance text-fg">
                 {found.name}
               </h1>
@@ -115,7 +98,7 @@ export default async function ProductPage({
             {body.length > 0 ? (
               <Reveal
                 delay={80}
-                className="flex flex-col gap-3 border-t border-hairline pt-6"
+                className="flex flex-col gap-3 rounded-card bg-surface p-6 ring-1 ring-inset ring-hairline"
               >
                 {body.map((paragraph) => (
                   <p
@@ -133,10 +116,7 @@ export default async function ProductPage({
                 <ButtonLink href="/#consultation" size="lg">
                   Запитати ціну та наявність
                 </ButtonLink>
-                <a
-                  href={site.phone.href}
-                  className="inline-flex min-h-13 items-center gap-2 rounded-control border border-hairline-strong px-7 text-body font-semibold text-fg transition-[border-color,background-color,scale] duration-fast ease-out-quint active:scale-[0.96] hover:border-control-line hover:bg-raised"
-                >
+                <a href={site.phone.href} className={buttonClasses("secondary", "lg")}>
                   <Phone aria-hidden="true" size={16} strokeWidth={2} />
                   {site.phone.label}
                 </a>
@@ -157,7 +137,7 @@ export default async function ProductPage({
       </Section>
 
       {found.spec && found.spec.rows.length > 0 ? (
-        <Section tone="surface" labelledBy="product-spec">
+        <Section labelledBy="product-spec" className="pt-0 lg:pt-0">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <h2 id="product-spec" className="text-h2 text-fg">
               Типорозміри
@@ -172,7 +152,7 @@ export default async function ProductPage({
               the caption carries the count for anyone who cannot see it. */}
           <Reveal
             delay={80}
-            className="mt-8 overflow-x-auto rounded-card border border-hairline bg-base shadow-card"
+            className="mt-8 overflow-x-auto rounded-card bg-base shadow-card ring-1 ring-inset ring-hairline"
           >
             <table className="w-full border-collapse text-body-sm">
               <caption className="sr-only">
@@ -219,7 +199,7 @@ export default async function ProductPage({
           <h2 id="product-related" className="text-h2 text-balance text-fg">
             Інші позиції напряму
           </h2>
-          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((item, i) => (
               <Reveal
                 as="li"

@@ -1,5 +1,17 @@
 # Product photography
 
+**Current state:** every one of the 23 products has an image. 15 are the
+manufacturers' renders from `illustration-kit/implants/`, shown on a dark
+studio tile (`.product-stage` in `globals.css`) and composited with
+`mix-blend-mode: screen`, which makes their black ground vanish into the tile
+without keying anything out — see `src/components/catalog/product-media.tsx`.
+This is option 3 below, done without redoing the other photographs: the
+transparent cut-outs sit on the dark tile as they are, and the one photograph
+shot on white (TrHCROSS, `imageOnLight`) keeps a white tile.
+
+Options 1 and 2 below still give the best result and replace a render one file
+at a time. The history of the decision follows.
+
 8 of the 23 catalogue products have a photograph the site can use. The other 15
 render a labelled tile that says the photo is outstanding. This is a decision,
 not an oversight, and it is the one thing to fix before the catalogue is

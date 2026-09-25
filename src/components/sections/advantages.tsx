@@ -5,7 +5,7 @@ import { Reveal } from "@/components/reveal";
 import { Section, SectionHeader } from "@/components/ui/section";
 import { advantages, published, stats, type Advantage } from "@/content/trust";
 
-const icons: Record<Advantage["icon"], LucideIcon> = {
+export const advantageIcons: Record<Advantage["icon"], LucideIcon> = {
   truck: Truck,
   graduation: GraduationCap,
   layers: Layers,
@@ -54,7 +54,7 @@ export function Advantages() {
         }`}
       >
         {advantages.map((advantage, i) => {
-          const Icon = icons[advantage.icon];
+          const Icon = advantageIcons[advantage.icon];
           return (
             <Reveal
               as="li"

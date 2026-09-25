@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
 
-import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { Reveal } from "@/components/reveal";
 import { Consultation } from "@/components/sections/consultation";
 import { InstagramGlyph } from "@/components/ui/icons";
-import { Eyebrow } from "@/components/ui/section";
+import { PageHeader } from "@/components/ui/page-header";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -38,65 +37,74 @@ const channels = [
   },
 ] as const;
 
+/**
+ * Each channel is one card and, where it has an address, one link: the whole
+ * card is the target, so a phone number is a thumb-sized tap, not a line of
+ * text to aim at.
+ */
 export default function ContactsPage() {
   return (
     <>
-      <section
-        aria-labelledby="contacts-title"
-        className="border-b border-hairline"
+      <PageHeader
+        id="contacts-title"
+        trail={[{ label: "Головна", href: "/" }, { label: "Контакти" }]}
+        eyebrow="Контакти"
+        title={
+          <>
+            Зв’яжіться <strong>з нами</strong>
+          </>
+        }
       >
-        <div className="container-page flex flex-col gap-5 py-12 lg:py-16">
-          <Breadcrumbs
-            trail={[{ label: "Головна", href: "/" }, { label: "Контакти" }]}
-          />
-          <Reveal className="flex flex-col gap-5">
-            <Eyebrow>Контакти</Eyebrow>
-            <h1 id="contacts-title" className="text-display text-balance text-fg">
-              Зв’яжіться <strong>з нами</strong>
-            </h1>
-            <span aria-hidden="true" className="brand-mark size-3" />
-          </Reveal>
-
-          <ul className="mt-8 grid gap-x-8 gap-y-10 md:grid-cols-3">
-            {channels.map(({ icon: Icon, label, value, href, note }, i) => (
-              <Reveal
-                as="li"
-                key={label}
-                delay={i * 60}
-                className="flex flex-col gap-3 border-t-2 border-fg pt-6"
-              >
-                <p className="flex items-center gap-2 text-label uppercase text-fg-muted">
-                  <Icon aria-hidden="true" size={14} strokeWidth={2} />
-                  {label}
-                </p>
+        <ul className="grid gap-4 md:grid-cols-3">
+          {channels.map(({ icon: Icon, label, value, href, note }, i) => {
+            const body = (
+              <>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="grid size-11 place-items-center rounded-control bg-accent-tint text-fg-accent">
+                    <Icon aria-hidden="true" size={20} strokeWidth={1.75} />
+                  </span>
+                  {href ? (
+                    <ArrowUpRight
+                      aria-hidden="true"
+                      size={18}
+                      strokeWidth={2}
+                      className="text-fg-muted transition-[color,translate] duration-fast ease-out-quint group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-fg-accent"
+                    />
+                  ) : null}
+                </div>
+                <div className="mt-8 flex flex-col gap-2">
+                  <p className="text-label uppercase text-fg-muted">{label}</p>
+                  <p className="text-h3 text-pretty break-words text-fg">{value}</p>
+                  <p className="text-body-sm text-pretty text-fg-secondary">{note}</p>
+                </div>
+              </>
+            );
+            const card =
+              "group flex h-full flex-col rounded-card bg-surface p-6 ring-1 ring-inset ring-hairline transition-[box-shadow,translate] duration-medium ease-out-quint";
+            return (
+              <Reveal as="li" key={label} delay={i * 60} className="h-full">
                 {href ? (
-                  <a
-                    href={href}
-                    className="w-fit text-h3 text-fg transition-[color] duration-fast ease-out-quint hover:text-fg-accent"
-                  >
-                    {value}
+                  <a href={href} className={`${card} hover:-translate-y-1 hover:shadow-card-hover`}>
+                    {body}
                   </a>
                 ) : (
-                  <p className="text-h3 text-fg">{value}</p>
+                  <div className={card}>{body}</div>
                 )}
-                <p className="text-body-sm text-pretty text-fg-secondary">
-                  {note}
-                </p>
               </Reveal>
-            ))}
-          </ul>
+            );
+          })}
+        </ul>
 
-          <a
-            href={site.instagram.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex min-h-11 w-fit items-center gap-3 rounded-control border border-hairline-strong px-4 text-body-sm text-fg transition-[border-color,color,scale] duration-fast ease-out-quint active:scale-[0.97] hover:border-fg"
-          >
-            <InstagramGlyph size={16} strokeWidth={1.5} />
-            Instagram — {site.instagram.label}
-          </a>
-        </div>
-      </section>
+        <a
+          href={site.instagram.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-11 w-fit items-center gap-3 rounded-pill bg-surface px-5 text-body-sm text-fg ring-1 ring-inset ring-hairline transition-[background-color,box-shadow,scale] duration-fast ease-out-quint active:scale-[0.97] hover:bg-base hover:shadow-card"
+        >
+          <InstagramGlyph size={16} strokeWidth={1.5} />
+          Instagram — {site.instagram.label}
+        </a>
+      </PageHeader>
 
       <Consultation />
     </>

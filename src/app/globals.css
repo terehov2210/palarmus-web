@@ -606,12 +606,20 @@ body {
   }
 }
 
-/* The brand marker: a small Venetian Red square, as under every heading in
-   the brandbook. Size it with `size-*`. Decorative — always aria-hidden. */
-@utility brand-mark {
-  display: block;
-  flex-shrink: 0;
-  background-color: var(--color-accent-solid);
+/* ==========================================================================
+   Product stage — the tile a product render sits on.
+
+   The same in both themes on purpose: the manufacturers' renders are lit on
+   pure black and are composited with a screen blend (see ProductMedia), so
+   the tile has to be dark for the black to vanish into it. A soft pool of
+   light above centre stands in for the softbox the render was lit with.
+   ========================================================================== */
+
+.product-stage {
+  background-color: #070708;
+  background-image:
+    radial-gradient(70% 60% at 50% 38%, rgb(255 255 255 / 0.13) 0%, rgb(255 255 255 / 0.04) 55%, transparent 80%),
+    linear-gradient(to bottom, #161618, #070708);
 }
 
 /* The alert glyph in front of a Base UI `Field.Error`. Field.Error renders the
