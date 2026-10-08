@@ -51,6 +51,7 @@ export const site = {
  */
 export const primaryNav = [
   { label: "Каталог", href: "/catalog" },
+  { label: "3D-моделі", href: "/3d-models" },
   { label: "Навчання", href: "/education" },
   { label: "Про компанію", href: "/about" },
   { label: "Контакти", href: "/contacts" },
@@ -73,6 +74,7 @@ export const footerNav = {
     links: [
       { label: "Про компанію", href: "/about" },
       { label: "Навчання", href: "/education" },
+      { label: "3D-моделі імплантів", href: "/3d-models" },
       { label: "Глосарій", href: "/education#glossary" },
       { label: "Консультація", href: "/#consultation" },
       { label: "Контакти", href: "/contacts" },

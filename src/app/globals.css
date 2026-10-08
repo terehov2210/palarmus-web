@@ -615,11 +615,30 @@ body {
    light above centre stands in for the softbox the render was lit with.
    ========================================================================== */
 
+/* Text and chips laid over the stage. The stage is dark in both themes, so
+   these are not re-pointed by the dark theme either. White at 82% is 13:1 on
+   the stage's lightest point. */
+:root {
+  --stage-ink: rgb(255 255 255 / 0.82);
+  --stage-chip: rgb(255 255 255 / 0.08);
+}
+
 .product-stage {
   background-color: #070708;
   background-image:
     radial-gradient(70% 60% at 50% 38%, rgb(255 255 255 / 0.13) 0%, rgb(255 255 255 / 0.04) 55%, transparent 80%),
     linear-gradient(to bottom, #161618, #070708);
+}
+
+/* The /3d-models stage on a desktop: as tall as the window under the sticky
+   header (it sticks at 6rem, plus the card's padding and a margin below), so the
+   model is shown at the size the page exists for. Floored for short windows,
+   capped so a 4K screen does not get a stage taller than it is wide. */
+@media (min-width: 64rem) {
+  .model-stage-tall {
+    aspect-ratio: auto;
+    height: clamp(32rem, calc(100svh - 7.5rem), 60rem);
+  }
 }
 
 /* The alert glyph in front of a Base UI `Field.Error`. Field.Error renders the

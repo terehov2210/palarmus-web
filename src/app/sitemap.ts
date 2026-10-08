@@ -30,6 +30,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     })),
     {
+      url: `${site.url}/3d-models`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${site.url}/education`,
       changeFrequency: "monthly",
       priority: 0.8,
