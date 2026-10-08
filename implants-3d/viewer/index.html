@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Implant Viewer</title>
+<style>
+  :root { --bg: #eef0f3; --fg: #1d2127; --muted: #6b7380; --panel: #ffffffd9; --line: #d9dde3; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
+    font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  canvas { display: block; width: 100%; height: 100%; }
+  .panel { position: fixed; top: 16px; left: 16px; background: var(--panel); backdrop-filter: blur(8px);
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 240px; }
+  .panel h1 { font-size: 15px; margin: 0 0 8px; }
+  .row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; max-width: 420px; }
+  button { font: inherit; border: 1px solid var(--line); background: #fff; border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; min-height: 32px; }
+  button[aria-pressed="true"] { background: var(--fg); color: #fff; border-color: var(--fg); }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 8px 0 0; color: var(--muted); }
+  dd { margin: 0; color: var(--fg); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="panel">
+  <h1 id="title">—</h1>
+  <div class="row" id="lods"></div>
+  <div class="row">
+    <button id="spin" aria-pressed="true">Обертання</button>
+    <button id="wire" aria-pressed="false">Сітка</button>
+  </div>
+  <div class="row" id="envs">
+    <button data-env="studio" aria-pressed="true">Студія</button>
+    <button data-env="site" aria-pressed="false">Світло сайту</button>
+  </div>
+  <dl>
+    <dt>Файл</dt><dd id="size">—</dd>
+    <dt>Трикутники</dt><dd id="tris">—</dd>
+    <dt>Завантаження</dt><dd id="time">—</dd>
+  </dl>
+</div>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+// ?model=H1-deltaway-stem&lods=deltaway_stem_lod0,deltaway_stem_lod1
+const q = new URLSearchParams(location.search);
+const model = q.get('model') ?? 'H1-deltaway-stem';
+const lods = (q.get('lods') ?? 'deltaway_stem_lod0,deltaway_stem_lod1').split(',');
+document.getElementById('title').textContent = model;
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+// same output as the site's hero: Khronos PBR Neutral, exposure 1.06
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMappingExposure = 1.06;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 1, 0.005, 20);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.2;
+
+// The site's <Environment> rig rebuilt as a scene: grey floor + five Lightformer cards.
+function studio() {
+  const env = new THREE.Scene();
+  env.background = new THREE.Color('#55585c');
+  const card = (intensity, pos, scale, color, circle = false) => {
+    const geo = circle ? new THREE.CircleGeometry(0.5, 32) : new THREE.PlaneGeometry(1, 1);
+    const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(intensity), side: THREE.DoubleSide, toneMapped: false });
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(...pos); m.scale.set(scale[0], scale[1], 1); m.lookAt(0, 0, 0);
+    env.add(m);
+  };
+  card(5, [0.4, 3.2, 2.4], [3.4, 1.6], '#ffffff');
+  card(4.4, [-3.4, 0.8, 2.2], [0.9, 9], '#ffffff');
+  card(2.4, [3.4, 0.2, 1.6], [1.1, 7], '#ffd9db');
+  card(1.8, [0, 1.4, -4.2], [5, 3.5], '#ffffff');
+  card(9, [-1.5, 2.3, 2.8], [0.8, 0.8], '#ffffff', true);
+  const pm = new THREE.PMREMGenerator(renderer);
+  return pm.fromScene(env, 0, 0.1, 100, { size: 1024 }).texture;  // 256 (default) shows texel blocks in mirror polish
+}
+// Product studio: the light a catalogue shot of polished titanium needs. Metal shows only its
+// surroundings, so it needs large bright sources AND dark areas to read as shaped steel:
+// a big soft top box, two tall strips, a dim front fill, a dark floor below the horizon.
+function product() {
+  const env = new THREE.Scene();
+  env.background = new THREE.Color('#9a9ea5');
+  const card = (intensity, pos, scale, color = '#ffffff') => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(intensity), side: THREE.DoubleSide, toneMapped: false }));
+    m.position.set(...pos); m.scale.set(scale[0], scale[1], 1); m.lookAt(0, 0, 0);
+    env.add(m);
+  };
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(40, 48),
+    new THREE.MeshBasicMaterial({ color: '#2b2d31', side: THREE.DoubleSide }));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = -1.2; env.add(floor);
+  card(3.2, [0, 4, 0.6], [6, 4]);                 // top softbox
+  card(4.0, [-3.2, 0.6, 1.8], [1.4, 7]);          // key strip, camera-left
+  card(2.6, [3.2, 0.4, 1.2], [1.4, 7], '#fff4f0'); // fill strip, camera-right
+  card(1.2, [0, 0.3, 4], [4, 1.6]);               // low front fill
+  card(2.0, [0, 1.5, -4], [6, 3]);                // rim from behind
+  const pm = new THREE.PMREMGenerator(renderer);
+  return pm.fromScene(env, 0, 0.1, 100, { size: 1024 }).texture;  // 256 (default) shows texel blocks in mirror polish
+}
+const ENVS = { site: studio(), studio: product() };
+scene.environment = ENVS.studio;
+
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+let current = null;
+const buttons = {};
+
+async function show(name) {
+  const url = `../models/${model}/dist/${name}.glb`;
+  const t0 = performance.now();
+  const res = await fetch(url);
+  const buf = await res.arrayBuffer();
+  const gltf = await loader.parseAsync(buf, '');
+  const ms = performance.now() - t0;
+  if (current) scene.remove(current);
+  current = gltf.scene;
+  let tris = 0;
+  current.traverse((o) => {
+    if (o.isMesh) {
+      o.material.envMapIntensity = 1.5;          // ENV_INTENSITY in hero-model.tsx
+      tris += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3;
+    }
+  });
+  scene.add(current);
+  const box = new THREE.Box3().setFromObject(current);
+  const c = box.getCenter(new THREE.Vector3());
+  const r = box.getSize(new THREE.Vector3()).length() / 2;
+  controls.target.copy(c);
+  if (!show.framed) {
+    camera.position.copy(c).add(new THREE.Vector3(0.35, 0.1, 1).normalize().multiplyScalar(r / Math.tan(THREE.MathUtils.degToRad(15)) * 1.05));
+    show.framed = true;
+  }
+  document.getElementById('size').textContent = `${(buf.byteLength / 1024).toFixed(0)} KB`;
+  document.getElementById('tris').textContent = Math.round(tris).toLocaleString('uk');
+  document.getElementById('time').textContent = `${ms.toFixed(0)} ms`;
+  for (const [k, b] of Object.entries(buttons)) b.setAttribute('aria-pressed', String(k === name));
+  setWire(document.getElementById('wire').getAttribute('aria-pressed') === 'true');
+}
+
+function setWire(on) {
+  current?.traverse((o) => { if (o.isMesh) o.material.wireframe = on; });
+}
+
+for (const name of lods) {
+  const b = document.createElement('button');
+  b.textContent = lods.length > 2 ? name.replace(/_lod(\d)$/, ' · LOD$1') : name.split('_').pop().toUpperCase();
+  b.onclick = () => show(name);
+  buttons[name] = b;
+  document.getElementById('lods').append(b);
+}
+document.getElementById('spin').onclick = (e) => {
+  controls.autoRotate = !controls.autoRotate;
+  e.currentTarget.setAttribute('aria-pressed', String(controls.autoRotate));
+};
+document.getElementById('wire').onclick = (e) => {
+  const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
+  e.currentTarget.setAttribute('aria-pressed', String(on));
+  setWire(on);
+};
+
+for (const b of document.querySelectorAll('#envs button')) {
+  b.onclick = () => {
+    scene.environment = ENVS[b.dataset.env];
+    for (const o of document.querySelectorAll('#envs button')) o.setAttribute('aria-pressed', String(o === b));
+  };
+}
+
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+show(lods[0]);
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+// handle for scripted review shots: viewer.look([x,y,z] target, [dx,dy,dz] direction, distance)
+window.viewer = {
+  camera, controls, show, setEnv: (k) => document.querySelector(`#envs [data-env=${k}]`).click(),
+  look(target, dir, dist) {
+    controls.autoRotate = false;
+    document.getElementById('spin').setAttribute('aria-pressed', 'false');
+    const t = new THREE.Vector3(...target), d = new THREE.Vector3(...dir).normalize();
+    controls.target.copy(t);
+    camera.position.copy(t).addScaledVector(d, dist);
+    controls.update();
+  },
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+{
+  "ti_plasma_spray": {
+    "tile_mm": 4.0,
+    "maps": [
+      "basecolor",
+      "orm",
+      "normal"
+    ],
+    "normal_scale": 1.0,
+    "occlusion": true,
+    "note": "Light matte grey; tuned in the site's lighting (viewer/). Metalness 0.8 stands in for the multiple scattering in the pores that a real-time BRDF lacks."
+  },
+  "ti_polished": {
+    "tile_mm": 30.0,
+    "maps": [
+      "orm",
+      "normal"
+    ],
+    "base_color": [
+      0.86,
+      0.86,
+      0.87
+    ],
+    "normal_scale": 0.6,
+    "note": "Mirror polish with smudges and hairline scratches."
+  },
+  "ti_satin": {
+    "tile_mm": 10.0,
+    "maps": [
+      "orm",
+      "normal"
+    ],
+    "base_color": [
+      0.7,
+      0.7,
+      0.72
+    ],
+    "normal_scale": 1.0,
+    "note": "Ground finish; lines run along V, so UVs must put V along the part's long axis."
+  },
+  "cocr_polished": {
+    "tile_mm": 30.0,
+    "maps": [
+      "orm"
+    ],
+    "base_color": [
+      0.93,
+      0.93,
+      0.94
+    ],
+    "note": "CoCrMo bearing surfaces (Metallica heads)."
+  },
+  "ceramic_biolox": {
+    "tile_mm": 10.0,
+    "maps": [],
+    "base_color": [
+      0.8,
+      0.66,
+      0.78
+    ],
+    "metallic": 0.0,
+    "roughness": 0.07,
+    "note": "DeltaOne ceramic heads / ceramic liners. Factors only: the surface is a flawless polish."
+  },
+  "uhmwpe": {
+    "tile_mm": 6.0,
+    "maps": [
+      "orm",
+      "normal"
+    ],
+    "base_color": [
+      0.93,
+      0.93,
+      0.91
+    ],
+    "metallic": 0.0,
+    "normal_scale": 1.0,
+    "note": "XPE liners. Rings run along U: UVs need U around the part's axis."
+  },
+  "metal_beadblast": {
+    "tile_mm": 3.0,
+    "maps": [
+      "basecolor",
+      "orm",
+      "normal"
+    ],
+    "normal_scale": 0.8,
+    "note": "Grit-blasted bone-facing metal (cement pockets, tray underside, keels)."
+  },
+  "bioabsorbable": {
+    "tile_mm": 4.0,
+    "maps": [
+      "basecolor",
+      "orm",
+      "normal"
+    ],
+    "metallic": 0.0,
+    "normal_scale": 1.0,
+    "note": "Bioresorbable screws and anchors (GraftFix, SpeedLoc Bio, XtraLoc Bio)."
+  },
+  "suture_white": {
+    "tile_mm": 1.6,
+    "maps": [
+      "basecolor",
+      "orm",
+      "normal"
+    ],
+    "metallic": 0.0,
+    "occlusion": true,
+    "normal_scale": 1.0,
+    "note": "Braided UHMWPE suture; tube UVs: u = turns, v = mm / tile_mm."
+  },
+  "suture_tracer": {
+    "tile_mm": 1.6,
+    "maps": [
+      "basecolor",
+      "orm",
+      "normal"
+    ],
+    "metallic": 0.0,
+    "occlusion": true,
+    "normal_scale": 1.0,
+    "note": "Braided UHMWPE suture; tube UVs: u = turns, v = mm / tile_mm."
+  },
+  "peek": {
+    "tile_mm": 10.0,
+    "maps": [],
+    "base_color": [
+      0.72,
+      0.55,
+      0.34
+    ],
+    "metallic": 0.0,
+    "roughness": 0.38,
+    "note": "PEEK suture anchors (XtraLoc PEEK, SpeedLoc PEEK). Factors only."
+  },
+  "ti_anodized_gold": {
+    "tile_mm": 10.0,
+    "maps": [],
+    "base_color": [
+      0.86,
+      0.68,
+      0.3
+    ],
+    "metallic": 1.0,
+    "roughness": 0.3,
+    "note": "Colour-anodised titanium screws. Factors only."
+  },
+  "ti_anodized_blue": {
+    "tile_mm": 10.0,
+    "maps": [],
+    "base_color": [
+      0.28,
+      0.42,
+      0.78
+    ],
+    "metallic": 1.0,
+    "roughness": 0.3,
+    "note": "Colour-anodised titanium screws. Factors only."
+  },
+  "ti_anodized_magenta": {
+    "tile_mm": 10.0,
+    "maps": [],
+    "base_color": [
+      0.62,
+      0.3,
+      0.62
+    ],
+    "metallic": 1.0,
+    "roughness": 0.3,
+    "note": "Colour-anodised titanium screws. Factors only."
+  },
+  "ti_trabecular": {
+    "tile_mm": 6.0,
+    "maps": [
+      "basecolor",
+      "orm",
+      "normal"
+    ],
+    "normal_scale": 1.0,
+    "occlusion": true,
+    "note": "3D-printed trabecular titanium (Apex 3D TF, ARS augments). Darker and coarser than ti_plasma_spray; pores in albedo/AO so it stays matte under mipmapping."
+  }
+}
