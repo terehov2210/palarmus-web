@@ -1,6 +1,32 @@
+import Image from "next/image";
+
 import { Reveal } from "@/components/reveal";
 import { Eyebrow } from "@/components/ui/section";
-import { partners } from "@/content/trust";
+import { partners, type Partner } from "@/content/trust";
+
+/**
+ * A maker's logo in one ink colour. The originals are purple, grey and a
+ * gradient, and two of them vanish on the dark theme; flattened to the text
+ * colour they read the same in both themes and sit together as a set.
+ */
+export function PartnerLogo({
+  partner,
+  className,
+}: {
+  partner: Partner;
+  className?: string;
+}) {
+  return (
+    <Image
+      src={partner.logo.src}
+      alt={partner.name}
+      width={partner.logo.width}
+      height={partner.logo.height}
+      unoptimized={partner.logo.src.endsWith(".svg")}
+      className={`w-auto max-w-full self-start object-contain brightness-0 opacity-85 dark:invert ${className ?? ""}`}
+    />
+  );
+}
 
 export function Partners() {
   return (
@@ -21,11 +47,9 @@ export function Partners() {
           {partners.map((partner) => (
             <li
               key={partner.name}
-              className="flex flex-col gap-1.5 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline"
+              className="flex flex-col gap-5 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline"
             >
-              <p className="font-display text-[1.625rem] leading-tight font-semibold tracking-[-0.02em] text-fg">
-                {partner.name}
-              </p>
+              <PartnerLogo partner={partner} className="h-9" />
               <p className="text-body-sm text-fg-muted">{partner.note}</p>
             </li>
           ))}

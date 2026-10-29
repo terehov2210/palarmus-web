@@ -17,7 +17,7 @@ export const site = {
    * listed the same six directions the catalogue section repeats right below.
    */
   heroLede:
-    "Остеосинтез, ендопротезування та артроскопія — від виробників напряму.",
+    "Остеосинтез, ендопротезування та артроскопія — сучасні рішення для операційної.",
   phone: {
     label: "+38 (095) 2025 005",
     href: "tel:+380952025005",

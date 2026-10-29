@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/reveal";
 import { advantageIcons } from "@/components/sections/advantages";
 import { Consultation } from "@/components/sections/consultation";
+import { PartnerLogo } from "@/components/sections/partners";
 import { ButtonLink } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { PageHeader } from "@/components/ui/page-header";
@@ -137,11 +138,9 @@ export default function AboutPage() {
             {partners.map((partner) => (
               <li
                 key={partner.name}
-                className="flex flex-col gap-1 rounded-inner bg-surface px-6 py-5 ring-1 ring-inset ring-hairline"
+                className="flex flex-col gap-3 rounded-inner bg-surface px-6 py-5 ring-1 ring-inset ring-hairline"
               >
-                <span className="font-display text-[1.375rem] leading-tight font-semibold tracking-[-0.02em] text-fg">
-                  {partner.name}
-                </span>
+                <PartnerLogo partner={partner} className="h-7" />
                 <span className="text-body-sm text-fg-muted">{partner.note}</span>
               </li>
             ))}

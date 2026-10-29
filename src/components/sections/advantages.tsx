@@ -27,7 +27,7 @@ export function Advantages() {
         eyebrow="Чому Palarmus"
         titleId="advantages-title"
         title="Постачальник, який доїжджає до операційної"
-        description="Palarmus Implants — молода компанія, що виводить на український ринок сучасні рішення у травматології та ортопедії разом із виробниками, а не замість них."
+        description="Palarmus Implants — постачальник сучасних рішень у травматології та ортопедії, який поєднує технології міжнародних виробників із підтримкою медичних фахівців в Україні."
       />
 
       {/* Held back until every figure is verified — see `published`. */}

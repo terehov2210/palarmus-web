@@ -177,12 +177,30 @@ export const testimonials: Testimonial[] = [
 export type Partner = {
   name: string;
   note: string;
+  /** The maker's own logo, cropped to its ink; drawn one-colour on the site. */
+  logo: { src: string; width: number; height: number };
 };
 
-/** Both names appear on the live "Про компанію" page. */
+/**
+ * Both names appear on the live "Про компанію" page. Logos: iKey Medical from
+ * its DeltaWay surgical technique PDF, Oliga (with its Dunitech nail brand)
+ * from oliga.com.tr, i+Med from imasmed.com.
+ */
 export const partners: Partner[] = [
-  { name: "iKey Medical", note: "Імпланти для остеосинтезу" },
-  { name: "Oliga", note: "Стержні за технологією Dunitech" },
-  { name: "iMed", note: "Гіалуронова кислота TrHCROSS" },
+  {
+    name: "iKey Medical",
+    note: "Імпланти для остеосинтезу",
+    logo: { src: "/partners/ikey-medical.png", width: 800, height: 167 },
+  },
+  {
+    name: "Oliga",
+    note: "Стержні за технологією Dunitech",
+    logo: { src: "/partners/oliga-dunitech.png", width: 348, height: 82 },
+  },
+  {
+    name: "iMed",
+    note: "Гіалуронова кислота TrHCROSS",
+    logo: { src: "/partners/imed.svg", width: 214, height: 80 },
+  },
   // TODO: додати решту виробників, з якими підписано дистрибуцію.
 ];
