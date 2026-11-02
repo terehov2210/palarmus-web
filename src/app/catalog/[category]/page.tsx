@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { hasDarkVariant, ThemedImage } from "@/components/ui/themed-image";
 import { notFound } from "next/navigation";
 
 import { positions } from "@/components/catalog/category-card";
@@ -9,7 +9,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
 import { categories, findCategory } from "@/content/catalog";
-import { productsByCategory } from "@/content/products";
+import { groupedProducts, productsByCategory } from "@/content/products";
 
 export function generateStaticParams() {
   return categories.map((c) => ({ category: c.slug }));
@@ -53,8 +53,8 @@ export default async function CategoryPage({
           // The catalogue card's art, on a tile of its own: it is painted on a
           // light studio ground, which a fade into a dark page would muddy.
           <div className="rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline">
-            <div className="relative aspect-16/10 overflow-hidden rounded-inner bg-[#f2f4f5]">
-              <Image
+            <div className={`relative aspect-16/10 overflow-hidden rounded-inner bg-[#f2f4f5] ${hasDarkVariant(found.image) ? "dark:bg-[#0e0e10]" : ""}`}>
+              <ThemedImage
                 src={found.image}
                 alt={found.imageAlt}
                 fill
@@ -81,18 +81,30 @@ export default async function CategoryPage({
         </div>
 
         {items.length > 0 ? (
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {items.map((product, i) => (
-              <Reveal
-                as="li"
-                key={product.slug}
-                delay={(i % 4) * 60}
-                className="h-full"
-              >
-                <ProductCard product={product} />
-              </Reveal>
+          <div className="mt-10 flex flex-col gap-14">
+            {groupedProducts(found.slug).map((group) => (
+              <div key={group.title ?? "all"} className="flex flex-col gap-6">
+                {group.title ? (
+                  <h3 className="flex items-baseline gap-3 text-h3 text-fg">
+                    {group.title}
+                    <span className="text-body-sm font-normal text-fg-muted tabular-nums">{group.items.length}</span>
+                  </h3>
+                ) : null}
+                <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {group.items.map((product, i) => (
+                    <Reveal
+                      as="li"
+                      key={product.slug}
+                      delay={(i % 4) * 60}
+                      className="h-full"
+                    >
+                      <ProductCard product={product} />
+                    </Reveal>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
           /* An empty category says so plainly and offers the one action that
              helps, rather than rendering a grid with nothing in it. */

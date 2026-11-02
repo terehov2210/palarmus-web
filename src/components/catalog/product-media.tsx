@@ -23,7 +23,7 @@ export function ProductMedia({
   product,
   sizes,
   priority = false,
-  padding = "p-7",
+  padding = "p-5",
   className,
 }: {
   product: Product;

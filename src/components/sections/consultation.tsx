@@ -42,7 +42,14 @@ const error =
  * Without JavaScript this is still a plain `<form>` posting to a server
  * action, so it degrades to server-side validation only.
  */
-export function Consultation({ showContacts = true }: { showContacts?: boolean } = {}) {
+export function Consultation({
+  showContacts = true,
+  prefill,
+}: {
+  showContacts?: boolean;
+  /** Starts the message, e.g. the product the reader came from. */
+  prefill?: string;
+} = {}) {
   const [state, formAction, isPending] = useActionState(
     submitConsultation,
     initialConsultationState,
@@ -210,7 +217,7 @@ export function Consultation({ showContacts = true }: { showContacts?: boolean }
               </Field.Label>
               <Field.Control
                 render={<textarea rows={4} />}
-                defaultValue={state.values.message}
+                defaultValue={state.values.message || prefill}
                 className={`${control} min-h-32 resize-y`}
               />
             </Field.Root>

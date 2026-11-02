@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import Image from "next/image";
+import { ThemedImage } from "@/components/ui/themed-image";
 import { ImageOff } from "lucide-react";
 
 const publicDir = path.join(process.cwd(), "public");
@@ -56,7 +56,7 @@ export function ArtSlot({
   if (hasAsset(src)) {
     return (
       <div className={wrapper}>
-        <Image
+        <ThemedImage
           src={src}
           alt={alt}
           fill

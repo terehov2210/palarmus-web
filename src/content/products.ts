@@ -850,3 +850,41 @@ export const productsByCategory = (category: string) =>
 
 export const findProduct = (category: string, slug: string) =>
   products.find((p) => p.category === category && p.slug === slug);
+
+/**
+ * Sub-groups inside a direction, so a category of nails, plates and screws
+ * does not read as one mixed grid. Keyed by slug and kept explicit: a product
+ * not listed falls into «Інше». Directions with one group get no headings.
+ */
+const GROUPS: Record<string, { title: string; slugs: string[] }[]> = {
+  traumatology: [
+    { title: "Інтрамедулярні стрижні", slugs: ["proximal-rod", "navy-ar", "rewalk-femoral", "rewalk-tibial", "nite", "nuna", "titan-long"] },
+    { title: "Пластини", slugs: ["distal-medial-tibial-plate", "calcaneal-plate"] },
+    { title: "Гвинти", slugs: ["herbert-screw"] },
+  ],
+  joints: [
+    { title: "Кульшовий суглоб", slugs: ["hip-hybrid", "hip-metal-pe", "hip-ceramic-pe", "hip-apex-3dtf", "revision-hip-apex-3dtf", "acetabular-augment-3dtf-ars"] },
+    { title: "Колінний суглоб", slugs: ["knee-mirai-ps", "knee-unicompartmental-cr"] },
+  ],
+  "sports-medicine": [
+    { title: "Шовні якорі", slugs: ["paratak", "loctak", "sutureloc", "xtraloc-peek", "speedloc"] },
+    { title: "Кортикальна та інтерференційна фіксація", slugs: ["ringbutton", "graftfix"] },
+    { title: "Відновлення меніска", slugs: ["crescent-fix"] },
+  ],
+  equipment: [
+    { title: "Дрилі та пили", slugs: ["high-speed-drill", "low-speed-drill", "oscillating-saw", "reciprocating-saw", "mini-power-tool"] },
+    { title: "Ендоскопія", slugs: ["endoscopic-tower"] },
+  ],
+};
+
+export function groupedProducts(category: string): { title: string | null; items: Product[] }[] {
+  const items = productsByCategory(category);
+  const groups = GROUPS[category];
+  if (!groups) return [{ title: null, items }];
+  const out = groups
+    .map((g) => ({ title: g.title as string | null, items: items.filter((p) => g.slugs.includes(p.slug)) }))
+    .filter((g) => g.items.length > 0);
+  const rest = items.filter((p) => !groups.some((g) => g.slugs.includes(p.slug)));
+  if (rest.length) out.push({ title: "Інше", items: rest });
+  return out.length > 1 ? out : [{ title: null, items }];
+}

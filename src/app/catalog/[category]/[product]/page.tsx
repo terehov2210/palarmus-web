@@ -12,6 +12,7 @@ import { Eyebrow, Section } from "@/components/ui/section";
 import { findCategory } from "@/content/catalog";
 import { findProduct, products, productsByCategory } from "@/content/products";
 import { site } from "@/content/site";
+import { Consultation } from "@/components/sections/consultation";
 import { modelForProduct } from "@/content/models-3d";
 
 export function generateStaticParams() {
@@ -132,7 +133,7 @@ export default async function ProductPage({
 
             <Reveal delay={140} className="flex flex-col gap-4 pt-1">
               <div className="flex flex-wrap gap-3">
-                <ButtonLink href="/#consultation" size="lg">
+                <ButtonLink href="#consultation" size="lg">
                   Запитати ціну та наявність
                 </ButtonLink>
                 <a href={site.phone.href} className={buttonClasses("secondary", "lg")}>
@@ -161,9 +162,14 @@ export default async function ProductPage({
             <h2 id="product-spec" className="text-h2 text-fg">
               Типорозміри
             </h2>
-            <p className="text-body-sm text-fg-muted tabular-nums">
-              {found.spec.rows.length} позицій
-            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <p className="text-body-sm text-fg-muted tabular-nums">
+                {found.spec.rows.length} позицій
+              </p>
+              <ButtonLink href="#consultation" variant="secondary">
+                Підібрати розмір з інженером
+              </ButtonLink>
+            </div>
           </div>
 
           {/* The table is the useful part of a catalogue entry, so it is not
@@ -232,6 +238,10 @@ export default async function ProductPage({
           </ul>
         </Section>
       ) : null}
+
+      {/* The request form on the product's own page, already naming it, so
+          «Запитати ціну» and «Підібрати розмір» never lose the context. */}
+      <Consultation showContacts={false} prefill={`${found.name} — потрібен підбір типорозміру / ціна та наявність.`} />
     </>
   );
 }

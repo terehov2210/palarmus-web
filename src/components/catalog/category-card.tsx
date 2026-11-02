@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { hasDarkVariant, ThemedImage } from "@/components/ui/themed-image";
 import Link from "next/link";
 
 import type { Category } from "@/content/catalog";
@@ -28,8 +28,8 @@ export function CategoryCard({
       href={`/catalog/${category.slug}`}
       className="group flex h-full flex-col rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline transition-[box-shadow,scale] duration-medium ease-out-quint active:scale-[0.99] hover:shadow-card-hover hover:ring-hairline-strong"
     >
-      <div className="relative aspect-16/8 overflow-hidden rounded-inner bg-[#f2f4f5]">
-        <Image
+      <div className={`relative aspect-16/8 overflow-hidden rounded-inner bg-[#f2f4f5] ${hasDarkVariant(category.image) ? "dark:bg-[#0e0e10]" : ""}`}>
+        <ThemedImage
           src={category.image}
           alt={category.imageAlt}
           fill

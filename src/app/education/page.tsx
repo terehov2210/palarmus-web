@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Search } from "lucide-react";
 
+import { hasDarkVariant, ThemedImage } from "@/components/ui/themed-image";
 import { MaterialCard } from "@/components/education/material-card";
 import { Reveal } from "@/components/reveal";
 import { ButtonLink } from "@/components/ui/button";
@@ -90,8 +91,8 @@ export default function EducationPage() {
                   href={`/education/${d.slug}`}
                   className="group flex h-full flex-col overflow-hidden rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline transition-[box-shadow,scale] duration-medium ease-out-quint active:scale-[0.99] hover:shadow-card-hover hover:ring-hairline-strong"
                 >
-                  <div className="relative aspect-16/9 overflow-hidden rounded-inner bg-[#f2f4f5]">
-                    <Image
+                  <div className={`relative aspect-16/9 overflow-hidden rounded-inner bg-[#f2f4f5] ${hasDarkVariant(d.image) ? "dark:bg-[#0e0e10]" : ""}`}>
+                    <ThemedImage
                       src={d.image}
                       alt={d.imageAlt}
                       fill
