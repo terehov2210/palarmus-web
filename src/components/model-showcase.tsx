@@ -12,29 +12,39 @@ import { ButtonLink } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/section";
 import { findCategory } from "@/content/catalog";
 import {
+  GROUPS,
+  groupOf,
   materials,
   modelThumb,
   models3d,
   modelUrl,
+  previewUrl,
   type Model3D,
 } from "@/content/models-3d";
+import { ModelPoster } from "@/components/model-poster";
+import type { StageState } from "@/components/model-stage";
 import { supportsWebGL } from "@/lib/webgl";
 
 /** three + R3F stay out of the page bundle, and WebGL cannot render on the server. */
 const ModelStage = dynamic(
   () => import("@/components/model-stage").then((m) => m.ModelStage),
-  { ssr: false },
+  { ssr: false, loading: () => null },
 );
 
-/** Short names for the filter: the catalogue's own titles run to four words. */
-const FILTERS = [
-  { id: "all", label: "Усі" },
-  { id: "joints", label: "Суглоби" },
-  { id: "traumatology", label: "Травматологія" },
-  { id: "sports-medicine", label: "Спортивна медицина" },
-] as const;
+/** The filter: implant types rather than the catalogue's three sections, each with its count. */
+const FILTERS = [{ id: "all", label: "Усі" }, ...GROUPS] as const;
 
 type FilterId = (typeof FILTERS)[number]["id"];
+
+/** "Усі" lists the groups in filter order (the source keeps the original 16 first). */
+const ORDERED = [...models3d].sort(
+  (a, b) => GROUPS.findIndex((g) => g.id === groupOf(a)) - GROUPS.findIndex((g) => g.id === groupOf(b)),
+);
+
+const countOf = (id: FilterId) => (id === "all" ? models3d.length : models3d.filter((m) => groupOf(m) === id).length);
+
+/** Lower-case, apostrophes and ™ dropped, so «п'яткова» matches «п’яткова». */
+const fold = (s: string) => s.toLowerCase().replace(/[’'ʼ™®]/g, "");
 
 const isSlug = (slug: string) => models3d.some((m) => m.slug === slug);
 
@@ -45,7 +55,8 @@ const isSlug = (slug: string) => models3d.some((m) => m.slug === slug);
  */
 const warmed = new Set<string>();
 function warm(model: Model3D) {
-  const url = modelUrl(model);
+  // the light preview is what the stage asks for first
+  const url = previewUrl(model) ?? modelUrl(model);
   if (warmed.has(url)) return;
   warmed.add(url);
   fetch(url, { priority: "low" } as RequestInit).catch(() => warmed.delete(url));
@@ -67,11 +78,11 @@ function ModelSheet({ model }: { model: Model3D }) {
 
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <h3 className="text-label uppercase text-fg-accent">Де застосовується</h3>
+          <h3 className="text-label text-fg-accent">Де застосовується</h3>
           <p className="max-w-[60ch] text-body text-pretty text-fg-secondary">{model.where}</p>
         </div>
         <div className="flex flex-col gap-2">
-          <h3 className="text-label uppercase text-fg-accent">Чому саме така конструкція</h3>
+          <h3 className="text-label text-fg-accent">Чому саме така конструкція</h3>
           <p className="max-w-[60ch] text-body text-pretty text-fg-secondary">{model.why}</p>
         </div>
       </div>
@@ -135,7 +146,7 @@ function ModelCard({
       className={`group flex h-full w-full flex-col overflow-hidden rounded-card bg-base p-2 text-start shadow-card ring-inset transition-[box-shadow,translate,scale] duration-medium ease-out-quint active:scale-[0.99] ${
         selected
           ? "ring-2 ring-accent-line"
-          : "ring-1 ring-hairline hover:-translate-y-1 hover:shadow-card-hover"
+          : "ring-1 ring-hairline hover:shadow-card-hover"
       }`}
     >
       <div className="product-stage relative aspect-4/3 overflow-hidden rounded-inner">
@@ -144,12 +155,12 @@ function ModelCard({
           alt=""
           fill
           sizes="(min-width: 1280px) 15rem, (min-width: 640px) 30vw, 44vw"
-          className="object-contain p-3 transition-[scale] duration-700 ease-out-quint group-hover:scale-[1.06]"
+          className="object-contain p-3"
         />
       </div>
       <div className="flex flex-1 flex-col gap-1 px-3 pt-4 pb-3">
         <p className="text-caption text-fg-muted">
-          {FILTERS.find((f) => f.id === model.category)?.label}
+          {GROUPS.find((g) => g.id === groupOf(model))?.label}
         </p>
         <h3 className="text-body-sm font-semibold text-balance text-fg">{model.short}</h3>
       </div>
@@ -168,8 +179,16 @@ function ModelCard({
 export function ModelShowcase() {
   const [slug, setSlug] = useState(models3d[0].slug);
   const [filter, setFilter] = useState<FilterId>("all");
+  const [query, setQuery] = useState("");
   const [webgl, setWebgl] = useState<boolean | null>(null);
   const stage = useRef<HTMLDivElement>(null);
+  /** Null until the stage chunk has loaded and reported in. */
+  const [loaded, setLoaded] = useState<StageState | null>(null);
+  const [posterFor, setPosterFor] = useState(slug);
+  if (posterFor !== slug) {
+    setPosterFor(slug);
+    if (loaded !== null) setLoaded("poster");
+  }
 
   // Platform capability and the URL hash: neither exists during SSR.
   useEffect(() => {
@@ -193,7 +212,10 @@ export function ModelShowcase() {
   }, []);
 
   const model = models3d.find((m) => m.slug === slug) ?? models3d[0];
-  const shown = models3d.filter((m) => filter === "all" || m.category === filter);
+  const q = fold(query.trim());
+  const shown = ORDERED.filter(
+    (m) => (filter === "all" || groupOf(m) === filter) && (!q || fold(`${m.name} ${m.short} ${m.maker}`).includes(q)),
+  );
 
   return (
     <div className="flex flex-col gap-20 lg:gap-28">
@@ -210,7 +232,16 @@ export function ModelShowcase() {
               <p className="sr-only">
                 Тривимірна модель: {model.name}. Потягніть по горизонталі, щоб обертати.
               </p>
-              {webgl ? <ModelStage model={model} /> : null}
+              {webgl ? (
+                <>
+                  <ModelPoster
+                    model={model}
+                    hidden={loaded !== null && loaded !== "poster"}
+                    status={loaded === null ? "Завантаження 3D" : undefined}
+                  />
+                  <ModelStage model={model} onStage={setLoaded} />
+                </>
+              ) : null}
               {webgl === false ? (
                 <Image
                   src={modelThumb(model)}
@@ -228,10 +259,22 @@ export function ModelShowcase() {
       </div>
 
       <section aria-labelledby="models-all" className="flex flex-col gap-8">
-        <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <h2 id="models-all" className="text-h2 text-fg">
-            Усі моделі
-          </h2>
+        <Reveal className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="models-all" className="text-h2 text-fg">
+              Усі моделі
+            </h2>
+            <label className="relative block w-full sm:w-72">
+              <span className="sr-only">Пошук моделі</span>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Пошук: пластина, гвинт, Mirai…"
+                className="h-10 w-full rounded-pill bg-fg/[0.04] px-4 text-body-sm text-fg ring-1 ring-inset ring-hairline placeholder:text-fg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-line"
+              />
+            </label>
+          </div>
           <ToggleGroup
             aria-label="Напрям"
             value={[filter]}
@@ -240,7 +283,7 @@ export function ModelShowcase() {
             }}
             // One row that scrolls sideways on a phone: four options wrapped inside a
             // pill read as two broken pills.
-            className="inline-flex max-w-full gap-1 self-start overflow-x-auto rounded-pill bg-fg/[0.04] p-1 ring-1 ring-inset ring-hairline [scrollbar-width:none] sm:self-auto"
+            className="inline-flex max-w-full gap-1 self-start overflow-x-auto rounded-pill bg-fg/[0.04] p-1 ring-1 ring-inset ring-hairline [scrollbar-width:none]"
           >
             {FILTERS.map((f) => (
               <Toggle
@@ -249,11 +292,15 @@ export function ModelShowcase() {
                 className="inline-flex min-h-9 shrink-0 items-center whitespace-nowrap rounded-pill px-4 text-body-sm font-medium text-fg-secondary transition-[background-color,color,box-shadow,scale] duration-fast ease-out-quint hover:text-fg active:scale-[0.96] data-pressed:bg-base data-pressed:text-fg data-pressed:shadow-card"
               >
                 {f.label}
+                <span className="ms-1.5 text-caption tabular-nums text-fg-muted">{countOf(f.id)}</span>
               </Toggle>
             ))}
           </ToggleGroup>
         </Reveal>
 
+        {shown.length === 0 ? (
+          <p className="text-body text-fg-muted">Нічого не знайдено. Спробуйте іншу назву або оберіть «Усі».</p>
+        ) : null}
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {shown.map((m) => (
             <li key={m.slug}>

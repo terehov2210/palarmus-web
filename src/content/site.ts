@@ -75,7 +75,7 @@ export const footerNav = {
       { label: "Про компанію", href: "/about" },
       { label: "Навчання", href: "/education" },
       { label: "3D-моделі імплантів", href: "/3d-models" },
-      { label: "Глосарій", href: "/education#glossary" },
+      { label: "Глосарій", href: "/education/basics#glossary" },
       { label: "Консультація", href: "/#consultation" },
       { label: "Контакти", href: "/contacts" },
     ],

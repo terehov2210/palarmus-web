@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 import { categories } from "@/content/catalog";
 import { products, productHref } from "@/content/products";
 import { site } from "@/content/site";
+import { directions, materialHref, materials } from "@/content/training";
 
 /**
  * Every route the site has. Everything below is prerendered.
@@ -39,6 +40,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    {
+      url: `${site.url}/education/materials`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    ...directions.map((d) => ({
+      url: `${site.url}/education/${d.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+    ...materials.map((m) => ({
+      url: `${site.url}${materialHref(m)}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
     {
       url: `${site.url}/about`,
       changeFrequency: "yearly",

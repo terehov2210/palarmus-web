@@ -18,7 +18,7 @@ export default function NotFound() {
     <div className="container-page flex min-h-[60vh] flex-col justify-center gap-6 py-24">
       <Eyebrow>Помилка 404</Eyebrow>
       <h1 className="max-w-[20ch] text-display text-balance text-fg">
-        Сторінку <strong>не знайдено</strong>
+        Сторінку не знайдено
       </h1>
       <p className="max-w-[56ch] text-lede text-pretty text-fg-secondary">
         Можливо, посилання застаріло або сторінку перенесли. Почніть із

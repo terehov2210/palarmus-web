@@ -51,7 +51,7 @@ export default function ContactsPage() {
         eyebrow="Контакти"
         title={
           <>
-            Зв’яжіться <strong>з нами</strong>
+            Зв’яжіться з нами
           </>
         }
       >
@@ -73,7 +73,7 @@ export default function ContactsPage() {
                   ) : null}
                 </div>
                 <div className="mt-8 flex flex-col gap-2">
-                  <p className="text-label uppercase text-fg-muted">{label}</p>
+                  <p className="text-label text-fg-muted">{label}</p>
                   <p className="text-h3 text-pretty break-words text-fg">{value}</p>
                   <p className="text-body-sm text-pretty text-fg-secondary">{note}</p>
                 </div>
@@ -84,7 +84,7 @@ export default function ContactsPage() {
             return (
               <Reveal as="li" key={label} delay={i * 60} className="h-full">
                 {href ? (
-                  <a href={href} className={`${card} hover:-translate-y-1 hover:shadow-card-hover`}>
+                  <a href={href} className={`${card} hover:shadow-card-hover`}>
                     {body}
                   </a>
                 ) : (
@@ -106,7 +106,7 @@ export default function ContactsPage() {
         </a>
       </PageHeader>
 
-      <Consultation />
+      <Consultation showContacts={false} />
     </>
   );
 }

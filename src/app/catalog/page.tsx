@@ -24,7 +24,7 @@ export default function CatalogPage() {
         eyebrow="Каталог"
         title={
           <>
-            Шість <strong>напрямів</strong>
+            Шість напрямів
           </>
         }
         lede="Кожен напрям укомплектований імплантами, інструментом і супровідними документами. Позиції, яких немає в наявності, підбираємо разом із виробником."
@@ -52,10 +52,6 @@ export default function CatalogPage() {
 
       <Section labelledBy="catalog-help" className="pt-0 lg:pt-0">
         <Reveal className="relative isolate overflow-hidden rounded-card bg-surface p-8 ring-1 ring-inset ring-hairline lg:p-14">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -end-24 -bottom-32 -z-10 h-80 w-[36rem] rounded-full bg-[radial-gradient(closest-side,rgb(199_0_11/0.12),transparent)] blur-2xl"
-          />
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
             <div className="flex flex-col gap-4">
               <h2 id="catalog-help" className="max-w-[22ch] text-h2 text-balance text-fg">
@@ -71,8 +67,8 @@ export default function CatalogPage() {
               <ButtonLink href="/#consultation" size="lg">
                 Отримати консультацію
               </ButtonLink>
-              <ButtonLink href="/education" variant="secondary" size="lg">
-                Навчальний розділ
+              <ButtonLink href="/3d-models" variant="secondary" size="lg">
+                3D-моделі імплантів
               </ButtonLink>
             </div>
           </div>

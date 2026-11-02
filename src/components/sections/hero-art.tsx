@@ -50,7 +50,7 @@ function ZoneCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <p className="text-label uppercase text-fg-muted">{zone.label}</p>
+          <p className="text-label text-fg-muted">{zone.label}</p>
           <p className="text-h3 text-balance text-fg">{zone.title}</p>
         </div>
         <Button
@@ -94,7 +94,7 @@ function ZoneLegend({
   return (
     <div className="flex flex-col items-start gap-2">
       {hint ? (
-        <p className="rounded-pill bg-base/70 px-3 py-1 text-label uppercase text-fg-muted ring-1 ring-inset ring-hairline backdrop-blur-md">
+        <p className="rounded-pill bg-base/70 px-3 py-1 text-label text-fg-muted ring-1 ring-inset ring-hairline backdrop-blur-md">
           Потягніть, щоб обертати · оберіть зону
         </p>
       ) : null}

@@ -23,8 +23,7 @@ export function SiteFooter() {
           >
             <Logo className="h-10 w-auto text-fg" />
           </Link>
-          <p className="flex items-center gap-2 text-label uppercase text-fg-muted">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-accent-solid" />
+          <p className="flex items-center gap-2 text-label text-fg-muted">
             {site.slogan}
           </p>
           <p className="max-w-[42ch] text-body-sm text-pretty text-fg-secondary">
@@ -77,7 +76,7 @@ export function SiteFooter() {
           <nav key={column.heading} aria-labelledby={`footer-${column.heading}`}>
             <h2
               id={`footer-${column.heading}`}
-              className="text-label font-sans uppercase text-fg-muted"
+              className="text-label font-sans text-fg-muted"
             >
               {column.heading}
             </h2>

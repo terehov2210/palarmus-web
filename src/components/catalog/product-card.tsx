@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { ProductMedia } from "@/components/catalog/product-media";
 import { findCategory } from "@/content/catalog";
 import { productHref, type Product } from "@/content/products";
+import { modelForProduct } from "@/content/models-3d";
 
 /**
  * One product in a listing: the studio tile (see `ProductMedia`), the name,
@@ -15,14 +16,20 @@ export function ProductCard({ product, showCategory = false }: { product: Produc
   return (
     <Link
       href={productHref(product)}
-      className="group flex h-full flex-col overflow-hidden rounded-card bg-base p-2 shadow-card ring-1 ring-inset ring-hairline transition-[box-shadow,translate,scale] duration-medium ease-out-quint active:scale-[0.99] hover:-translate-y-1 hover:shadow-card-hover"
+      className="group flex h-full flex-col overflow-hidden rounded-card bg-base p-2 shadow-card ring-1 ring-inset ring-hairline transition-[box-shadow,scale] duration-medium ease-out-quint active:scale-[0.99] hover:shadow-card-hover hover:ring-hairline-strong"
     >
-      <ProductMedia
-        product={product}
-        sizes="(min-width: 1280px) 20rem, (min-width: 640px) 44vw, 88vw"
-        zoomOnHover
-        className="aspect-4/3 rounded-inner"
-      />
+      <div className="relative">
+        <ProductMedia
+          product={product}
+          sizes="(min-width: 1280px) 20rem, (min-width: 640px) 44vw, 88vw"
+          className="aspect-4/3 rounded-inner"
+        />
+        {modelForProduct(product.slug) ? (
+          <span className="pointer-events-none absolute top-3 left-3 rounded-pill bg-(--stage-chip) px-2.5 py-0.5 text-caption font-semibold text-(--stage-ink) ring-1 ring-inset ring-white/10 backdrop-blur-md">
+            3D
+          </span>
+        ) : null}
+      </div>
 
       <div className="flex flex-1 flex-col gap-2 px-4 pt-5 pb-4">
         {showCategory ? (

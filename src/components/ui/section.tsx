@@ -23,7 +23,7 @@ export function Section({
       id={id}
       aria-labelledby={labelledBy}
       className={[
-        "py-20 lg:py-36",
+        "py-16 lg:py-28",
         tone === "surface" ? "bg-surface" : "bg-base",
         className,
       ]
@@ -35,18 +35,10 @@ export function Section({
   );
 }
 
-/** Small pill label led by a Venetian Red dot. The dot is decorative and
-    hidden from assistive tech. */
+/** Quiet sentence-case label over a heading. Used sparingly: most sections
+    are named by their heading alone. */
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return (
-    <p className="inline-flex w-fit items-center gap-2 rounded-pill bg-fg/[0.05] py-1.5 ps-2.5 pe-3.5 text-label uppercase text-fg-secondary ring-1 ring-inset ring-hairline">
-      <span
-        aria-hidden="true"
-        className="size-1.5 rounded-full bg-accent-solid shadow-[0_0_0_3px_color-mix(in_oklab,var(--color-accent-solid)_20%,transparent)]"
-      />
-      {children}
-    </p>
-  );
+  return <p className="text-body-sm font-medium text-fg-muted">{children}</p>;
 }
 
 type SectionHeaderProps = {

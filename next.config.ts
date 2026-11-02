@@ -76,6 +76,23 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      /**
+       * The training library's PDFs are shown in an iframe on the site's own
+       * material pages, which `DENY` above would block. Later entries override
+       * earlier ones for the same header, so this relaxes it to same-origin
+       * for these files only.
+       */
+      {
+        source: "/education/library/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=2592000",
+          },
+        ],
+      },
       {
         source: "/models/:path*",
         headers: [

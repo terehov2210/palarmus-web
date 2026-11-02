@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 
 import type { Category } from "@/content/catalog";
 
@@ -27,7 +26,7 @@ export function CategoryCard({
   return (
     <Link
       href={`/catalog/${category.slug}`}
-      className="group flex h-full flex-col rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline transition-[box-shadow,translate,scale] duration-medium ease-out-quint active:scale-[0.99] hover:-translate-y-1 hover:shadow-card-hover"
+      className="group flex h-full flex-col rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline transition-[box-shadow,scale] duration-medium ease-out-quint active:scale-[0.99] hover:shadow-card-hover hover:ring-hairline-strong"
     >
       <div className="relative aspect-16/8 overflow-hidden rounded-inner bg-[#f2f4f5]">
         <Image
@@ -36,22 +35,8 @@ export function CategoryCard({
           fill
           quality={82}
           sizes="(min-width: 1024px) 40rem, 92vw"
-          className="object-cover object-right transition-[scale] duration-700 ease-out-quint group-hover:scale-[1.04]"
+          className="object-cover object-right"
         />
-
-        <span
-          aria-hidden="true"
-          className="absolute start-3 top-3 rounded-pill bg-white/85 px-2.5 py-1 text-label text-[#3a3a3a] ring-1 ring-inset ring-black/10 backdrop-blur-md"
-        >
-          {category.index}
-        </span>
-
-        <span
-          aria-hidden="true"
-          className="absolute end-3 top-3 grid size-10 place-items-center rounded-full bg-white/90 text-black shadow-[0_2px_8px_-2px_rgb(0_0_0/0.25)] ring-1 ring-inset ring-black/10 backdrop-blur-md transition-[background-color,color,rotate] duration-medium ease-out-quint group-hover:rotate-45 group-hover:bg-accent-solid group-hover:text-on-accent group-hover:ring-transparent"
-        >
-          <ArrowUpRight size={18} strokeWidth={2} />
-        </span>
       </div>
 
       <div className="flex flex-col gap-1.5 px-4 pt-5 pb-4 lg:px-5">

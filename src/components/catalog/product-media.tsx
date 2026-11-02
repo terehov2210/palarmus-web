@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ImageOff } from "lucide-react";
 
+import { modelForProduct, modelThumb } from "@/content/models-3d";
 import type { Product } from "@/content/products";
 
 /**
@@ -23,22 +24,22 @@ export function ProductMedia({
   sizes,
   priority = false,
   padding = "p-7",
-  zoomOnHover = false,
   className,
 }: {
   product: Product;
   sizes: string;
   priority?: boolean;
   padding?: string;
-  zoomOnHover?: boolean;
   className?: string;
 }) {
   const light = product.imageOnLight === true;
+  // No photo yet but a 3D model: its studio render stands in.
+  const model = product.image ? undefined : modelForProduct(product.slug);
   return (
     <div
       className={[
         "relative overflow-hidden",
-        product.image ? (light ? "bg-white" : "product-stage") : "bg-surface",
+        product.image ? (light ? "bg-white" : "product-stage") : model ? "product-stage" : "bg-surface",
         className,
       ]
         .filter(Boolean)
@@ -55,10 +56,18 @@ export function ProductMedia({
             "object-contain",
             padding,
             light ? "" : "mix-blend-screen",
-            zoomOnHover ? "transition-[scale] duration-700 ease-out-quint group-hover:scale-[1.06]" : "",
           ]
             .filter(Boolean)
             .join(" ")}
+        />
+      ) : model ? (
+        <Image
+          src={modelThumb(model)}
+          alt={`3D-модель: ${product.name}`}
+          fill
+          priority={priority}
+          sizes={sizes}
+          className={`object-contain ${padding}`}
         />
       ) : (
         <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">

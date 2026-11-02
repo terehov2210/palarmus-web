@@ -1,3 +1,5 @@
+import { previewSlugs } from "@/content/models-3d-preview";
+
 /**
  * The 3D model showcase at /3d-models.
  *
@@ -9,6 +11,8 @@
  * construction. Parts that are sold only inside a set (the TITAN lag screw) or
  * not listed at all leave it null, and the page offers a consultation instead.
  */
+
+import { moreModels } from "@/content/models-3d-more";
 
 export type MaterialId =
   | "ti-polished"
@@ -24,7 +28,11 @@ export type MaterialId =
   | "ti-magenta"
   | "peek"
   | "bioabsorbable"
-  | "suture";
+  | "suture"
+  | "ti-dark"
+  | "ti-green"
+  | "plastic"
+  | "housing";
 
 /** Name and a swatch that suggests the finish. The swatches are drawn on the
     fixed-dark stage colours, so they read the same in both themes. */
@@ -43,12 +51,30 @@ export const materials: Record<MaterialId, { label: string; swatch: string }> = 
   peek: { label: "PEEK", swatch: "radial-gradient(circle at 35% 30%,#efe3cc,#cdb791)" },
   bioabsorbable: { label: "Біорезорбуючий полімер", swatch: "radial-gradient(circle at 35% 30%,#f6f3ea,#d9d2c0)" },
   suture: { label: "Шовна нитка з маркером", swatch: "repeating-linear-gradient(45deg,#ffffff 0 3px,#2d5fbf 3px 5px)" },
+  "ti-dark": { label: "Анодований титан, темний", swatch: "linear-gradient(135deg,#55585e,#1d1f22)" },
+  "ti-green": { label: "Анодований титан, зелений", swatch: "linear-gradient(135deg,#a8dc8a,#4f9a3a)" },
+  plastic: { label: "Медичний пластик", swatch: "linear-gradient(135deg,#9a6be0,#e46fae)" },
+  housing: { label: "Анодований алюміній", swatch: "linear-gradient(135deg,#6b6a55,#1d1d1f)" },
 };
+
+/** The showcase filter: finer than the catalogue's categories, so ~100 models stay findable. */
+export const GROUPS = [
+  { id: "joints", label: "Суглоби" },
+  { id: "nails", label: "Стрижні" },
+  { id: "plates", label: "Пластини" },
+  { id: "screws", label: "Гвинти" },
+  { id: "sports", label: "Спортивна медицина" },
+  { id: "instruments", label: "Інструменти та шовні" },
+  { id: "equipment", label: "Обладнання" },
+] as const;
+export type GroupId = (typeof GROUPS)[number]["id"];
 
 export type Model3D = {
   slug: string;
   /** Catalogue category slug, so the filter reuses the catalogue's own names. */
-  category: "joints" | "traumatology" | "sports-medicine";
+  category: "joints" | "traumatology" | "sports-medicine" | "equipment";
+  /** Showcase filter group; defaults from the category (see `groupOf`). */
+  group?: GroupId;
   name: string;
   /** Card title: fits two lines at the narrowest grid column. */
   short: string;
@@ -70,8 +96,11 @@ export type Model3D = {
 
 export const modelUrl = (m: Pick<Model3D, "slug">) => `/models/showcase/${m.slug}.glb`;
 export const modelThumb = (m: Pick<Model3D, "slug">) => `/showcase/${m.slug}.webp`;
+/** The light LOD1 preview, for the models big enough to need one. */
+export const previewUrl = (m: Pick<Model3D, "slug">) =>
+  previewSlugs.has(m.slug) ? `/models/showcase/${m.slug}.lod1.glb` : null;
 
-export const models3d: Model3D[] = [
+const baseModels: Model3D[] = [
   {
     slug: "hip-tha",
     category: "joints",
@@ -109,7 +138,7 @@ export const models3d: Model3D[] = [
       ["Чашка", "Apex™ 3D TF, Ø52 мм"],
       ["Головка", "керамічна, Ø32 мм"],
     ],
-    materials: ["ti-polished", "ti-plasma", "ti-satin", "ti-trabecular", "polyethylene", "ceramic"],
+    materials: ["ti-polished", "ti-plasma", "beadblast", "ti-trabecular", "polyethylene", "ceramic"],
     product: "revision-hip-apex-3dtf",
     pose: [0, 0, 0],
     spin: "y",
@@ -131,7 +160,7 @@ export const models3d: Model3D[] = [
       ["Конус", "12/14"],
       ["Напилення", "пористий титан, 0,5 мм"],
     ],
-    materials: ["ti-polished", "ti-plasma", "ti-satin"],
+    materials: ["ti-polished", "ti-plasma", "beadblast"],
     product: null,
     pose: [0, 0, 0],
     spin: "y",
@@ -196,6 +225,7 @@ export const models3d: Model3D[] = [
   },
   {
     slug: "navy-ar",
+    group: "nails",
     category: "traumatology",
     name: "Інтрамедулярний стегновий стрижень NAVY A/R",
     short: "Стрижень NAVY A/R",
@@ -214,6 +244,7 @@ export const models3d: Model3D[] = [
   },
   {
     slug: "titan-lag",
+    group: "screws",
     category: "traumatology",
     name: "Шийковий гвинт TITAN з компресійним гвинтом",
     short: "Шийковий гвинт TITAN",
@@ -226,13 +257,14 @@ export const models3d: Model3D[] = [
       ["Розмір", "10,5 × 95 мм"],
       ["Компресійний гвинт", "Ø4,7 мм"],
     ],
-    materials: ["ti-satin"],
+    materials: ["ti-dark"],
     product: "titan-long",
     pose: [0, 0, -90],
     spin: "x",
   },
   {
     slug: "pfna-blade",
+    group: "screws",
     category: "traumatology",
     name: "Спіральне лезо PFNA",
     short: "Спіральне лезо PFNA",
@@ -251,6 +283,7 @@ export const models3d: Model3D[] = [
   },
   {
     slug: "herbert",
+    group: "screws",
     category: "traumatology",
     name: "Гвинт Герберта канюльований компресійний",
     short: "Гвинт Герберта",
@@ -271,6 +304,7 @@ export const models3d: Model3D[] = [
   },
   {
     slug: "headless",
+    group: "screws",
     category: "traumatology",
     name: "Канюльований компресійний гвинт без головки",
     short: "Компресійний гвинт без головки",
@@ -378,4 +412,246 @@ export const models3d: Model3D[] = [
     pose: [0, 0, 0],
     spin: "y",
   },
+  {
+    slug: "titan-long-kit",
+    group: "nails",
+    category: "traumatology",
+    name: "Комплект TITAN довгий",
+    short: "Комплект TITAN довгий",
+    maker: "Стрижень, пара шийкових гвинтів TITAN, дистальні гвинти",
+    where:
+      "Вертлюгові й підвертлюгові переломи, що поширюються на діафіз стегна, а також патологічні переломи, коли кістку треба підтримати на всю довжину.",
+    why:
+      "Через отвір-вісімку в головку стегна проходять два гвинти: великий тримає головку, компресійний стягує уламки й не дає їй провертатися. Довгий стрижень повторює вигин стегна і внизу блокується двома гвинтами.",
+    spec: [
+      ["Стрижень", "Ø11 × 380 мм R (ряд Ø10–11 × 340–400 мм)"],
+      ["Шийковий гвинт", "10,5 × 95 мм + компресійний Ø4,7 мм"],
+      ["Кут", "130°"],
+      ["Дистальні гвинти", "2, Ø4,9 мм"],
+    ],
+    materials: ["ti-dark", "ti-gold"],
+    product: "titan-long",
+    pose: [0, 0, -90],
+    spin: "x",
+  },
+  {
+    slug: "titan-short-kit",
+    group: "nails",
+    category: "traumatology",
+    name: "Комплект TITAN короткий",
+    short: "Комплект TITAN короткий",
+    maker: "Стрижень зі спіральним лезом і дистальним гвинтом",
+    where: "Стабільні та нестабільні вертлюгові переломи стегнової кістки, переважно в літніх пацієнтів.",
+    why:
+      "Короткий стрижень вводять через верхівку великого вертлюга з невеликого розрізу. Спіральне лезо ущільнює губчасту кістку головки, тому тримається навіть при остеопорозі, а розщеплений кінець стрижня зменшує напругу в кістці.",
+    spec: [
+      ["Стрижень", "Ø10 × 200 мм (ряд Ø9,4–12 × 170–240 мм)"],
+      ["Шийкове лезо", "10,5 × 100 мм"],
+      ["Кут", "130°"],
+      ["Дистальний гвинт", "1, Ø4,9 мм"],
+    ],
+    materials: ["ti-dark", "ti-gold", "ti-green"],
+    product: null,
+    pose: [0, 0, -90],
+    spin: "x",
+  },
+  {
+    slug: "rewalk-femoral",
+    group: "nails",
+    category: "traumatology",
+    name: "Стегновий стрижень Rewalk",
+    short: "Стрижень Rewalk стегновий",
+    maker: "Комплект з шийковим і дистальними гвинтами",
+    where: "Переломи проксимального відділу й діафіза стегнової кістки.",
+    why:
+      "Шийковий гвинт Ø6,8 мм проходить через стрижень у головку стегна, а дистальні гвинти блокують його знизу. Конструкція несе навантаження разом із кісткою, тому пацієнт раніше стає на ногу.",
+    spec: [
+      ["Стрижень", "Ø10 × 380 мм R (ряд Ø9,4–11 × 320–400 мм)"],
+      ["Шийковий гвинт", "Ø6,8 × 90 мм"],
+      ["Дистальні гвинти", "2, Ø4,9 мм"],
+    ],
+    materials: ["ti-dark", "ti-gold"],
+    product: "rewalk-femoral",
+    pose: [0, 0, -90],
+    spin: "x",
+  },
+  {
+    slug: "rewalk-tibial",
+    group: "nails",
+    category: "traumatology",
+    name: "Великогомілковий стрижень Rewalk",
+    short: "Стрижень Rewalk великогомілковий",
+    maker: "Комплект з блокуючими гвинтами в трьох площинах",
+    where: "Діафізарні та метафізарні переломи великогомілкової кістки, зокрема багатоуламкові.",
+    why:
+      "Вигин у верхній частині стрижня дає ввести його через точку над горбистістю великогомілкової кістки. Гвинти в різних площинах на обох кінцях утримують навіть короткі уламки біля суглобів.",
+    spec: [
+      ["Стрижень", "Ø10 × 340 мм (ряд Ø9–11 × 260–380 мм)"],
+      ["Проксимальні гвинти", "5, у трьох напрямках"],
+      ["Дистальні гвинти", "4, у двох площинах"],
+    ],
+    materials: ["ti-dark", "ti-gold", "ti-green"],
+    product: "rewalk-tibial",
+    pose: [0, 0, -90],
+    spin: "x",
+  },
+  {
+    slug: "femur-distal-lateral-plate",
+    category: "traumatology",
+    name: "Дистальна латеральна стегнова блокуюча пластина 5.0",
+    short: "Пластина стегнова дистальна 5.0",
+    maker: "Поліаксіальна, анатомічна",
+    where: "Переломи дистального відділу стегнової кістки, зокрема внутрішньосуглобові та навколо протеза колінного суглоба.",
+    why:
+      "Розширена голівка лягає на латеральний виросток і несе кластер блокуючих гвинтів, що утримують дрібні уламки суглобового кінця. Комбіновані отвори стовбура дають і заблокувати гвинт, і стягнути уламки компресією.",
+    spec: [
+      ["Розмір", "8 отворів, 200 мм (ряд 8–14 отворів)"],
+      ["Гвинти", "5.0"],
+    ],
+    materials: ["ti-dark"],
+    product: null,
+    pose: [90, 0, 0],
+    spin: "x",
+  },
+  {
+    slug: "tibia-distal-medial-plate",
+    category: "traumatology",
+    name: "Дистальна медіальна блокуюча пластина великогомілкової кістки 3.5",
+    short: "Пластина великогомілкова дистальна",
+    maker: "Поліаксіальна, анатомічна",
+    where: "Переломи дистального відділу великогомілкової кістки, зокрема пілону.",
+    why:
+      "Пластина вигнута по медіальній поверхні кістки і лягає під шкірою без попереднього згинання. Ложкоподібна голівка з кластером отворів утримує уламки над гомілковостопним суглобом.",
+    spec: [
+      ["Розмір", "8 отворів, 155 мм (ряд 6–14 отворів)"],
+      ["Гвинти", "2.7 / 3.5"],
+    ],
+    materials: ["ti-dark"],
+    product: "distal-medial-tibial-plate",
+    pose: [90, 0, 0],
+    spin: "x",
+  },
+  {
+    slug: "radius-volar-plate",
+    category: "traumatology",
+    name: "Дистальна променева долонна блокуюча пластина 2.7",
+    short: "Пластина променева долонна",
+    maker: "Поліаксіальна, тип 1",
+    where: "Переломи дистального метаепіфіза променевої кістки, найчастіший перелом верхньої кінцівки.",
+    why:
+      "Широка голівка з двома рядами блокуючих отворів підпирає суглобову поверхню знизу, як риштування, тож зап’ястя можна розробляти вже в перші тижні.",
+    spec: [
+      ["Розмір", "4 отвори стовбура, 64 мм"],
+      ["Гвинти", "2.7"],
+    ],
+    materials: ["ti-dark"],
+    product: null,
+    pose: [90, 0, 0],
+    spin: "x",
+  },
+  {
+    slug: "calcaneal-plate",
+    category: "traumatology",
+    name: "Блокуюча пластина п’яткової кістки 3.5",
+    short: "Пластина п’яткова 3.5",
+    maker: "Поліаксіальна",
+    where: "Переломи п’яткової кістки, у тому числі внутрішньосуглобові.",
+    why:
+      "Дві широкі частини з кількома отворами тримають передній і задній відділи п’яткової кістки, а вузький місток між ними лягає по її бічній стінці.",
+    spec: [
+      ["Розмір", "60 мм"],
+      ["Гвинти", "3.5"],
+    ],
+    materials: ["ti-dark"],
+    product: "calcaneal-plate",
+    pose: [90, 0, 0],
+    spin: "x",
+  },
+  {
+    slug: "mirai-stem",
+    category: "joints",
+    name: "Ендопротез колінного суглоба Mirai™ PS зі стемом",
+    short: "Ендопротез Mirai™ PS зі стемом",
+    maker: "iKey Medical",
+    where:
+      "Тотальне ендопротезування колінного суглоба, коли великогомілкова кістка ослаблена: остеопороз, дефекти, деформації.",
+    why:
+      "Подовжувальний стрижень продовжує кіль платформи вниз по каналу кістки й розподіляє навантаження на більшу ділянку. Це той самий задньостабілізований Mirai™, лише з додатковою опорою.",
+    spec: [
+      ["Компоненти", "стегновий, PS-вкладиш, платформа зі стемом"],
+      ["Стем", "з канавками, полірований"],
+    ],
+    materials: ["cocr", "beadblast", "polyethylene"],
+    product: null,
+    pose: [0, -30, 0],
+    spin: "y",
+  },
+  {
+    slug: "augment-3dtf",
+    category: "joints",
+    name: "Ацетабулярний аугмент 3D TF ARS",
+    short: "Аугмент 3D TF ARS",
+    maker: "Тип I, трабекулярний титан",
+    where: "Ревізійне ендопротезування кульшового суглоба з дефектом даху вертлюжної западини.",
+    why:
+      "Аугмент заповнює дефект кістки під чашкою, а його пористий трабекулярний титан проростає кісткою так само, як чашка 3D TF. Чашку з’єднують з аугментом цементом, сам аугмент кріплять гвинтами.",
+    spec: [
+      ["Розмір", "50/52 × 15 мм (ряд 50/52–58/60 × 10–20 мм)"],
+      ["Отвори", "3 радіальні, 2 у верхній площадці"],
+    ],
+    materials: ["ti-trabecular", "ti-satin"],
+    product: "acetabular-augment-3dtf-ars",
+    pose: [0, 0, 0],
+    spin: "y",
+  },
+  {
+    slug: "wingbutton",
+    category: "sports-medicine",
+    name: "WingButton™ з регульованою петлею",
+    short: "WingButton™",
+    maker: "Регульована кортикальна фіксація",
+    where: "Пластика передньої хрестоподібної зв’язки та інші реконструкції, де трансплантат фіксують у кістковому тунелі.",
+    why:
+      "Петлю можна підтягнути вже після проведення пластини, тому трансплантат входить у тунель на потрібну глибину без вимірювання довжини наперед.",
+    spec: [
+      ["Пластина", "12 × 4 × 1,5 мм, 4 отвори"],
+      ["Петля", "регульована, показано 20 мм"],
+    ],
+    materials: ["ti-dark", "suture"],
+    product: null,
+    pose: [0, 0, 0],
+    spin: "y",
+  },
+  {
+    slug: "crescent-fix",
+    category: "sports-medicine",
+    name: "Crescent-Fix™ для шва меніска",
+    short: "Crescent-Fix™",
+    maker: "Система «все всередині»",
+    where: "Розриви меніска в задніх відділах, які зшивають артроскопічно без додаткових розрізів.",
+    why:
+      "Імпланти й нитка заряджені в голку з вигином 12°. Хірург проводить її крізь меніск з артроскопічного доступу, і шов затягується всередині суглоба.",
+    spec: [
+      ["Голка", "вигин 12°"],
+      ["Шов", "2-0"],
+      ["Показано", "інструмент доставки"],
+    ],
+    materials: ["plastic", "ti-polished"],
+    product: "crescent-fix",
+    pose: [0, 0, -90],
+    spin: "x",
+  },
 ];
+
+const CATEGORY_GROUP: Record<Model3D["category"], GroupId> = {
+  joints: "joints",
+  traumatology: "plates",
+  "sports-medicine": "sports",
+  equipment: "equipment",
+};
+export const groupOf = (m: Model3D): GroupId => m.group ?? CATEGORY_GROUP[m.category];
+
+export const models3d: Model3D[] = [...baseModels, ...moreModels];
+
+/** The 3D model of a catalogue product, if there is one (assemblies come first in the list). */
+export const modelForProduct = (product: string) => models3d.find((m) => m.product === product);

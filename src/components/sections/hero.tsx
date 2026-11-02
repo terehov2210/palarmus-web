@@ -78,10 +78,8 @@ export function Hero() {
         <div className="pointer-events-auto flex max-w-[40rem] flex-col gap-9">
           <Reveal className="flex flex-col gap-7">
             <Eyebrow>{site.slogan}</Eyebrow>
-            {/* Two weights, as on the brandbook's exhibition stand: the
-                category in Light, the subject in ExtraBold. */}
             <h1 id="hero-title" className="text-display text-balance text-fg">
-              Нове покоління <strong>імплантів</strong> для травматології та
+              Нове покоління імплантів для травматології та
               ортопедії
             </h1>
             <p className="max-w-[46ch] text-lede text-pretty text-fg-secondary">

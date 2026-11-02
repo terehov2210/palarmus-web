@@ -1,354 +1,184 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, Compass, Info } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Search } from "lucide-react";
 
+import { MaterialCard } from "@/components/education/material-card";
 import { Reveal } from "@/components/reveal";
-import { ArtSlot } from "@/components/ui/art-slot";
 import { ButtonLink } from "@/components/ui/button";
-import { Eyebrow, Section, SectionHeader } from "@/components/ui/section";
+import { PageHeader } from "@/components/ui/page-header";
+import { Section, SectionHeader } from "@/components/ui/section";
 import {
-  glossary,
-  implantTypes,
-  materialGroups,
-  principles,
-  regions,
-} from "@/content/education";
+  basicsTopics,
+  directions,
+  findMaterial,
+  materialsCount,
+  materialsIn,
+  popularMaterials,
+} from "@/content/training";
 
 export const metadata: Metadata = {
   title: "Навчання",
   description:
-    "Навчальний розділ про ортопедичні імпланти: принципи фіксації, типи конструкцій, матеріали та анатомічні зони. Для ординаторів і лікарів, які починають працювати з остеосинтезом.",
+    "Навчальні матеріали, хірургічні техніки та відеодемонстрації від міжнародних виробників для лікарів травматологів та ортопедів.",
   alternates: { canonical: "/education" },
 };
 
 /**
- * Layout families are deliberately all different, so the page does not read as
- * one component repeated seven times: numbered list, alternating full-width
- * rows, grouped columns, a two-column table-less region map, a definition
- * grid, then a closing panel.
+ * The library's home (brief §3): first screen with search, the five
+ * directions, the materials worth opening first, the basics, and a way to ask
+ * for what is missing. A library, not an advert: every card opens a real file.
  */
 export default function EducationPage() {
+  const basics = findMaterial("implant-basics")!;
+
   return (
     <>
-      {/* ---- Intro. The one eyebrow in the first three sections. ---------- */}
-      <section
-        aria-labelledby="education-title"
-        className="relative isolate overflow-hidden"
-      >
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 blueprint-grid opacity-40 [mask-image:radial-gradient(120%_90%_at_100%_0%,black,transparent_70%)]"
-        />
-        <div className="container-page relative grid gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16 lg:py-24">
-          <Reveal className="flex flex-col gap-5">
-            <Eyebrow>Навчальний розділ</Eyebrow>
-            <h1
-              id="education-title"
-              className="text-display text-balance text-fg"
-            >
-              Як влаштовані ортопедичні імпланти
-            </h1>
-            <p className="max-w-[54ch] text-lede text-pretty text-fg-secondary">
-              Розбір конструкцій, матеріалів і принципів фіксації для
-              ординаторів та лікарів, які починають працювати з остеосинтезом.
-            </p>
-            <div className="mt-2 flex flex-wrap gap-3">
-              <ButtonLink href="#types" size="lg">
-                До типів імплантів
-              </ButtonLink>
-              <ButtonLink href="#glossary" variant="secondary" size="lg">
-                Глосарій
-              </ButtonLink>
-            </div>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <ArtSlot
+      <PageHeader
+        id="education-title"
+        trail={[{ label: "Головна", href: "/" }, { label: "Навчання" }]}
+        title="Професійні знання для сучасної хірургічної практики"
+        lede="Навчальні матеріали, хірургічні техніки та відеодемонстрації від міжнародних виробників для лікарів травматологів та ортопедів."
+        aside={
+          <div className="relative aspect-4/3 overflow-hidden rounded-media shadow-card-hover media-outline">
+            <Image
               src="/education/hero.webp"
               alt="Розріз стегнової кістки з інтрамедулярним стержнем та шийковим гвинтом"
-              spec="Ключовий кадр розділу: стегнова кістка в розрізі зі стержнем і шийковим гвинтом. 1600x1200, нейтральний сірий фон, кістка кольору слонової кості, імплант титановий."
-              aspect="aspect-4/3"
-              sizes="(min-width: 1024px) 42rem, 92vw"
+              fill
               priority
+              quality={82}
+              sizes="(min-width: 1024px) 38rem, 92vw"
+              className="object-cover"
             />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ---- Principles. Numbered list, no eyebrow. ----------------------- */}
-      <Section id="principles" labelledBy="principles-title" className="pt-4 lg:pt-8">
-        <SectionHeader
-          titleId="principles-title"
-          title="Чотири принципи, з яких починається будь-яка фіксація"
-          description="Імплант не працює сам по собі. Він лише інструмент, який реалізує рішення, ухвалене до розрізу."
-        />
-
-        <ol className="mt-12 grid gap-4 sm:grid-cols-2">
-          {principles.map((principle, i) => (
-            <Reveal
-              as="li"
-              key={principle.title}
-              delay={(i % 2) * 60}
-              className="flex gap-5 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline"
+          </div>
+        }
+      >
+        {/* A plain GET form: the search works before, and without, JavaScript. */}
+        <form action="/education/materials" role="search" className="max-w-2xl">
+          <label className="relative block">
+            <span className="sr-only">Пошук навчальних матеріалів</span>
+            <Search
+              aria-hidden="true"
+              size={18}
+              strokeWidth={1.5}
+              className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-fg-muted"
+            />
+            <input
+              type="search"
+              name="q"
+              placeholder="Знайти процедуру, імплант або навчальний матеріал"
+              className="min-h-13 w-full rounded-pill bg-surface ps-11 pe-28 text-body text-fg ring-1 ring-inset ring-hairline placeholder:text-fg-muted focus:ring-hairline-strong focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="absolute top-1.5 right-1.5 bottom-1.5 rounded-pill bg-base px-4 text-body-sm font-semibold text-fg ring-1 ring-inset ring-hairline transition-[box-shadow] duration-fast ease-out-quint hover:shadow-card"
             >
-              <span
-                aria-hidden="true"
-                className="grid size-11 shrink-0 place-items-center rounded-control bg-accent-tint text-body-sm font-bold text-fg-accent tabular-nums"
-              >
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <div className="flex flex-col gap-2">
-                <h3 className="text-h3 text-fg">{principle.title}</h3>
-                <p className="text-body-sm text-pretty text-fg-secondary">
-                  {principle.body}
-                </p>
-              </div>
-            </Reveal>
-          ))}
-        </ol>
+              Знайти
+            </button>
+          </label>
+        </form>
+      </PageHeader>
+
+      <Section id="directions" labelledBy="directions-title" className="pt-0 lg:pt-4">
+        <SectionHeader titleId="directions-title" title="Навчання за медичними напрямами" />
+        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {directions.map((d, i) => {
+            const count = materialsIn(d.slug).length;
+            return (
+              <Reveal as="li" key={d.slug} delay={(i % 3) * 60} className="h-full">
+                <Link
+                  href={`/education/${d.slug}`}
+                  className="group flex h-full flex-col overflow-hidden rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline transition-[box-shadow,scale] duration-medium ease-out-quint active:scale-[0.99] hover:shadow-card-hover hover:ring-hairline-strong"
+                >
+                  <div className="relative aspect-16/9 overflow-hidden rounded-inner bg-[#f2f4f5]">
+                    <Image
+                      src={d.image}
+                      alt={d.imageAlt}
+                      fill
+                      sizes="(min-width: 1024px) 26rem, (min-width: 640px) 44vw, 92vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1.5 px-4 pt-5 pb-4">
+                    <h3 className="text-h3 text-balance text-fg">{d.title}</h3>
+                    <p className="text-body-sm text-pretty text-fg-secondary">{d.summary}</p>
+                    <p className="mt-auto pt-3 text-caption text-fg-muted tabular-nums">
+                      {count > 0 ? materialsCount(count) : "Матеріали готуються"}
+                    </p>
+                  </div>
+                </Link>
+              </Reveal>
+            );
+          })}
+        </ul>
       </Section>
 
-      {/* ---- Implant types. Alternating full-width rows. ------------------ */}
-      <Section id="types" labelledBy="types-title">
+      <Section id="popular" labelledBy="popular-title" tone="surface">
         <SectionHeader
-          titleId="types-title"
-          title="Шість типів конструкцій"
-          description="Для кожного типу: що це, де застосовується і який принцип фіксації він реалізує."
+          titleId="popular-title"
+          title="Популярні навчальні матеріали"
+          action={
+            <ButtonLink href="/education/materials" variant="secondary">
+              Усі навчальні матеріали
+            </ButtonLink>
+          }
         />
-
-        {/* Two-up rather than six stacked image+text rows: the same block
-            repeated six times down a page reads as a template, and the art
-            alone would add ~4000px of scroll before any of the copy. */}
-        <ul className="mt-12 grid gap-4 lg:grid-cols-2 lg:gap-5">
-          {implantTypes.map((type, i) => (
-            <Reveal
-              as="li"
-              key={type.slug}
-              id={type.slug}
-              delay={(i % 2) * 60}
-              className="h-full"
-            >
-              <article className="flex h-full flex-col rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline">
-                <ArtSlot
-                  src={type.image}
-                  alt={type.imageAlt}
-                  spec={`${type.name}. Квадрат 1400x1400, той самий стиль: кістка кольору слонової кості, титановий імплант, напівпрозорі м'які тканини.`}
-                  aspect="aspect-4/3 sm:aspect-square"
-                  sizes="(min-width: 1024px) 32rem, 92vw"
-                  className="rounded-inner media-outline"
-                />
-
-                <div className="flex flex-1 flex-col gap-5 px-5 pt-6 pb-5 lg:px-6">
-                  <div className="flex flex-col gap-1.5">
-                    <h3 className="text-h3 text-balance text-fg">
-                      {type.name}
-                    </h3>
-                    <p className="text-caption text-fg-muted">{type.kicker}</p>
-                  </div>
-
-                  <dl className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-1">
-                      <dt className="text-label uppercase text-fg-muted">
-                        Що це
-                      </dt>
-                      <dd className="text-body-sm text-pretty text-fg-secondary">
-                        {type.what}
-                      </dd>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <dt className="text-label uppercase text-fg-muted">
-                        Де застосовується
-                      </dt>
-                      <dd className="text-body-sm text-pretty text-fg-secondary">
-                        {type.where}
-                      </dd>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <dt className="text-label uppercase text-fg-muted">
-                        Принцип фіксації
-                      </dt>
-                      <dd className="text-body-sm text-pretty text-fg-secondary">
-                        {type.principle}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              </article>
+        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {popularMaterials.map((m, i) => (
+            <Reveal as="li" key={m.slug} delay={(i % 3) * 60} className="h-full">
+              <MaterialCard material={m} />
             </Reveal>
           ))}
         </ul>
       </Section>
 
-      {/* ---- Materials. Grouped by the job the material does. ------------- */}
-      <Section id="materials" labelledBy="materials-title">
-        <SectionHeader
-          eyebrow="Матеріали"
-          titleId="materials-title"
-          title="Матеріал вибирають під роботу, а не під ціну"
-          description="Жорсткість, зносостійкість і прозорість для променів вирішують різні задачі, тому в одній конструкції часто поєднано кілька матеріалів."
-        />
-
-        <div className="mt-12 grid gap-4 lg:grid-cols-3">
-          {materialGroups.map((group, i) => (
-            <Reveal
-              key={group.heading}
-              delay={(i % 3) * 60}
-              className="flex flex-col gap-5 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline"
-            >
-              <div className="flex flex-col gap-2">
-                <h3 className="text-h3 text-fg">{group.heading}</h3>
-                <p className="text-body-sm text-pretty text-fg-muted">
-                  {group.intro}
-                </p>
-              </div>
-              <dl className="flex flex-col gap-2">
-                {group.items.map((item) => (
-                  <div key={item.name} className="flex flex-col gap-1 rounded-inner bg-base/70 p-4 ring-1 ring-inset ring-hairline">
-                    <dt className="text-body-sm font-semibold text-fg">
-                      {item.name}
-                    </dt>
-                    <dd className="text-body-sm text-pretty text-fg-secondary">
-                      {item.note}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
-
-      {/* ---- Regions. Anatomy to catalogue, as linked rows. --------------- */}
-      <Section id="regions" labelledBy="regions-title">
-        <SectionHeader
-          titleId="regions-title"
-          title="Від анатомічної зони до розділу каталогу"
-          action={
-            <ButtonLink href="/catalog" variant="secondary">
-              Усі категорії
-            </ButtonLink>
-          }
-        />
-
-        <Reveal as="ul" delay={80} className="mt-12 grid gap-4 lg:grid-cols-2">
-          {regions.map((region) => (
-            <li key={region.area}>
-              <Link
-                href={region.href}
-                className="group flex items-start justify-between gap-6 rounded-card bg-surface p-6 ring-1 ring-inset ring-hairline transition-[box-shadow,translate,scale] duration-medium ease-out-quint active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-card-hover"
-              >
-                <span className="flex flex-col gap-1">
-                  <span className="text-h3 text-fg">{region.area}</span>
-                  <span className="text-body-sm text-pretty text-fg-secondary">
-                    {region.systems}
-                  </span>
-                </span>
-                <ArrowUpRight
-                  aria-hidden="true"
-                  size={18}
-                  strokeWidth={2}
-                  className="mt-1 shrink-0 text-fg-accent transition-[translate] duration-fast ease-out-quint group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                />
-              </Link>
-            </li>
-          ))}
-        </Reveal>
-      </Section>
-
-      {/* ---- Glossary. Definition grid. ----------------------------------- */}
-      <Section id="glossary" labelledBy="glossary-title">
-        <SectionHeader
-          eyebrow="Глосарій"
-          titleId="glossary-title"
-          title="Терміни, які звучать на кожному обході"
-        />
-
-        <Reveal
-          as="dl"
-          delay={80}
-          className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {glossary.map((entry) => (
-            <div
-              key={entry.term}
-              className="flex flex-col gap-1.5 rounded-inner bg-surface p-5 ring-1 ring-inset ring-hairline"
-            >
-              <dt className="text-body-sm font-semibold text-fg">
-                {entry.term}
-              </dt>
-              <dd className="text-body-sm text-pretty text-fg-secondary">
-                {entry.definition}
-              </dd>
-            </div>
-          ))}
-        </Reveal>
-      </Section>
-
-      {/* ---- Scope note and close. ---------------------------------------- */}
-      <Section id="scope" labelledBy="scope-title">
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+      <Section id="basics" labelledBy="basics-title">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
           <Reveal className="flex flex-col gap-5">
-            <h2
-              id="scope-title"
-              className="max-w-[26ch] text-h2 text-balance text-fg"
-            >
-              Межі цього матеріалу
+            <h2 id="basics-title" className="text-h2 text-balance text-fg">
+              Базові знання
             </h2>
-            <div className="flex flex-col gap-4 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline">
-              <p className="flex gap-3 text-body text-pretty text-fg-secondary">
-                <Info
-                  aria-hidden="true"
-                  size={18}
-                  strokeWidth={1.5}
-                  className="mt-1 shrink-0 text-fg-accent"
-                />
-                Розділ оглядовий. Тут немає діаметрів, глибин розсвердлювання,
-                моментів затягування чи порогів показань: ці параметри залежать
-                від конкретної системи і беруться лише з technique guide
-                виробника.
-              </p>
-              <p className="flex gap-3 text-body text-pretty text-fg-secondary">
-                <BookOpen
-                  aria-hidden="true"
-                  size={18}
-                  strokeWidth={1.5}
-                  className="mt-1 shrink-0 text-fg-accent"
-                />
-                Матеріал не замінює керівництва з хірургічної техніки і не є
-                клінічною рекомендацією. Рішення щодо пацієнта ухвалює лікар.
-              </p>
-              <p className="flex gap-3 text-body text-pretty text-fg-secondary">
-                <Compass
-                  aria-hidden="true"
-                  size={18}
-                  strokeWidth={1.5}
-                  className="mt-1 shrink-0 text-fg-accent"
-                />
-                Для конкретної системи ми надаємо technique guide виробника і
-                проводимо воркшоп із інженером.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal
-            delay={120}
-            className="flex flex-col gap-5 rounded-card bg-surface p-7 shadow-card ring-1 ring-inset ring-hairline lg:p-9"
-          >
-            <h3 className="text-h3 text-balance text-fg">
-              Потрібен воркшоп для відділення
-            </h3>
-            <p className="text-body-sm text-pretty text-fg-secondary">
-              Розбираємо систему на моделях кістки разом з інженером виробника.
-              Напишіть, який напрям цікавить, і ми узгодимо дату.
+            <p className="max-w-[52ch] text-lede text-pretty text-fg-secondary">
+              Загальні матеріали про будову імплантів — для молодих лікарів і як
+              довідка для досвідчених. Параметри конкретних систем лишаються в
+              хірургічних техніках виробників.
             </p>
-            <div className="mt-auto flex flex-wrap gap-3 pt-2">
-              <ButtonLink href="/#consultation">Замовити воркшоп</ButtonLink>
-              <ButtonLink href="/catalog" variant="secondary">
-                Каталог
-              </ButtonLink>
-            </div>
+            <ul className="flex flex-col divide-y divide-hairline border-y border-hairline">
+              {basicsTopics.map((t) => (
+                <li key={t.label}>
+                  <Link
+                    href={t.href}
+                    className="flex min-h-12 items-center justify-between gap-4 py-3 text-body text-fg-secondary transition-[color] duration-fast ease-out-quint hover:text-fg"
+                  >
+                    {t.label}
+                    <ArrowRight aria-hidden="true" size={16} strokeWidth={1.5} className="shrink-0 text-fg-muted" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={100}>
+            <MaterialCard material={basics} />
           </Reveal>
         </div>
+      </Section>
+
+      <Section id="ask" labelledBy="ask-title" tone="surface">
+        <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-4">
+            <h2 id="ask-title" className="max-w-[22ch] text-h2 text-balance text-fg">
+              Не знайшли потрібний навчальний матеріал?
+            </h2>
+            <p className="max-w-[58ch] text-lede text-pretty text-fg-secondary">
+              Зверніться до команди Palarmus Implants, щоб уточнити наявність
+              матеріалів щодо конкретної системи або хірургічної техніки.
+            </p>
+          </div>
+          <ButtonLink href="/contacts" size="lg" className="shrink-0">
+            Зв’язатися з нами
+            <ArrowUpRight aria-hidden="true" size={16} strokeWidth={2} />
+          </ButtonLink>
+        </Reveal>
       </Section>
     </>
   );

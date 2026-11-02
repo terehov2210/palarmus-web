@@ -26,7 +26,7 @@ const base = [
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent-solid text-on-accent shadow-[0_1px_0_rgb(255_255_255/0.18)_inset,0_8px_20px_-8px_rgb(199_0_11/0.55)] hover:bg-accent-solid-hover hover:shadow-[0_1px_0_rgb(255_255_255/0.18)_inset,0_12px_28px_-10px_rgb(199_0_11/0.65)] active:bg-accent-solid-active",
+    "bg-accent-solid text-on-accent shadow-[0_1px_0_rgb(255_255_255/0.18)_inset] hover:bg-accent-solid-hover active:bg-accent-solid-active",
   // A tonal fill rather than a 1px frame: the ring is inset so it never
   // changes the button's size, and it only tightens on hover.
   secondary:

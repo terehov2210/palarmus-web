@@ -5,12 +5,14 @@ import { Info, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { ProductCard } from "@/components/catalog/product-card";
 import { ProductMedia } from "@/components/catalog/product-media";
+import { ProductViewer } from "@/components/catalog/product-viewer";
 import { Reveal } from "@/components/reveal";
 import { buttonClasses, ButtonLink } from "@/components/ui/button";
 import { Eyebrow, Section } from "@/components/ui/section";
 import { findCategory } from "@/content/catalog";
 import { findProduct, products, productsByCategory } from "@/content/products";
 import { site } from "@/content/site";
+import { modelForProduct } from "@/content/models-3d";
 
 export function generateStaticParams() {
   return products.map((p) => ({ category: p.category, product: p.slug }));
@@ -51,6 +53,7 @@ export default async function ProductPage({
   if (!found) notFound();
 
   const cat = findCategory(found.category);
+  const model = modelForProduct(found.slug);
   const body = bodyWithoutLede(found.body, found.summary);
   const related = productsByCategory(found.category)
     .filter((p) => p.slug !== found.slug)
@@ -73,15 +76,31 @@ export default async function ProductPage({
               anchor both get a sensible amount of room; sticky beside the
               copy on wide screens so it stays in view while the text runs. */}
           <Reveal className="lg:sticky lg:top-28 lg:self-start">
-            <div className="rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline">
-              <ProductMedia
+            {/* With a 3D model the stage opens on it, the photo one toggle away. */}
+            {model ? (
+              <ProductViewer
+                model={model}
+                photo={
+                  <ProductMedia
+                    product={found}
+                    priority
+                    padding="p-10 lg:p-14"
+                    sizes="(min-width: 1024px) 34rem, 92vw"
+                    className="aspect-square rounded-inner"
+                  />
+                }
+              />
+            ) : (
+              <div className="rounded-card bg-surface p-2 shadow-card ring-1 ring-inset ring-hairline">
+                <ProductMedia
                 product={found}
                 priority
                 padding="p-10 lg:p-14"
                 sizes="(min-width: 1024px) 34rem, 92vw"
                 className="aspect-square rounded-inner"
               />
-            </div>
+              </div>
+            )}
           </Reveal>
 
           <div className="flex flex-col gap-6">
@@ -164,7 +183,7 @@ export default async function ProductPage({
                     <th
                       key={h}
                       scope="col"
-                      className="border-b border-hairline px-5 py-3.5 text-start text-label uppercase text-fg-muted"
+                      className="border-b border-hairline px-5 py-3.5 text-start text-label text-fg-muted"
                     >
                       {h}
                     </th>

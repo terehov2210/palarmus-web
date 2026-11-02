@@ -356,7 +356,7 @@ export function HotspotCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <p className="text-label uppercase text-fg-muted">
+          <p className="text-label text-fg-muted">
             {hotspotKindLabel[hotspot.kind]}
           </p>
           <p className="text-h3 text-fg">{hotspot.title}</p>
@@ -476,7 +476,7 @@ export function HotspotLegend({
         .filter(Boolean)
         .join(" ")}
     >
-      <p className="rounded-control bg-base/85 px-2 py-1 text-label uppercase text-fg-muted backdrop-blur-sm">
+      <p className="rounded-control bg-base/85 px-2 py-1 text-label text-fg-muted backdrop-blur-sm">
         Потягніть, щоб обертати
       </p>
       <ul className="flex flex-wrap gap-1.5">

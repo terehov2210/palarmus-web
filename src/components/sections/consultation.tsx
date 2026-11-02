@@ -13,7 +13,6 @@ import {
 } from "@/lib/consultation";
 import { Reveal } from "@/components/reveal";
 import { Button } from "@/components/ui/button";
-import { Eyebrow } from "@/components/ui/section";
 import { site } from "@/content/site";
 
 /** The perimeter turns red off Base UI's `data-invalid` on the control. */
@@ -43,7 +42,7 @@ const error =
  * Without JavaScript this is still a plain `<form>` posting to a server
  * action, so it degrades to server-side validation only.
  */
-export function Consultation() {
+export function Consultation({ showContacts = true }: { showContacts?: boolean } = {}) {
   const [state, formAction, isPending] = useActionState(
     submitConsultation,
     initialConsultationState,
@@ -64,16 +63,11 @@ export function Consultation() {
     <section
       id="consultation"
       aria-labelledby="consultation-title"
-      className="relative isolate overflow-hidden bg-surface py-20 lg:py-36"
+      className="relative isolate overflow-hidden bg-surface py-16 lg:py-28"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-40 end-[-10%] h-[32rem] w-[44rem] rounded-full bg-[radial-gradient(closest-side,rgb(199_0_11/0.10),transparent)] blur-2xl"
-      />
 
       <div className="container-page relative grid gap-12 lg:grid-cols-2 lg:gap-16">
         <Reveal className="flex flex-col gap-6">
-          <Eyebrow>Консультація</Eyebrow>
           <h2
             id="consultation-title"
             className="max-w-[20ch] text-h2 text-balance text-fg"
@@ -85,6 +79,7 @@ export function Consultation() {
             представником у вашому місті підбере набір і назве строк доставки.
           </p>
 
+          {showContacts ? (
           <ul className="mt-2 flex flex-col gap-1 rounded-card bg-base/60 p-3 ring-1 ring-inset ring-hairline">
             <li>
               <a
@@ -114,6 +109,7 @@ export function Consultation() {
               {site.address.label}
             </li>
           </ul>
+          ) : null}
         </Reveal>
 
         <Reveal delay={120}>

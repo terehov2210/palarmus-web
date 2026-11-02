@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { Reveal } from "@/components/reveal";
-import { advantageIcons } from "@/components/sections/advantages";
 import { Consultation } from "@/components/sections/consultation";
 import { PartnerLogo } from "@/components/sections/partners";
 import { ButtonLink } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Section, SectionHeader } from "@/components/ui/section";
 import { categories } from "@/content/catalog";
 import { site } from "@/content/site";
-import { advantages, partners } from "@/content/trust";
+import { partners } from "@/content/trust";
 
 export const metadata: Metadata = {
   title: "Про компанію",
@@ -26,6 +25,13 @@ export const metadata: Metadata = {
  * (sections 1.2 and 1.3) or already on the live site. Nothing here is a
  * figure, a date or a claim that would need a document behind it.
  */
+const STEPS = [
+  { title: "Запит", body: "Опишіть клінічний випадок або назвіть позицію — телефоном чи через форму консультації." },
+  { title: "Підбір", body: "Інженер разом із представником у вашому місті підбирає набір і називає строк доставки." },
+  { title: "Доставка", body: "Представники працюють у кожному місті України — імплант доїжджає до операційної в межах доби." },
+  { title: "Навчання", body: "Навчаємо лікарів в Україні та за кордоном разом із виробниками систем." },
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -35,7 +41,7 @@ export default function AboutPage() {
         eyebrow="Про компанію"
         title={
           <>
-            Світові технології <strong>ортопедії</strong> — доступні в Україні
+            Світові технології ортопедії — доступні в Україні
           </>
         }
       />
@@ -56,13 +62,9 @@ export default function AboutPage() {
             delay={80}
             className="relative isolate flex flex-col justify-between gap-10 overflow-hidden rounded-card bg-surface p-8 ring-1 ring-inset ring-hairline lg:p-12"
           >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -end-20 -top-24 -z-10 h-72 w-96 rounded-full bg-[radial-gradient(closest-side,rgb(199_0_11/0.14),transparent)] blur-2xl"
-            />
             <div className="flex flex-col items-start gap-4">
               <Logo variant="wordmark" className="h-8 w-auto text-fg sm:h-9" />
-              <p className="flex items-center gap-2 text-label uppercase text-fg-muted">
+              <p className="flex items-center gap-2 text-label text-fg-muted">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-accent-solid" />
                 {site.slogan}
               </p>
@@ -81,25 +83,28 @@ export default function AboutPage() {
           title="Як ми працюємо"
           description="Разом із виробниками систем, а не замість них: від підбору набору до навчання команди."
         />
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {advantages.map((advantage, i) => {
-            const Icon = advantageIcons[advantage.icon];
-            return (
-              <Reveal
-                as="li"
-                key={advantage.title}
-                delay={(i % 4) * 60}
-                className="flex flex-col gap-4 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline"
+        {/* The order of work, not the homepage's four advantages again: every
+            step is worded from what the site already promises (the consultation
+            form, the delivery and training claims). */}
+        <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {STEPS.map((step, i) => (
+            <Reveal
+              as="li"
+              key={step.title}
+              delay={(i % 4) * 60}
+              className="flex flex-col gap-4 rounded-card bg-surface p-7 ring-1 ring-inset ring-hairline"
+            >
+              <span
+                aria-hidden="true"
+                className="grid size-11 place-items-center rounded-control bg-accent-tint text-body-sm font-bold text-fg-accent tabular-nums"
               >
-                <span className="mb-4 grid size-12 place-items-center rounded-inner bg-accent-tint text-fg-accent">
-                  <Icon aria-hidden="true" size={22} strokeWidth={1.75} />
-                </span>
-                <h3 className="text-h3 text-fg">{advantage.title}</h3>
-                <p className="text-body-sm text-pretty text-fg-secondary">{advantage.body}</p>
-              </Reveal>
-            );
-          })}
-        </ul>
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 className="text-h3 text-fg">{step.title}</h3>
+              <p className="text-body-sm text-pretty text-fg-secondary">{step.body}</p>
+            </Reveal>
+          ))}
+        </ol>
       </Section>
 
       <Section labelledBy="about-scope-title" className="pt-0 lg:pt-0">

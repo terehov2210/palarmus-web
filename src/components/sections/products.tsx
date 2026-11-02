@@ -8,7 +8,6 @@ export function Products() {
   return (
     <Section id="products" labelledBy="products-title">
       <SectionHeader
-        eyebrow="Популярні позиції"
         titleId="products-title"
         title="Системи, які замовляють найчастіше"
         action={
