@@ -63,7 +63,7 @@ placeholder ships instead.
 | LocTak™ | `public/products/loctak.webp` |
 | SutureLoc™ | `public/products/sutureloc.webp` |
 | XtraLoc™ PEEK | `public/products/xtraloc.webp` |
-| SpeedLoc™ | `public/products/speedloc.png` |
+| SpeedLoc™ | `public/products/speedloc.webp` |
 | TrHCROSS 2,0% | `public/products/trhcross.webp` |
 
 Those eight are also what the homepage strip shows, so the one grid where the

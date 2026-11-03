@@ -656,7 +656,7 @@ export const products: Product[] = [
         ["A307987", "Ø 5.5 × 19 мм", "Нитка білого / чорно-білого кольору"],
       ],
     },
-    image: "/products/speedloc.png",
+    image: "/products/speedloc.webp",
     imageAlt: "Біорезорбуючий якір для швів SpeedLoc™",
     source: "https://palarmus.com.ua/pokuptsyam/shop/biorezorbuyuchiy-yakir-dlya-shviv-speedloc/",
   },
