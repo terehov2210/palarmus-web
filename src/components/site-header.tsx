@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { Phone } from "lucide-react";
 
+import { ConsultLink } from "@/components/consult-link";
 import { MobileNav } from "@/components/mobile-nav";
+import { NavLinks } from "@/components/nav-links";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ButtonLink } from "@/components/ui/button";
+import { buttonClasses } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
-import { primaryNav, site } from "@/content/site";
+import { site } from "@/content/site";
 
 export function SiteHeader() {
   return (
@@ -20,18 +22,7 @@ export function SiteHeader() {
         </Link>
 
         <nav aria-label="Основна навігація" className="hidden lg:block">
-          <ul className="flex items-center gap-0.5 rounded-pill bg-fg/[0.04] p-1 ring-1 ring-inset ring-hairline">
-            {primaryNav.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="inline-flex min-h-9 items-center rounded-pill px-4 text-body-sm font-medium text-fg-secondary transition-[background-color,color,box-shadow] duration-fast ease-out-quint hover:bg-base hover:text-fg hover:shadow-card"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <NavLinks />
         </nav>
 
         <div className="ms-auto flex items-center gap-2">
@@ -49,13 +40,15 @@ export function SiteHeader() {
               Secondary on purpose — the sticky header must never put a second
               filled action on screen beside the one a section already owns. */}
           <span className="hidden sm:block">
-            <ButtonLink
-              href="#consultation"
-              variant="secondary"
-              className="bg-fg! text-(--color-base)! ring-0! hover:bg-fg-secondary!"
+            <ConsultLink
+              className={buttonClasses(
+                "secondary",
+                "md",
+                "bg-fg! text-(--color-base)! ring-0! hover:bg-fg-secondary!",
+              )}
             >
               Отримати консультацію
-            </ButtonLink>
+            </ConsultLink>
           </span>
 
           <ThemeToggle />

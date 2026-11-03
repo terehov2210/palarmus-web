@@ -20,6 +20,14 @@ export const materialTypes: { id: MaterialType; label: string }[] = [
   { id: "basics", label: "Базові знання" },
 ];
 
+/** The filter's wording (brief §4): plural, since a filter names a set. */
+export const typeFilterLabel: Record<MaterialType, string> = {
+  technique: "Хірургічні техніки",
+  video: "Відео",
+  pdf: "Інструкції / PDF",
+  basics: "Базові знання",
+};
+
 export const typeLabel = (t: MaterialType) => materialTypes.find((m) => m.id === t)!.label;
 
 export type Direction = {
@@ -261,7 +269,7 @@ export const popularMaterials = [
 /** Topics of the «Базові знання» block, each an anchor in the article. */
 export const basicsTopics = [
   { label: "Основні типи ортопедичних імплантів", href: "/education/basics#types" },
-  { label: "Конструкції пластин, гвинтів і стержнів", href: "/education/basics#types" },
+  { label: "Конструкції пластин, гвинтів і стержнів", href: "/education/basics#plate" },
   { label: "Компоненти ендопротезів", href: "/education/basics#hip" },
   { label: "Матеріали та пари тертя", href: "/education/basics#materials" },
   { label: "Основні терміни ортопедії й травматології", href: "/education/basics#glossary" },

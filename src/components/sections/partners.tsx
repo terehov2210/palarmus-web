@@ -35,7 +35,7 @@ export function Partners() {
         <Reveal className="flex flex-col gap-5">
           <Eyebrow>Виробники</Eyebrow>
           <h2 id="partners-title" className="max-w-[28ch] font-display text-[clamp(1.5rem,1.1rem+1.2vw,2rem)] leading-tight font-medium tracking-[-0.025em] text-balance text-fg">
-            Працюємо напряму з виробниками систем
+            Працюємо з міжнародними виробниками систем
           </h2>
         </Reveal>
 

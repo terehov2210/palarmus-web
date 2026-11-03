@@ -14,6 +14,8 @@ import { findProduct, products, productsByCategory } from "@/content/products";
 import { site } from "@/content/site";
 import { Consultation } from "@/components/sections/consultation";
 import { modelForProduct } from "@/content/models-3d";
+import { materials } from "@/content/training";
+import { MaterialCard } from "@/components/education/material-card";
 
 export function generateStaticParams() {
   return products.map((p) => ({ category: p.category, product: p.slug }));
@@ -59,6 +61,9 @@ export default async function ProductPage({
   const related = productsByCategory(found.category)
     .filter((p) => p.slug !== found.slug)
     .slice(0, 4);
+  // Techniques, brochures and videos from the training library that are about
+  // this product: the catalogue's «documentation», from files already on site.
+  const docs = materials.filter((m) => m.products.includes(found.slug));
 
   return (
     <>
@@ -216,6 +221,24 @@ export default async function ProductPage({
               </tbody>
             </table>
           </Reveal>
+        </Section>
+      ) : null}
+
+      {docs.length > 0 ? (
+        <Section labelledBy="product-docs" className="pt-0 lg:pt-0">
+          <h2 id="product-docs" className="text-h2 text-balance text-fg">
+            Документи та матеріали
+          </h2>
+          <p className="mt-4 max-w-[58ch] text-lede text-pretty text-fg-secondary">
+            Хірургічні техніки, описи систем і відео виробника з розділу «Навчання».
+          </p>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {docs.map((m, i) => (
+              <Reveal as="li" key={m.slug} delay={(i % 3) * 60} className="h-full">
+                <MaterialCard material={m} />
+              </Reveal>
+            ))}
+          </ul>
         </Section>
       ) : null}
 

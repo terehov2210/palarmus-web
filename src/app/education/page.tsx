@@ -68,7 +68,7 @@ export default function EducationPage() {
               type="search"
               name="q"
               placeholder="Знайти процедуру, імплант або навчальний матеріал"
-              className="min-h-13 w-full rounded-pill bg-surface ps-11 pe-28 text-body text-fg ring-1 ring-inset ring-hairline placeholder:text-fg-muted focus:ring-hairline-strong focus:outline-none"
+              className="min-h-13 w-full rounded-pill bg-surface ps-11 pe-28 text-body text-fg ring-1 ring-inset ring-hairline placeholder:text-fg-muted"
             />
             <button
               type="submit"

@@ -33,7 +33,7 @@ const channels = [
     label: "Офіс",
     value: site.address.label,
     href: site.address.href,
-    note: "Представники працюють у кожному місті України.",
+    note: "Відкрити на карті. Представники працюють у кожному місті України.",
   },
 ] as const;
 
@@ -84,7 +84,11 @@ export default function ContactsPage() {
             return (
               <Reveal as="li" key={label} delay={i * 60} className="h-full">
                 {href ? (
-                  <a href={href} className={`${card} hover:shadow-card-hover`}>
+                  <a
+                    href={href}
+                    {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className={`${card} hover:shadow-card-hover`}
+                  >
                     {body}
                   </a>
                 ) : (

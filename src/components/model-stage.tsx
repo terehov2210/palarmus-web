@@ -5,7 +5,7 @@ import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber"
 import { Environment, useGLTF, useProgress } from "@react-three/drei";
 import * as THREE from "three";
 import { Progress as BaseProgress } from "@base-ui/react/progress";
-import { Layers, Maximize2, Minimize2, Minus, Moon, Plus, RotateCcw, Sun } from "lucide-react";
+import { Layers, Maximize2, Minimize2, Minus, Moon, Pause, Play, Plus, RotateCcw, Sun } from "lucide-react";
 
 import { STUDIO_HDR_URL } from "@/components/skeleton-materials";
 import { ModelPoster } from "@/components/model-poster";
@@ -37,6 +37,8 @@ const ZOOM_MAX = 4;
 const EXPLODE_REACH = 0.4;
 /** The camera backs off this much more at full explode, so the spread parts stay in frame. */
 const EXPLODE_BACKOFF = 0.95;
+/** Radians per arrow-key press: sixteen presses go once round. */
+const KEY_STEP = Math.PI / 8;
 
 /** Ukrainian names for the parts (GLB node names, see implants-3d). */
 const PART_NAMES: Record<string, string> = {
@@ -362,7 +364,7 @@ function ToolButton({
       aria-pressed={pressed}
       onPointerDown={(e) => e.stopPropagation()}
       onClick={onClick}
-      className={`flex size-9 items-center justify-center rounded-pill text-(--stage-ink) transition-[background-color,color] duration-fast ease-out-quint hover:bg-(--stage-chip-strong) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-line ${
+      className={`flex size-9 items-center justify-center rounded-pill text-(--stage-ink) transition-[background-color,color] duration-fast ease-out-quint hover:bg-(--stage-chip-strong) ${
         pressed ? "bg-(--stage-chip-strong)" : ""
       }`}
     >
@@ -410,6 +412,9 @@ export function ModelStage({
   const [exploded, setExploded] = useState(false);
   const [lightStage, setLightStage] = useState(false);
   const [full, setFull] = useState(false);
+  /** The reader stopped the idle turn. It stays stopped across models. */
+  const [paused, setPaused] = useState(false);
+  const reduced = useRef(false);
   const [parts, setParts] = useState(0);
   /** "poster": only the picture; "preview": the light GLB turns; "full": the real one. */
   const [stage, setStage] = useState<StageState>("poster");
@@ -464,12 +469,13 @@ export function ModelStage({
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const sync = () => {
-      spin.current.idle = !query.matches;
+      reduced.current = query.matches;
+      spin.current.idle = !query.matches && !paused;
     };
     sync();
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
-  }, []);
+  }, [paused]);
 
   useEffect(() => {
     const sync = () => setFull(document.fullscreenElement === wrapper.current);
@@ -500,6 +506,42 @@ export function ModelStage({
     setExploded(next);
     explode.current.target = next ? 1 : 0;
     spin.current.hold = next;
+  };
+
+  /**
+   * The keyboard route to everything a drag does: arrows turn and tilt, + and −
+   * zoom. Only when the stage itself has focus, so the toolbar buttons inside
+   * keep their own keys.
+   */
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+    const state = spin.current;
+    switch (event.key) {
+      case "ArrowLeft":
+        state.yaw -= KEY_STEP;
+        break;
+      case "ArrowRight":
+        state.yaw += KEY_STEP;
+        break;
+      case "ArrowUp":
+        state.pitch = THREE.MathUtils.clamp(state.pitch - KEY_STEP / 2, -PITCH_MAX, PITCH_MAX);
+        break;
+      case "ArrowDown":
+        state.pitch = THREE.MathUtils.clamp(state.pitch + KEY_STEP / 2, -PITCH_MAX, PITCH_MAX);
+        break;
+      case "+":
+      case "=":
+        zoomBy(1.25);
+        break;
+      case "-":
+        zoomBy(1 / 1.25);
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    state.velocity = 0;
+    state.rest = RESUME_AFTER;
   };
 
   const toggleFull = () => {
@@ -552,15 +594,21 @@ export function ModelStage({
   }, []);
 
   // light stage: dark ink on a pale studio sweep
+  // The focus ring follows the stage, not the page: the page's ring is black in
+  // the light theme, which vanishes on the dark stage (and white on the light one).
   const stageVars = lightStage
-    ? ({ "--stage-ink": "rgb(18 18 20 / 0.86)", "--stage-chip": "rgb(0 0 0 / 0.06)", "--stage-chip-strong": "rgb(0 0 0 / 0.1)" } as React.CSSProperties)
-    : ({ "--stage-chip-strong": "rgb(255 255 255 / 0.14)" } as React.CSSProperties);
+    ? ({ "--stage-ink": "rgb(18 18 20 / 0.86)", "--stage-chip": "rgb(0 0 0 / 0.06)", "--stage-chip-strong": "rgb(0 0 0 / 0.1)", "--color-focus-ring": "#121214" } as React.CSSProperties)
+    : ({ "--stage-chip-strong": "rgb(255 255 255 / 0.14)", "--color-focus-ring": "#ffffff" } as React.CSSProperties);
 
   return (
     <div
       ref={wrapper}
       style={stageVars}
-      className="absolute inset-0 cursor-grab touch-pan-y select-none active:cursor-grabbing"
+      tabIndex={0}
+      role="group"
+      aria-label={`3D-модель: ${model.name}. Стрілки обертають, плюс і мінус змінюють масштаб.`}
+      className="absolute inset-0 cursor-grab touch-pan-y select-none active:cursor-grabbing focus-visible:after:pointer-events-none focus-visible:after:absolute focus-visible:after:inset-1.5 focus-visible:after:rounded-[calc(var(--radius-inner)-0.375rem)] focus-visible:after:ring-2 focus-visible:after:ring-(--color-focus-ring) focus-visible:after:content-['']"
+      onKeyDown={onKeyDown}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}
@@ -618,6 +666,14 @@ export function ModelStage({
       <p className="pointer-events-none absolute top-4 left-4 rounded-pill bg-(--stage-chip) px-3 py-1 text-label text-(--stage-ink) backdrop-blur-md">
         Потягніть, щоб обертати
       </p>
+
+      {/* Motion that runs by itself needs a way to stop it (WCAG 2.2.2). Under
+          a reduce preference there is no idle turn, so nothing to stop. */}
+      <div className="absolute top-3 right-3 rounded-pill bg-(--stage-chip) p-1 backdrop-blur-md motion-reduce:hidden">
+        <ToolButton label="Зупинити обертання" pressed={paused} onClick={() => setPaused((v) => !v)}>
+          {paused ? <Play className="size-4.5" aria-hidden="true" /> : <Pause className="size-4.5" aria-hidden="true" />}
+        </ToolButton>
+      </div>
 
       {tip ? (
         <span

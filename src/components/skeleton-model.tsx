@@ -763,8 +763,11 @@ export function SkeletonModel({
   frame = "full",
   lift = 0,
   shift = 0,
+  paused = false,
   className,
 }: {
+  /** The reader stopped the motion: it then behaves exactly as under reduce-motion. */
+  paused?: boolean;
   frame?: Framing;
   /** Fraction of the frame's half-height to raise an open zone by. */
   lift?: number;
@@ -858,13 +861,14 @@ export function SkeletonModel({
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const sync = () => {
-      spinRef.current.sweeping = !query.matches;
-      instantRef.current = query.matches;
+      const still = query.matches || paused;
+      spinRef.current.sweeping = !still;
+      instantRef.current = still;
     };
     sync();
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
-  }, []);
+  }, [paused]);
 
   useEffect(() => {
     if (active === null) return;

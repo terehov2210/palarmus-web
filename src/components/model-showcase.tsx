@@ -230,7 +230,8 @@ export function ModelShowcase() {
               className="product-stage relative aspect-square overflow-hidden rounded-inner sm:aspect-4/3 model-stage-tall"
             >
               <p className="sr-only">
-                Тривимірна модель: {model.name}. Потягніть по горизонталі, щоб обертати.
+                Тривимірна модель: {model.name}. Потягніть по горизонталі, щоб обертати, або
+                сфокусуйте сцену й обертайте стрілками.
               </p>
               {webgl ? (
                 <>
@@ -271,7 +272,7 @@ export function ModelShowcase() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Пошук: пластина, гвинт, Mirai…"
-                className="h-10 w-full rounded-pill bg-fg/[0.04] px-4 text-body-sm text-fg ring-1 ring-inset ring-hairline placeholder:text-fg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-line"
+                className="h-11 w-full rounded-pill bg-fg/[0.04] px-4 text-body text-fg sm:h-10 sm:text-body-sm ring-1 ring-inset ring-hairline placeholder:text-fg-muted"
               />
             </label>
           </div>
@@ -299,7 +300,22 @@ export function ModelShowcase() {
         </Reveal>
 
         {shown.length === 0 ? (
-          <p className="text-body text-fg-muted">Нічого не знайдено. Спробуйте іншу назву або оберіть «Усі».</p>
+          <div className="flex flex-col items-start gap-4">
+            <p className="text-body text-pretty text-fg-secondary">
+              {q ? <>За запитом «{query.trim()}» моделей немає.</> : <>У цій групі моделей немає.</>} Спробуйте
+              іншу назву або покажіть усі моделі.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setFilter("all");
+              }}
+              className="inline-flex min-h-10 items-center rounded-pill bg-fg/[0.05] px-4 text-body-sm font-semibold text-fg ring-1 ring-inset ring-hairline transition-[background-color,box-shadow] duration-fast ease-out-quint hover:bg-fg/[0.09] hover:ring-hairline-strong"
+            >
+              Показати всі моделі
+            </button>
+          </div>
         ) : null}
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {shown.map((m) => (

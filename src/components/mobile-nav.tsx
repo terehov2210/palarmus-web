@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { Mail, MapPin, Menu, Phone, X } from "lucide-react";
 
+import { ConsultLink } from "@/components/consult-link";
+import { isCurrent } from "@/components/nav-links";
 import { buttonClasses } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { primaryNav, site } from "@/content/site";
@@ -26,6 +29,7 @@ import { primaryNav, site } from "@/content/site";
  */
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const close = () => setOpen(false);
 
   return (
@@ -59,7 +63,8 @@ export function MobileNav() {
                     <Link
                       href={item.href}
                       onClick={close}
-                      className="flex min-h-16 items-center justify-between text-h2 text-fg transition-[color] duration-fast ease-out-quint hover:text-fg-accent"
+                      aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
+                      className="flex min-h-16 items-center justify-between text-h2 text-fg transition-[color] duration-fast ease-out-quint hover:text-fg-accent aria-[current=page]:text-fg-accent"
                     >
                       {item.label}
                     </Link>
@@ -92,13 +97,13 @@ export function MobileNav() {
                 />
                 {site.address.label}
               </p>
-              <Link
-                href="/#consultation"
+              <ConsultLink
                 onClick={close}
+                defer={200}
                 className={buttonClasses("primary", "lg", "w-full")}
               >
                 Отримати консультацію
-              </Link>
+              </ConsultLink>
             </div>
           </div>
         </Dialog.Popup>

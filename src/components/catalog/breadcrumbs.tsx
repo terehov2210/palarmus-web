@@ -11,7 +11,7 @@ type Crumb = { label: string; href?: string };
  */
 export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
   return (
-    <nav aria-label="Навігація по каталогу">
+    <nav aria-label="Хлібні крихти">
       <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-body-sm text-fg-muted">
         {trail.map((crumb, i) => {
           const last = i === trail.length - 1;
@@ -32,7 +32,7 @@ export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
               ) : (
                 <Link
                   href={crumb.href}
-                  className="rounded-control transition-[color] duration-fast ease-out-quint hover:text-fg-accent"
+                  className="-my-1 inline-block rounded-control py-1 transition-[color] duration-fast ease-out-quint hover:text-fg-accent"
                 >
                   {crumb.label}
                 </Link>

@@ -46,7 +46,7 @@ export function ProductViewer({ model, photo }: { model: Model3D; photo: ReactNo
         {show3d ? (
           <div className="product-stage relative aspect-square overflow-hidden rounded-inner">
             <p className="sr-only">
-              Тривимірна модель: {model.name}. Потягніть, щоб обертати.
+              Тривимірна модель: {model.name}. Потягніть, щоб обертати, або сфокусуйте сцену й обертайте стрілками.
             </p>
             <ModelPoster
               model={model}

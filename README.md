@@ -25,8 +25,8 @@ python3 scripts/art.py     # rebuild public/ art from art-src/ (needs Pillow)
    licence before the site is public.
 3. **Placeholder blocks** — off by default, see below. Turn each on only with
    real data.
-4. **Office map link** — `site.address.href` in `src/content/site.ts` is still
-   `null`.
+4. **Office map link** — `site.address.href` in `src/content/site.ts` is a
+   Google Maps search for the address; swap in the office's own place link.
 
 ## ⚠️ Placeholder content — gated off
 

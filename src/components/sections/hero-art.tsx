@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@base-ui/react/button";
-import { ArrowUpRight, X } from "lucide-react";
+import { ArrowUpRight, Pause, X } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/button";
 import { skeletonZones, type SkeletonZone } from "@/content/skeleton-zones";
@@ -84,8 +84,12 @@ function ZoneLegend({
   onActivate,
   onHover,
   hint,
+  paused,
+  onPause,
 }: {
   ref?: React.Ref<HTMLUListElement>;
+  paused: boolean;
+  onPause: () => void;
   active: string | null;
   onActivate: (zone: string | null) => void;
   onHover: (zone: string | null) => void;
@@ -94,9 +98,25 @@ function ZoneLegend({
   return (
     <div className="flex flex-col items-start gap-2">
       {hint ? (
-        <p className="rounded-pill bg-base/70 px-3 py-1 text-label text-fg-muted ring-1 ring-inset ring-hairline backdrop-blur-md">
-          Потягніть, щоб обертати · оберіть зону
-        </p>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <p className="rounded-pill bg-base/70 px-3 py-1 text-label text-fg-muted ring-1 ring-inset ring-hairline backdrop-blur-md">
+            Потягніть, щоб обертати · оберіть зону
+          </p>
+          {/* The figure moves by itself, so it needs a way to stop (WCAG
+              2.2.2). Under reduce-motion it never moves, so nothing to stop. */}
+          <Button
+            aria-pressed={paused}
+            onClick={onPause}
+            className={`pointer-events-auto inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-pill border px-3 text-caption backdrop-blur-md transition-[background-color,border-color,color,scale] duration-fast ease-out-quint active:scale-[0.96] motion-reduce:hidden ${
+              paused
+                ? "border-hairline-strong bg-raised text-fg"
+                : "border-hairline bg-raised/70 text-fg-secondary hover:border-hairline-strong hover:bg-raised hover:text-fg"
+            }`}
+          >
+            <Pause aria-hidden="true" size={13} strokeWidth={2} />
+            Зупинити рух
+          </Button>
+        </div>
       ) : null}
       <ul ref={ref} aria-label="Зони на моделі" className="flex flex-wrap gap-1.5">
         {skeletonZones.map((zone) => (
@@ -151,6 +171,7 @@ export function HeroArt() {
   const [active, setActive] = useState<string | null>(null);
   const [hover, setHover] = useState<string | null>(null);
   const [sideBySide, setSideBySide] = useState(false);
+  const [paused, setPaused] = useState(false);
   const legend = useRef<HTMLUListElement>(null);
 
   // Reading a platform capability, which does not exist during SSR.
@@ -208,7 +229,7 @@ export function HeroArt() {
     </div>
   ) : null;
   const zoneLegend = (
-    <ZoneLegend ref={legend} active={active} onActivate={activate} onHover={setHover} hint={webgl === true} />
+    <ZoneLegend ref={legend} active={active} onActivate={activate} onHover={setHover} hint={webgl === true} paused={paused} onPause={() => setPaused((v) => !v)} />
   );
 
   return (
@@ -243,6 +264,7 @@ export function HeroArt() {
             onActivate={activate}
             onHover={setHover}
             onLoaded={onLoaded}
+            paused={paused}
           />
         ) : null}
 

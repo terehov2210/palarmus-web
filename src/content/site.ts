@@ -28,8 +28,10 @@ export const site = {
   },
   address: {
     label: "м. Одеса, вул. Балківська 120/1",
-    // TODO: replace with the Google Maps place link for the Odesa office.
-    href: null as string | null,
+    // A Maps search for the address; swap for the office's own place link once
+    // it has one.
+    href: "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent("Одеса, вулиця Балківська, 120/1") as string | null,
   },
   instagram: {
     label: "implants.ua",
